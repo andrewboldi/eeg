@@ -1,0 +1,256 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{multirow}
+\usepackage{float}
+
+\definecolor{good}{rgb}{0.0,0.5,0.0}
+\definecolor{bad}{rgb}{0.7,0.0,0.0}
+
+\title{EEG Scalp-to-In-Ear Signal Prediction:\\
+  Iteration 001 --- Baseline Establishment}
+\author{Automated Research Loop}
+\date{April 7, 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We present the first iteration of an automated research pipeline for predicting
+4-channel in-ear EEG signals from 21-channel scalp EEG (10-20 system). Four
+model architectures are compared: closed-form optimal spatial filter, SGD-trained
+linear spatial filter, spatio-temporal FIR filter, and nonlinear convolutional
+encoder. Using synthetic data (5 subjects, 76,800 samples each, SNR=10\,dB),
+the closed-form solution achieves $r=0.887$, SNR$=6.51$\,dB, and coherence$=0.715$,
+while all gradient-trained models exhibit negative correlations, indicating
+critical training instabilities. Ablation studies confirm that MSE-only loss
+outperforms combined spectral/band-power losses. We identify root causes and
+propose concrete improvements for Iteration~002.
+\end{abstract}
+
+\section{Introduction}
+
+In-ear EEG offers a wearable, unobtrusive alternative to scalp EEG, but
+captures a limited spatial view of brain activity. If in-ear signals can be
+accurately predicted from scalp recordings, this opens pathways for:
+\begin{enumerate}
+  \item Transfer learning from large scalp EEG datasets to in-ear models,
+  \item Virtual in-ear channel generation for electrode optimization,
+  \item Understanding the spatial filtering relationship between montages.
+\end{enumerate}
+
+The forward model is: $\mathbf{Y} = \mathbf{M}\mathbf{X} + \boldsymbol{\eta}$,
+where $\mathbf{X} \in \mathbb{R}^{21 \times T}$ is scalp EEG,
+$\mathbf{M} \in \mathbb{R}^{4 \times 21}$ is the mixing matrix (weighted toward
+temporal/parietal channels T7, T8, P7, P8), and $\boldsymbol{\eta}$ is sensor noise.
+
+\section{Methods}
+
+\subsection{Data Generation and Preprocessing}
+Synthetic data was generated for 5 subjects with 76,800 samples each at 256\,Hz.
+The EEG simulation includes $1/f$ spectral falloff and alpha oscillations.
+Preprocessing: bandpass 0.5--45\,Hz, 50\,Hz notch, common average reference,
+artifact rejection ($|V| > 150\,\mu$V), z-score normalization, windowing to
+256-sample epochs with 50\% overlap. This yielded 2,090 training, 447 validation,
+and 449 test windows (chronological split, no temporal leakage).
+
+\subsection{Model Architectures}
+
+\begin{table}[H]
+\centering
+\caption{Model architectures compared.}
+\label{tab:models}
+\begin{tabular}{llrl}
+\toprule
+Model & Type & Parameters & Optimization \\
+\midrule
+Closed-form & $\mathbf{W}^* = \mathbf{R}_{YX}\mathbf{R}_{XX}^{-1}$ & 84 & Analytic \\
+Linear SGD & $\hat{\mathbf{Y}} = \mathbf{W}\mathbf{X}$ & 84 & Adam, 100 epochs \\
+FIR Filter & 1D Conv, $L{=}65$ taps & 5,460 & Adam, 200 epochs \\
+Conv Encoder & Depthwise-sep + residual & 24,068 & AdamW + Cosine, 300 epochs \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Loss Functions}
+The combined loss is $\mathcal{L} = \mathcal{L}_\text{MSE} + \lambda_s \mathcal{L}_\text{spec}
++ \lambda_b \mathcal{L}_\text{band}$, where $\mathcal{L}_\text{spec}$ matches
+log-magnitude FFT and $\mathcal{L}_\text{band}$ matches power in 5 EEG bands
+($\delta, \theta, \alpha, \beta, \gamma$). Default $\lambda_s = \lambda_b = 0.1$.
+
+\subsection{Evaluation Metrics}
+Per-channel Pearson correlation ($r$), RMSE, relative RMSE, SNR (dB),
+spectral RMSE, band power correlations (5 bands), and magnitude-squared coherence.
+
+\section{Results}
+
+\subsection{Model Comparison}
+
+\begin{table}[H]
+\centering
+\caption{Test set performance across all models. Best values in \textbf{bold}.}
+\label{tab:results}
+\begin{tabular}{lrrrrr}
+\toprule
+Model & $r$ & RMSE & Rel.\ RMSE & SNR (dB) & Coherence \\
+\midrule
+\textbf{Closed-form} & \textcolor{good}{\textbf{0.887}} & \textcolor{good}{\textbf{0.474}} & \textcolor{good}{\textbf{0.473}} & \textcolor{good}{\textbf{6.51}} & \textcolor{good}{\textbf{0.715}} \\
+Linear SGD & \textcolor{bad}{$-0.652$} & \textcolor{bad}{1.591} & \textcolor{bad}{1.588} & \textcolor{bad}{$-4.02$} & 0.288 \\
+FIR Filter & \textcolor{bad}{$-0.210$} & \textcolor{bad}{1.520} & \textcolor{bad}{1.517} & \textcolor{bad}{$-3.62$} & 0.059 \\
+Conv Encoder & \textcolor{bad}{$-0.043$} & \textcolor{bad}{1.444} & \textcolor{bad}{1.441} & \textcolor{bad}{$-3.17$} & 0.003 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Band Power Correlations}
+
+\begin{table}[H]
+\centering
+\caption{Mean band power correlations per model.}
+\label{tab:bandpower}
+\begin{tabular}{lrrrrr}
+\toprule
+Model & $\delta$ & $\theta$ & $\alpha$ & $\beta$ & $\gamma$ \\
+\midrule
+Closed-form & 0.633 & 0.638 & 0.492 & 0.563 & 0.368 \\
+Linear SGD  & 0.258 & 0.240 & 0.129 & 0.277 & 0.131 \\
+FIR Filter  & $-0.227$ & $-0.094$ & 0.090 & $-0.207$ & $-0.110$ \\
+Conv Encoder & --- & --- & --- & --- & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Loss Ablation Study}
+
+The ablation was run with the Conv Encoder architecture (100 epochs each):
+
+\begin{table}[H]
+\centering
+\caption{Loss ablation on Conv Encoder.}
+\label{tab:ablation_loss}
+\begin{tabular}{lrrr}
+\toprule
+Loss Configuration & $r$ & SNR (dB) & RMSE \\
+\midrule
+MSE only            & \textbf{0.813} & \textbf{4.71}  & \textbf{0.583} \\
+MSE + Spectral      & 0.680          & 2.64           & 0.739 \\
+MSE + Band power    & 0.433          & $-0.62$        & 1.076 \\
+All losses combined & $-0.341$       & $-4.32$        & 1.649 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Critical finding:} Each additional loss term \emph{degrades} performance.
+The spectral and band-power losses appear to introduce optimization conflicts
+or gradient interference.
+
+\subsection{Window Length Ablation}
+
+\begin{table}[H]
+\centering
+\caption{Window length ablation on Conv Encoder (combined loss, 100 epochs).}
+\label{tab:ablation_window}
+\begin{tabular}{lrrr}
+\toprule
+Window $T$ (samples) & $r$ & SNR (dB) & RMSE \\
+\midrule
+128  & $-0.019$ & $-3.02$ & 1.418 \\
+256  & $-0.367$ & $-4.38$ & 1.660 \\
+512  & $-0.466$ & $-4.84$ & 1.749 \\
+1024 & $-0.011$ & $-3.32$ & 1.468 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+All window sizes yield negative correlations when using the combined loss,
+confirming that the primary issue is the loss function/training dynamics, not
+the window size.
+
+\section{Analysis and Diagnosis}
+
+\subsection{Why Gradient-Trained Models Fail}
+
+Several observations point to root causes:
+
+\begin{enumerate}
+  \item \textbf{Loss magnitude explosion}: Training losses start in the millions
+    (e.g., $3.8 \times 10^6$ for Conv Encoder epoch 1), suggesting the data
+    or loss is not properly scaled. The closed-form solution bypasses this
+    entirely.
+
+  \item \textbf{Combined loss interference}: The ablation clearly shows that
+    adding spectral and band-power losses progressively destroys performance.
+    MSE-only achieves $r=0.81$, nearly matching the closed-form baseline.
+    The auxiliary losses likely create conflicting gradients.
+
+  \item \textbf{SGD vs.\ analytic}: The linear SGD model has identical architecture
+    to the closed-form but achieves $r=-0.65$ vs.\ $r=0.89$. This means the
+    Adam optimizer with the given hyperparameters cannot find the analytic
+    optimum --- a clear optimization failure, not an architecture limitation.
+
+  \item \textbf{Overfitting to wrong objective}: The Conv Encoder with combined
+    loss converges to a solution that is \emph{anti-correlated} with the target,
+    suggesting it gets trapped in a bad local minimum where spectral matching
+    conflicts with time-domain accuracy.
+\end{enumerate}
+
+\subsection{The Closed-Form Solution as Upper Bound}
+
+With $r=0.887$ and coherence of 0.715, the closed-form linear spatial filter
+explains approximately $78.7\%$ of variance in the in-ear signal ($r^2$).
+This is expected given the linear forward model with 10\,dB SNR. The remaining
+$21.3\%$ is attributable to additive sensor noise.
+
+The theoretical SNR limit for a perfect linear decoder with 10\,dB input SNR
+on our 4-channel output is approximately $10 + 10\log_{10}(21/4) \approx 17.2$\,dB
+(assuming perfect spatial averaging). The achieved 6.51\,dB falls short because
+the mixing matrix concentrates on a subset of channels, limiting the effective
+spatial averaging gain.
+
+\section{Proposed Improvements for Iteration 002}
+
+Based on our diagnosis, we propose the following changes:
+
+\begin{enumerate}
+  \item \textbf{Use MSE-only loss}: The ablation definitively shows this is
+    the best configuration. Remove spectral and band-power losses from the
+    default configs.
+
+  \item \textbf{Initialize from closed-form solution}: Use $\mathbf{W}^*$ as
+    initialization for gradient-trained models. For the linear SGD model, this
+    should immediately close the gap. For deeper models, the spatial layer can
+    be initialized this way.
+
+  \item \textbf{Fix loss scaling}: Normalize the loss by window length and
+    number of channels to bring magnitudes to $\mathcal{O}(1)$. Current losses
+    in the millions make learning rate tuning extremely brittle.
+
+  \item \textbf{Add gradient clipping}: Clip gradients to prevent the explosion
+    evident in early training epochs.
+
+  \item \textbf{Learning rate warmup}: Add linear warmup for the first 10\%
+    of training to stabilize early optimization.
+
+  \item \textbf{Proper hyperparameter sweep}: Run Optuna sweeps with MSE-only
+    loss to find optimal learning rates for each architecture.
+
+  \item \textbf{Increase training data}: 2,090 windows may be insufficient
+    for the 24K-parameter Conv Encoder. Increase \texttt{n\_subjects} and
+    \texttt{n\_samples}.
+\end{enumerate}
+
+\section{Conclusion}
+
+This first iteration establishes that the closed-form linear spatial filter
+is a strong baseline ($r=0.887$), but gradient-trained models fail due to
+training instabilities. The primary issue is the combined loss function and
+poor loss scaling, not the model architectures themselves. The MSE-only ablation
+proves that the Conv Encoder \emph{can} achieve $r=0.81$ with proper loss
+configuration. Iteration~002 will implement the fixes above and target
+$r \geq 0.85$ for all gradient-trained models.
+
+\end{document}

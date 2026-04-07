@@ -149,6 +149,7 @@ def train_one_epoch(
     loss_fn: nn.Module,
     optimizer: torch.optim.Optimizer,
     device: torch.device,
+    grad_clip: float | None = None,
 ) -> dict[str, float]:
     """Train for one epoch."""
     model.train()
@@ -171,6 +172,8 @@ def train_one_epoch(
             loss = loss_fn(pred, inear)
 
         loss.backward()
+        if grad_clip is not None:
+            torch.nn.utils.clip_grad_norm_(model.parameters(), grad_clip)
         optimizer.step()
 
         total_loss += loss.item()
@@ -266,9 +269,28 @@ def train(cfg: dict) -> tuple[nn.Module, dict]:
     n_params = sum(p.numel() for p in model.parameters())
     logger.info("Model: %s (%d parameters)", model_type, n_params)
 
+    # Closed-form initialization
+    if cfg["training"].get("init_from_closed_form", False):
+        cf_model = ClosedFormLinear(
+            C_in=cfg["model"]["params"]["C_in"],
+            C_out=cfg["model"]["params"]["C_out"],
+        )
+        cf_model.fit(train_ds.scalp.numpy(), train_ds.inear.numpy())
+        with torch.no_grad():
+            if model_type == "linear_spatial":
+                model.W.weight.copy_(cf_model.W)
+                logger.info("Initialized linear spatial filter from closed-form solution")
+            elif model_type == "fir_filter":
+                # Zero all taps, set center tap to closed-form weights
+                model.conv.weight.zero_()
+                center = model.filter_length // 2
+                model.conv.weight[:, :, center] = cf_model.W
+                logger.info("Initialized FIR center tap (idx=%d) from closed-form solution", center)
+
     # Loss, optimizer, scheduler
     loss_fn = build_loss(cfg)
     optimizer = build_optimizer(model, cfg)
+    grad_clip = cfg["training"].get("grad_clip", None)
 
     epochs = cfg["training"].get("epochs", 100)
     scheduler_cfg = cfg["training"].get("scheduler", {})
@@ -289,7 +311,7 @@ def train(cfg: dict) -> tuple[nn.Module, dict]:
     best_epoch = 0
 
     for epoch in tqdm(range(1, epochs + 1), desc="Training"):
-        train_metrics = train_one_epoch(model, train_loader, loss_fn, optimizer, device)
+        train_metrics = train_one_epoch(model, train_loader, loss_fn, optimizer, device, grad_clip)
         val_metrics = validate(model, val_loader, loss_fn, device)
 
         if scheduler is not None:

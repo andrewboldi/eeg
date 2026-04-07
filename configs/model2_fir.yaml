@@ -1,8 +1,8 @@
 # Model 2: Spatio-Temporal FIR Filter
 data:
   source: synthetic
-  n_subjects: 5
-  n_samples: 76800
+  n_subjects: 20
+  n_samples: 153600
   fs: 256.0
   snr_db: 10.0
   window_size: 256
@@ -14,7 +14,7 @@ model:
   params:
     C_in: 21
     C_out: 4
-    filter_length: 65   # ~254ms at 256 Hz
+    filter_length: 17   # ~66ms at 256 Hz (shorter for spatial-dominant problem)
     mode: acausal        # symmetric padding for offline use
 
 training:
@@ -22,13 +22,13 @@ training:
   batch_size: 64
   optimizer:
     type: adam
-    lr: 1.0e-3
-    weight_decay: 1.0e-4
+    lr: 5.0e-4
+    weight_decay: 1.0e-5
+  grad_clip: 1.0
+  init_from_closed_form: true
 
 loss:
-  type: combined
-  lambda_spec: 0.1
-  lambda_band: 0.1
+  type: mse
 
 logging:
   log_dir: results/logs

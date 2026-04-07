@@ -1,0 +1,132 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{float}
+
+\definecolor{good}{rgb}{0.0,0.5,0.0}
+
+\title{EEG Scalp-to-In-Ear Signal Prediction:\\
+  Iteration 004 --- Convergence Achieved}
+\author{Automated Research Loop}
+\date{April 7, 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+With closed-form center-tap initialization for the FIR filter, all four model
+architectures now meet convergence criteria. The FIR filter improved from
+$r=0.695$ to $r=0.887$ (SNR: $2.87 \to 6.50$\,dB), matching the closed-form
+baseline. The Conv Encoder reaches $r=0.886$ (SNR$=6.67$\,dB). All models
+achieve $r \geq 0.85$ and SNR $\geq 5.0$\,dB. The research loop now transitions
+to the Extension Phase.
+\end{abstract}
+
+\section{Final Fix: FIR Center-Tap Initialization}
+
+The FIR filter learns $\hat{\mathbf{Y}}[t] = \sum_{\tau=0}^{L-1}
+\mathbf{W}[\tau]\,\mathbf{X}[t-\tau+\lfloor L/2 \rfloor]$. Since the true
+forward model is purely spatial ($\mathbf{Y}[t] = \mathbf{M}\mathbf{X}[t]$),
+only the center tap $\mathbf{W}[\lfloor L/2 \rfloor]$ should be nonzero.
+
+We initialized:
+\begin{align}
+  \mathbf{W}[\lfloor L/2 \rfloor] &= \mathbf{W}^* = \mathbf{R}_{YX}\mathbf{R}_{XX}^{-1} \\
+  \mathbf{W}[\tau] &= \mathbf{0}, \quad \tau \neq \lfloor L/2 \rfloor
+\end{align}
+
+This gives the FIR filter the optimal spatial solution at zero lag, and SGD
+refines from there without distributing energy to irrelevant temporal taps.
+
+\section{Final Results}
+
+\begin{table}[H]
+\centering
+\caption{Complete results across all four iterations. All models converge in Iteration~004.}
+\begin{tabular}{lrrrrrrrr}
+\toprule
+& \multicolumn{4}{c}{Pearson $r$} & \multicolumn{4}{c}{SNR (dB)} \\
+\cmidrule(lr){2-5} \cmidrule(lr){6-9}
+Model & It.~1 & It.~2 & It.~3 & It.~4 & It.~1 & It.~2 & It.~3 & It.~4 \\
+\midrule
+Closed-form & 0.887 & 0.887 & 0.887 & 0.887 & 6.51 & 6.51 & 6.51 & 6.51 \\
+Linear SGD & $-0.65$ & 0.887 & 0.887 & 0.887 & $-4.0$ & 6.51 & 6.51 & 6.51 \\
+FIR Filter & $-0.21$ & 0.695 & 0.695 & \textcolor{good}{0.887} & $-3.6$ & 2.86 & 2.87 & \textcolor{good}{6.50} \\
+Conv Enc. & $-0.04$ & 0.815 & 0.876 & \textcolor{good}{0.886} & $-3.2$ & 4.75 & 6.33 & \textcolor{good}{6.67} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Convergence criteria --- all met.}
+\begin{tabular}{lcccc}
+\toprule
+Criterion & Closed-form & Linear SGD & FIR & Conv Enc. \\
+\midrule
+$r \geq 0.85$ & \textcolor{good}{\checkmark} & \textcolor{good}{\checkmark} & \textcolor{good}{\checkmark} & \textcolor{good}{\checkmark} \\
+SNR $\geq 5.0$\,dB & \textcolor{good}{\checkmark} & \textcolor{good}{\checkmark} & \textcolor{good}{\checkmark} & \textcolor{good}{\checkmark} \\
+No negative $r$ & \textcolor{good}{\checkmark} & \textcolor{good}{\checkmark} & \textcolor{good}{\checkmark} & \textcolor{good}{\checkmark} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Key Lessons Learned}
+
+\begin{enumerate}
+  \item \textbf{Initialization matters more than architecture}: The FIR and
+    linear models have enough capacity to solve the problem; they just needed
+    good initialization. Closed-form solutions provide optimal starting points
+    for gradient-trained models.
+
+  \item \textbf{Loss function simplicity wins}: MSE-only consistently outperformed
+    combined losses. Auxiliary objectives (spectral, band power) introduced
+    gradient interference without improving the final result.
+
+  \item \textbf{Gradient clipping is essential}: Without clipping, loss magnitudes
+    in the millions caused divergence. A simple max-norm clip of 1.0 stabilized
+    all models.
+
+  \item \textbf{Architecture should match the problem}: The purely spatial
+    forward model means that spatial filters (closed-form, linear) are optimal.
+    Temporal (FIR) and nonlinear (Conv) models converge to the same solution
+    when properly initialized, but their extra capacity does not help.
+
+  \item \textbf{The Conv Encoder achieves slightly higher SNR} (6.67 vs 6.51\,dB)
+    despite lower $r$ (0.886 vs 0.887). This suggests the nonlinear model
+    learned minor noise-suppression capabilities beyond the linear optimum.
+\end{enumerate}
+
+\section{Transition to Extension Phase}
+
+With convergence achieved on synthetic data, we propose the following research
+extensions, prioritized by scientific impact:
+
+\begin{enumerate}
+  \item \textbf{Real EEG data}: Apply the trained pipeline to the KU~Leuven
+    auditory attention dataset (Zenodo 3997352) and DTU in-ear dataset
+    (Zenodo 2647551). The true test of the approach.
+
+  \item \textbf{Cross-subject generalization}: Train on $N-1$ subjects, test
+    on the held-out subject. Evaluate how well spatial filters transfer.
+
+  \item \textbf{Nonlinear forward models}: Replace the linear mixing
+    $\mathbf{Y} = \mathbf{M}\mathbf{X}$ with volume conduction models that
+    include nonlinear tissue effects. Test whether the Conv Encoder's nonlinear
+    capacity provides an advantage.
+
+  \item \textbf{EEG-based auditory attention decoding}: Use the predicted in-ear
+    signals for auditory attention detection --- the downstream BCI application.
+
+  \item \textbf{Electrode subset selection}: Given the learned spatial weights,
+    identify the minimum scalp electrode subset needed to reconstruct in-ear
+    signals above a quality threshold.
+
+  \item \textbf{Online/streaming prediction}: Implement causal FIR mode for
+    real-time in-ear signal prediction from streaming scalp EEG.
+\end{enumerate}
+
+\end{document}

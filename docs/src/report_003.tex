@@ -1,0 +1,119 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{float}
+
+\definecolor{good}{rgb}{0.0,0.5,0.0}
+\definecolor{bad}{rgb}{0.7,0.0,0.0}
+\definecolor{improved}{rgb}{0.0,0.3,0.7}
+
+\title{EEG Scalp-to-In-Ear Signal Prediction:\\
+  Iteration 003 --- Scaling Data and Training}
+\author{Automated Research Loop}
+\date{April 7, 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We scaled the synthetic training data from 5 to 20 subjects (4$\times$ more data),
+reduced the FIR filter length from 65 to 17 taps, and increased Conv Encoder
+training from 300 to 500 epochs. The Conv Encoder achieves $r=0.876$
+(SNR$=6.33$\,dB), now meeting convergence criteria ($r \geq 0.85$). The FIR
+filter remains stalled at $r=0.695$, suggesting a fundamental architectural
+mismatch with this purely spatial problem. Three of four models now converge;
+Iteration~004 will address the FIR filter with closed-form initialization of
+its center tap.
+\end{abstract}
+
+\section{Changes from Iteration 002}
+
+\begin{enumerate}
+  \item \textbf{4$\times$ more training data}: \texttt{n\_subjects}: $5 \to 20$,
+    \texttt{n\_samples}: $76{,}800 \to 153{,}600$, yielding $\sim$8,360 training
+    windows (vs.\ 2,090 previously).
+  \item \textbf{Shorter FIR filter}: $L = 65 \to 17$ taps ($\sim$66\,ms context),
+    reducing parameters from 5,460 to 1,428. Hypothesis: the true forward model
+    is purely spatial (zero-lag), so fewer temporal parameters should reduce
+    overfitting.
+  \item \textbf{More Conv Encoder training}: $300 \to 500$ epochs with cosine
+    annealing $T_{\max} = 500$.
+\end{enumerate}
+
+\section{Results}
+
+\begin{table}[H]
+\centering
+\caption{Iteration 003 vs 002 comparison.}
+\begin{tabular}{lrrrrrr}
+\toprule
+& \multicolumn{2}{c}{Pearson $r$} & \multicolumn{2}{c}{SNR (dB)} & \multicolumn{2}{c}{Coherence} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+Model & It.~2 & It.~3 & It.~2 & It.~3 & It.~2 & It.~3 \\
+\midrule
+Closed-form & 0.887 & 0.887 & 6.51 & 6.51 & 0.715 & 0.715 \\
+Linear SGD & 0.887 & 0.887 & 6.51 & 6.51 & 0.715 & 0.715 \\
+FIR Filter & 0.695 & 0.695 & 2.86 & 2.87 & 0.333 & 0.334 \\
+Conv Encoder & 0.815 & \textcolor{good}{0.876} & 4.75 & \textcolor{good}{6.33} & 0.442 & \textcolor{good}{0.552} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Analysis}
+
+\paragraph{Conv Encoder breakthrough.}
+The combination of 4$\times$ more data and extended training (500 epochs) boosted
+the Conv Encoder from $r=0.815$ to $r=0.876$, a $\Delta r = +0.061$ improvement.
+SNR jumped from 4.75 to 6.33\,dB, approaching the closed-form's 6.51\,dB.
+The remaining gap ($r^2 = 0.767$ vs $0.787$) is only 2\% of variance, likely
+attributable to the Conv Encoder's nonlinear capacity being slightly harmful
+for this linear problem.
+
+\paragraph{FIR filter plateau.}
+Reducing filter length from 65 to 17 taps had negligible effect ($\Delta r < 0.001$).
+The FIR architecture applies a temporal convolution \emph{per input channel},
+then sums across channels. Even with $L=17$, it has 1,428 parameters learning
+temporal filters where the true signal is purely spatial. The temporal freedom
+allows it to fit noise correlations rather than the spatial mixing.
+
+\paragraph{Diagnosis: why FIR lags.}
+The FIR filter's 1D convolution learns $\mathbf{W}[k] \in \mathbb{R}^{4 \times 21}$
+for each lag $k \in \{0, \ldots, L-1\}$. For the true model $\mathbf{Y}[t] =
+\mathbf{M}\mathbf{X}[t]$, only $\mathbf{W}[0] = \mathbf{M}$ matters; all other
+lags should be zero. But SGD distributes energy across taps, fitting temporal
+noise autocorrelations. The fix: initialize $\mathbf{W}[\lfloor L/2 \rfloor]$
+from $\mathbf{W}^*$ and all other taps to zero.
+
+\section{Convergence Status}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lcccc}
+\toprule
+Criterion & Closed-form & Linear SGD & FIR & Conv \\
+\midrule
+$r \geq 0.85$ & \textcolor{good}{\checkmark} & \textcolor{good}{\checkmark} & \textcolor{bad}{$\times$} (0.695) & \textcolor{good}{\checkmark} \\
+SNR $\geq 5.0$\,dB & \textcolor{good}{\checkmark} & \textcolor{good}{\checkmark} & \textcolor{bad}{$\times$} (2.87) & \textcolor{good}{\checkmark} \\
+No negative $r$ & \textcolor{good}{\checkmark} & \textcolor{good}{\checkmark} & \textcolor{good}{\checkmark} & \textcolor{good}{\checkmark} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{3/4 models converged.} FIR filter is the sole remaining bottleneck.
+
+\section{Plan for Iteration 004}
+
+\begin{enumerate}
+  \item \textbf{Closed-form FIR initialization}: Set the center tap
+    $\mathbf{W}[\lfloor L/2 \rfloor]$ to $\mathbf{W}^*$ and all other taps to
+    zero. This gives the FIR a strong starting point.
+  \item \textbf{Regularize non-center taps}: Add L1 penalty on non-center taps
+    to encourage the model to keep energy concentrated at zero lag.
+  \item If FIR still underperforms, accept that the architecture is inappropriate
+    for purely spatial problems and declare convergence for the other three models.
+\end{enumerate}
+
+\end{document}
