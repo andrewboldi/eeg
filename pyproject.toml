@@ -1,0 +1,26 @@
+[project]
+name = "eeg-downsampling"
+version = "0.1.0"
+description = "Learn a mapping from scalp EEG (21 channels) to in-ear EEG (4 channels)"
+requires-python = ">=3.10"
+dependencies = [
+    "torch>=2.0",
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "mne>=1.5",
+    "h5py>=3.8",
+    "pyyaml>=6.0",
+    "tensorboard>=2.12",
+    "matplotlib>=3.7",
+    "scikit-learn>=1.2",
+    "tqdm>=4.65",
+    "optuna>=3.1",
+]
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]

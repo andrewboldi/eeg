@@ -1,0 +1,31 @@
+# Base configuration: Closed-form linear baseline
+data:
+  source: synthetic
+  n_subjects: 5
+  n_samples: 76800  # 256 * 300 = 5 minutes at 256 Hz
+  fs: 256.0
+  snr_db: 10.0
+  window_size: 256   # 1 second at 256 Hz
+  stride: 128        # 50% overlap
+  processed_path: data/processed/data.h5
+
+model:
+  type: closed_form
+  params:
+    C_in: 21
+    C_out: 4
+
+training:
+  batch_size: 64
+  optimizer:
+    type: adam
+    lr: 1.0e-3
+    weight_decay: 1.0e-4
+
+loss:
+  type: mse
+
+logging:
+  log_dir: results/logs
+  ckpt_dir: results/checkpoints
+  output_dir: results
