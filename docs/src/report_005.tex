@@ -78,20 +78,28 @@ Subj. & $r$ & RMSE & SNR & Subj. & $r$ & RMSE & SNR \\
 Model & $r$ (mean) & $r$ (std) & SNR mean & SNR std \\
 \midrule
 Closed-form (LOSO) & 0.861 & 0.012 & 5.69 & 0.35 \\
+Conv Encoder (LOSO) & 0.742 & 0.023 & 3.45 & 0.32 \\
 Closed-form (pooled) & 0.887 & --- & 6.51 & --- \\
+Conv Encoder (pooled) & 0.886 & --- & 6.67 & --- \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \subsection{Analysis}
 
-\paragraph{Strong generalization.}
-The LOSO correlation ($r=0.861$) is only 2.9\% below the pooled result
-($r=0.887$). This small gap is expected: with 20 subjects sharing the
-same mixing matrix $\mathbf{M}$, the cross-covariance
-$\mathbf{R}_{YX}$ estimated from 19 subjects closely approximates the
-true value. The held-out subject's noise realization is the main source
-of prediction error.
+\paragraph{Closed-form generalizes better.}
+The closed-form LOSO ($r=0.861$) is only 2.9\% below its pooled result
+($r=0.887$), while the Conv Encoder drops from $r=0.886$ (pooled) to
+$r=0.742$ (LOSO) --- a 16.2\% degradation. The 24K-parameter Conv Encoder
+overfits to training subjects' noise patterns, while the 84-parameter
+closed-form solution captures only the true spatial mapping.
+
+\paragraph{Overfitting diagnosis.}
+The Conv Encoder's higher inter-subject variance ($\sigma_r = 0.023$ vs
+$0.012$) and much lower SNR (3.45 vs 5.69\,dB) confirm overfitting.
+For a purely linear forward model, model complexity hurts cross-subject
+transfer. This motivates testing nonlinear forward models where the
+Conv Encoder's capacity may be genuinely needed.
 
 \paragraph{Low inter-subject variance.}
 $\sigma_r = 0.012$ across 20 folds indicates highly consistent
