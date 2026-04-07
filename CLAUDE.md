@@ -36,7 +36,7 @@ Only after convergence criteria are met:
 - **Phase**: Extension Phase - ready for new research directions
 - **Next extension ideas** (prioritized):
   1. ~~Cross-subject generalization~~ DONE (Iter 005): LOSO r=0.861+/-0.012
-  2. Electrode subset selection (minimum channels for quality threshold)
+  2. ~~Electrode subset selection~~ DONE (Iter 006): 5 channels (Fp1,F7,F8,T7,T8) maintain r>=0.80
   3. Nonlinear forward models (test Conv Encoder advantage)
   4. Real EEG datasets (KU Leuven / DTU in-ear)
   5. Auditory attention decoding (downstream BCI application)
@@ -50,6 +50,7 @@ Only after convergence criteria are met:
 | 003 | 20 subjects, 500 conv epochs | 0.695 | 0.876 | Conv converges |
 | 004 | FIR center-tap CF init | 0.887 | 0.886 | ALL CONVERGED |
 | 005 | Cross-subject LOSO eval | --- | --- | CF LOSO r=0.861+/-0.012 |
+| 006 | Electrode subset selection | --- | --- | 5ch (Fp1,F7,F8,T7,T8) r=0.818 |
 
 ## File Structure
 - `docs/src/report_NNN.tex` - LaTeX source for iteration NNN

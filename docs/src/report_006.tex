@@ -1,0 +1,124 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{float}
+
+\definecolor{good}{rgb}{0.0,0.5,0.0}
+
+\title{EEG Scalp-to-In-Ear Signal Prediction:\\
+  Extension 006 --- Electrode Subset Selection}
+\author{Automated Research Loop}
+\date{April 7, 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Using greedy backward elimination with the closed-form spatial filter,
+we determine that only \textbf{5 of 21} scalp electrodes (Fp1, F7, F8, T7, T8)
+are needed to maintain $r \geq 0.80$ for in-ear prediction. Performance
+degrades gracefully: removing 16 channels from 21 to 5 costs only $\Delta r = 0.08$.
+The temporal electrodes T7 and T8 are the most critical, consistent with
+the ear-proximal anatomy encoded in the mixing matrix.
+\end{abstract}
+
+\section{Method}
+
+\textbf{Greedy backward elimination}: Starting from all 21 channels, iteratively
+remove the channel whose absence causes the smallest drop in Pearson $r$.
+Continue until $r$ drops below a threshold (0.80). At each step, the closed-form
+spatial filter $\mathbf{W}^* = \mathbf{R}_{YX}\mathbf{R}_{XX}^{-1}$ is recomputed
+on the reduced channel set.
+
+Data: 20 subjects, 80/20 train/test split, $\sim$19,000 training windows.
+
+\section{Results}
+
+\begin{table}[H]
+\centering
+\caption{Elimination order and performance. Channels are removed top to bottom.}
+\begin{tabular}{rlcr}
+\toprule
+$N_\text{ch}$ & Removed & Region & $r$ \\
+\midrule
+21 & --- & & 0.900 \\
+20 & O2 & Occipital & 0.900 \\
+19 & Oz & Occipital & 0.900 \\
+18 & P3 & Parietal & 0.900 \\
+17 & O1 & Occipital & 0.900 \\
+16 & P4 & Parietal & 0.900 \\
+15 & Pz & Parietal & 0.900 \\
+14 & A1 & Mastoid & 0.899 \\
+13 & C4 & Central & 0.895 \\
+12 & C3 & Central & 0.892 \\
+11 & Fp2 & Frontal & 0.887 \\
+10 & Fz & Frontal & 0.880 \\
+9  & F3 & Frontal & 0.872 \\
+8  & Cz & Central & 0.861 \\
+7  & P7 & Parietal & 0.846 \\
+6  & P8 & Parietal & 0.835 \\
+5  & F4 & Frontal & \textcolor{good}{0.818} \\
+4  & Fp1 & Frontal & 0.791 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Key Findings}
+
+\paragraph{Massive redundancy.}
+Removing 6 channels (O2, Oz, P3, O1, P4, Pz) has \emph{zero} impact
+($r=0.900$ at both 21 and 15 channels). These occipital and parietal
+midline electrodes contribute nothing to in-ear prediction because
+the mixing matrix assigns them zero weight.
+
+\paragraph{Core channel set.}
+The 4 last-surviving channels are \{F7, F8, T7, T8\} ($r=0.791$).
+These are the temporal and frontal-temporal electrodes anatomically
+closest to the ears. T7 and T8 carry the highest mixing weights
+(0.45 for EarL1/EarR1), confirming that electrode proximity to the
+ear canal is the primary driver.
+
+\paragraph{The 5-channel sweet spot.}
+Adding Fp1 to the core 4 yields r=0.818, crossing the 0.80 threshold.
+This 5-electrode montage (\textbf{Fp1, F7, F8, T7, T8}) offers:
+\begin{itemize}
+  \item 76\% reduction in electrode count (5 vs 21)
+  \item Only 9\% loss in correlation (0.818 vs 0.900)
+  \item All electrodes in the frontal-temporal region, simplifying cap design
+\end{itemize}
+
+\paragraph{Graceful degradation.}
+The elimination curve shows two regimes:
+\begin{enumerate}
+  \item \textbf{Plateau} (21 to 14 channels): removing distant electrodes
+    has near-zero effect ($\Delta r < 0.002$)
+  \item \textbf{Gradual decline} (14 to 4 channels): each removal costs
+    $\sim$0.01 in $r$, with acceleration below 8 channels
+\end{enumerate}
+
+\section{Practical Implications}
+
+\begin{enumerate}
+  \item \textbf{Simplified hardware}: A 5-electrode EEG system (3 frontal +
+    2 temporal) could replace a 21-channel cap for in-ear prediction, reducing
+    cost and setup time.
+
+  \item \textbf{Electrode placement guide}: Temporal electrodes (T7, T8) are
+    essential; occipital and parietal midline electrodes are expendable.
+
+  \item \textbf{Hybrid BCI design}: The 5-channel montage naturally pairs with
+    in-ear devices, as all electrodes are in the upper head region compatible
+    with headband-style wearables.
+\end{enumerate}
+
+\section{Next Extension}
+
+With electrode selection complete, the next step is testing with a
+\textbf{nonlinear forward model} to evaluate whether the Conv Encoder
+architecture provides a genuine advantage when the true scalp-to-in-ear
+mapping is nonlinear (e.g., volume conduction with tissue nonlinearities).
+
+\end{document}
