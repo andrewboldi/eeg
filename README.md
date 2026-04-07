@@ -6,25 +6,25 @@ Learn a mapping from 21-channel scalp EEG (10-20 system) to 4-channel in-ear EEG
 
 ```bash
 # Install dependencies
-pip install -e .
+uv sync
 
 # Run the full pipeline (synthetic data)
 bash scripts/run_all.sh
 
 # Or train individual models
-python -m src.train --config configs/base.yaml          # Closed-form baseline
-python -m src.train --config configs/model1_linear.yaml  # Linear spatial filter
-python -m src.train --config configs/model2_fir.yaml     # Spatio-temporal FIR
-python -m src.train --config configs/model3_conv.yaml    # Convolutional encoder
+uv run python -m src.train --config configs/base.yaml          # Closed-form baseline
+uv run python -m src.train --config configs/model1_linear.yaml  # Linear spatial filter
+uv run python -m src.train --config configs/model2_fir.yaml     # Spatio-temporal FIR
+uv run python -m src.train --config configs/model3_conv.yaml    # Convolutional encoder
 
 # Evaluate a trained model
-python -m src.evaluate --config configs/model2_fir.yaml --checkpoint results/checkpoints/fir_filter_best.pt
+uv run python -m src.evaluate --config configs/model2_fir.yaml --checkpoint results/checkpoints/fir_filter_best.pt
 
 # Run hyperparameter sweeps
-python scripts/sweep_hparams.py --model model2 --n-trials 30
+uv run python scripts/sweep_hparams.py --model model2 --n-trials 30
 
 # Run ablation studies
-python scripts/ablation.py --study loss
+uv run python scripts/ablation.py --study loss
 ```
 
 ## Models
