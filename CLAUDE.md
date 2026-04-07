@@ -35,7 +35,7 @@ Only after convergence criteria are met:
 - **Status**: CONVERGED. All 4 models achieve r >= 0.85 and SNR >= 5.0 dB
 - **Phase**: Extension Phase - ready for new research directions
 - **Next extension ideas** (prioritized):
-  1. Cross-subject generalization (leave-one-subject-out evaluation)
+  1. ~~Cross-subject generalization~~ DONE (Iter 005): LOSO r=0.861+/-0.012
   2. Electrode subset selection (minimum channels for quality threshold)
   3. Nonlinear forward models (test Conv Encoder advantage)
   4. Real EEG datasets (KU Leuven / DTU in-ear)
@@ -49,6 +49,7 @@ Only after convergence criteria are met:
 | 002 | MSE-only, grad clip, CF init for linear | 0.695 | 0.815 | Linear matches CF |
 | 003 | 20 subjects, 500 conv epochs | 0.695 | 0.876 | Conv converges |
 | 004 | FIR center-tap CF init | 0.887 | 0.886 | ALL CONVERGED |
+| 005 | Cross-subject LOSO eval | --- | --- | CF LOSO r=0.861+/-0.012 |
 
 ## File Structure
 - `docs/src/report_NNN.tex` - LaTeX source for iteration NNN

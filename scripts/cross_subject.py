@@ -42,7 +42,7 @@ MODEL_CONFIGS = {
 TRAIN_CONFIGS = {
     "linear_spatial": {"epochs": 100, "lr": 1e-4, "grad_clip": 1.0},
     "fir_filter": {"epochs": 200, "lr": 5e-4, "grad_clip": 1.0},
-    "conv_encoder": {"epochs": 300, "lr": 1e-3, "grad_clip": 1.0},
+    "conv_encoder": {"epochs": 100, "lr": 1e-3, "grad_clip": 1.0},
 }
 
 
