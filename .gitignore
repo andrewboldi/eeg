@@ -1,0 +1,17 @@
+data/raw/
+data/processed/
+results/checkpoints/
+results/logs/
+results/figures/
+__pycache__/
+*.pyc
+*.egg-info/
+.eggs/
+dist/
+build/
+*.so
+.env
+*.h5
+*.npy
+*.npz
+wandb/

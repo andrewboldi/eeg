@@ -1,0 +1,36 @@
+# Model 2: Spatio-Temporal FIR Filter
+data:
+  source: synthetic
+  n_subjects: 5
+  n_samples: 76800
+  fs: 256.0
+  snr_db: 10.0
+  window_size: 256
+  stride: 128
+  processed_path: data/processed/data.h5
+
+model:
+  type: fir_filter
+  params:
+    C_in: 21
+    C_out: 4
+    filter_length: 65   # ~254ms at 256 Hz
+    mode: acausal        # symmetric padding for offline use
+
+training:
+  epochs: 200
+  batch_size: 64
+  optimizer:
+    type: adam
+    lr: 1.0e-3
+    weight_decay: 1.0e-4
+
+loss:
+  type: combined
+  lambda_spec: 0.1
+  lambda_band: 0.1
+
+logging:
+  log_dir: results/logs
+  ckpt_dir: results/checkpoints
+  output_dir: results
