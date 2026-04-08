@@ -10,7 +10,7 @@
 - **Script**: `uv run python scripts/benchmark.py --baseline` (or `--model-fn models/your_model.py`)
 - **Leaderboard**: `results/benchmark/leaderboard.jsonl`
 
-### Current Best: r = 0.373 (FIR spatio-temporal filter, iter009)
+### Current Best: r = 0.376 (FIR + channel dropout, iter011)
 
 ## Autoresearch Loop Protocol
 
@@ -75,6 +75,7 @@ uv run python scripts/benchmark.py --model-fn models/iter{NNN}_{name}.py --name 
 | 008 | regularization_sweep | 0.366 | 0.074 | 0.59 | Tikhonov reg sweep (no improvement) |
 | 009 | fir_spatio_temporal | **0.373** | 0.074 | 0.61 | FIR filter with CF center-tap init, 150 epochs |
 | 010 | deep_temporal_conv | 0.372 | 0.076 | 0.62 | Depthwise-sep conv + residual, 100 epochs (no improvement) |
+| 011 | fir_channel_dropout | **0.376** | 0.076 | 0.61 | FIR + 15% channel dropout augmentation |
 
 ## Reading Papers
 When referencing arXiv papers:
