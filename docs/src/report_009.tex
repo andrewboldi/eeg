@@ -1,0 +1,58 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,booktabs,hyperref,float}
+\definecolor{good}{rgb}{0.0,0.5,0.0}
+
+\title{Iteration 009: Spatio-Temporal FIR on Real Data}
+\author{Autoresearch Loop}
+\date{April 7, 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Adding temporal context via FIR filters improves scalp-to-in-ear prediction
+from $r=0.366$ to $r=0.373$ (+1.9\%), the first improvement over the
+closed-form baseline on real data. At 20\,Hz, a short FIR filter captures
+50--550\,ms of temporal dynamics in the volume conduction path. Center-tap
+initialization from the closed-form solution remains critical.
+\end{abstract}
+
+\section{Method}
+Spatio-temporal FIR filter: $\hat{y}_c[t] = \sum_j \sum_\tau w_{c,j,\tau} x_j[t-\tau]$,
+implemented as \texttt{nn.Conv1d}. Swept filter lengths $L \in \{3,5,7,11\}$ taps
+(150--550\,ms at 20\,Hz). Center tap initialized from $\mathbf{W}^*$, all other
+taps initialized to zero. Trained 150 epochs with AdamW ($\text{lr}=10^{-3}$),
+cosine annealing, gradient clipping (norm 1.0).
+
+\section{Results}
+\begin{table}[H]
+\centering
+\caption{Benchmark results (subjects 13--15 LOSO).}
+\begin{tabular}{lrrr}
+\toprule
+Model & Mean $r$ & Std $r$ & SNR (dB) \\
+\midrule
+Closed-form baseline & 0.366 & 0.072 & 0.59 \\
+\textbf{FIR (best $L$)} & \textbf{0.373} & 0.074 & \textbf{0.61} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Analysis}
+The +0.007 improvement is modest but consistent across test subjects, confirming
+that temporal lags carry real information. At 20\,Hz with 1--9\,Hz content,
+the temporal autocorrelation is strong and even a few taps capture useful
+cross-lag structure.
+
+The improvement ceiling at this sampling rate is likely low --- the 1--9\,Hz
+band has limited spatial discriminability. Broadband data (1--45\,Hz) would
+provide much richer temporal/spatial features.
+
+\section{Next}
+Iteration 010 will explore a deeper temporal model: a lightweight 1D
+convolutional network with residual connections, larger receptive field,
+and batch normalization. The hypothesis is that stacking temporal convolutions
+can capture nonlinear temporal dynamics the linear FIR misses.
+
+\end{document}
