@@ -1,0 +1,48 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,booktabs,hyperref,float}
+
+\title{Iteration 028: Huber + Correlation Loss}
+\author{Autoresearch Loop}
+\date{April 8, 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Replacing MSE with Huber loss in the combined objective, with InstanceNorm,
+achieves $r=0.375$. Huber's robustness to outliers does not compensate for
+InstanceNorm's information loss.
+\end{abstract}
+
+\section{Hypothesis}
+The MSE component is sensitive to outliers from noisy channels (ELC, ERT).
+Huber loss (L2 for small errors, L1 for large) reduces outlier influence
+while maintaining gradient stability near zero error.
+
+\section{Method}
+Loss: $0.5 \times \text{Huber}(\delta=1.0) + 0.5 \times (1-r)$. Architecture:
+InstanceNorm + FIR (7 taps). Corr validation + 15\% channel dropout.
+
+\section{Results}
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrr}
+\toprule
+Model & Mean $r$ & Std $r$ & SNR (dB) \\
+\midrule
+Combined loss (iter017) & 0.378 & 0.078 & 0.61 \\
+Huber+corr + InstanceNorm & 0.375 & 0.075 & 0.62 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Analysis}
+The lowest std of any model tested (0.075 vs typical 0.077) suggests Huber
+loss does improve consistency. However, InstanceNorm's $-$0.003 effect
+dominates. Huber loss without InstanceNorm is worth testing.
+
+\section{Next}
+Focus on non-InstanceNorm variants to isolate technique effects.
+
+\end{document}

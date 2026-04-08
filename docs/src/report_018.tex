@@ -1,0 +1,51 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,booktabs,hyperref,float}
+
+\title{Iteration 018: Euclidean Alignment}
+\author{Autoresearch Loop}
+\date{April 8, 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Per-batch whitening via Euclidean alignment achieves $r=0.369$, worse than
+the baseline ($r=0.378$). Noisy batch-level covariance estimates at test time
+degrade rather than improve predictions.
+\end{abstract}
+
+\section{Hypothesis}
+Euclidean alignment (He \& Wu, 2019) whitens each subject's data to a common
+reference, reducing cross-subject covariance differences. Applied per-batch
+at test time, it could adapt the model to each test subject's spatial covariance.
+
+\section{Method}
+For each batch, compute the sample covariance matrix $\hat{\Sigma}$, then whiten:
+$\tilde{x} = \hat{\Sigma}^{-1/2} x$. Applied to both training and test batches.
+Combined with the iter017 training recipe.
+
+\section{Results}
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrr}
+\toprule
+Model & Mean $r$ & Std $r$ & SNR (dB) \\
+\midrule
+Combined loss (iter017) & 0.378 & 0.078 & 0.61 \\
+Euclidean alignment & 0.369 & 0.072 & 0.60 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Analysis}
+The $-$0.009 degradation reveals that batch-level covariance estimation is too
+noisy with 2s windows at 20\,Hz (only 40 timepoints per window). The covariance
+matrix is $27 \times 27$ but estimated from very few samples, leading to unstable
+whitening. Subject-level alignment (requiring subject labels) might work, but
+per-batch alignment is unreliable at this scale.
+
+\section{Next}
+Iteration 019: stochastic weight averaging for flatter minima.
+
+\end{document}

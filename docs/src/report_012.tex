@@ -1,0 +1,50 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,booktabs,hyperref,float}
+
+\title{Iteration 012: Closed-Form + FIR Ensemble}
+\author{Autoresearch Loop}
+\date{April 7, 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+A weighted average of closed-form and FIR predictions achieves $r=0.375$,
+not improving over the FIR alone ($r=0.376$). The two models make highly
+correlated predictions, so ensembling provides minimal complementary information.
+\end{abstract}
+
+\section{Hypothesis}
+The closed-form solution is globally optimal for MSE but has no temporal context.
+The FIR model adds temporal dynamics but may overfit. An ensemble could combine
+the robustness of CF with the expressiveness of FIR.
+
+\section{Method}
+Weighted average: $\hat{y} = \alpha \cdot \hat{y}_\text{CF} + (1-\alpha) \cdot \hat{y}_\text{FIR}$,
+with $\alpha$ optimized on the validation set via grid search.
+
+\section{Results}
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrr}
+\toprule
+Model & Mean $r$ & Std $r$ & SNR (dB) \\
+\midrule
+FIR + dropout (iter011) & 0.376 & 0.076 & 0.61 \\
+CF + FIR ensemble & 0.375 & 0.076 & 0.61 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Analysis}
+Since the FIR model is initialized from the CF solution and remains close to it,
+the two models produce highly correlated outputs. Ensembling is only beneficial
+when constituent models have diverse error patterns. This suggests the FIR model's
+improvement over CF is primarily from temporal refinement, not a fundamentally
+different spatial mapping.
+
+\section{Next}
+Iteration 013: band-specific models to exploit frequency-dependent spatial patterns.
+
+\end{document}

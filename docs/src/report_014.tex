@@ -1,0 +1,50 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,booktabs,hyperref,float}
+
+\title{Iteration 014: Long FIR + Dropout + Warm Restarts}
+\author{Autoresearch Loop}
+\date{April 8, 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Sweeping longer FIR filter lengths (7, 11, 15 taps) with channel dropout and
+cosine warm restarts achieves $r=0.375$, not improving over the 7-tap baseline
+($r=0.376$). Longer filters do not capture additional useful temporal structure
+in the 1--9\,Hz band at 20\,Hz sampling.
+\end{abstract}
+
+\section{Hypothesis}
+Longer FIR filters (up to 750\,ms at 15 taps) might capture slower EEG dynamics
+or longer volume conduction delays. Warm restarts could help escape local minima.
+
+\section{Method}
+Swept $L \in \{7, 11, 15\}$ taps with 15\% channel dropout. Used cosine
+annealing with warm restarts ($T_0=50$, $T_\text{mult}=1$) over 150 epochs.
+Best result selected by validation correlation.
+
+\section{Results}
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrr}
+\toprule
+Model & Mean $r$ & Std $r$ & SNR (dB) \\
+\midrule
+FIR + dropout (iter011) & 0.376 & 0.076 & 0.61 \\
+Long FIR + restarts & 0.375 & 0.076 & 0.61 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Analysis}
+At 20\,Hz with 1--9\,Hz content, the Nyquist-limited temporal resolution means
+7 taps (350\,ms) already captures most relevant temporal structure. Longer filters
+add parameters that overfit without gaining signal. This confirms 7 taps as the
+optimal filter length for this sampling rate.
+
+\section{Next}
+Iteration 015: correlation-based loss function to directly optimize the evaluation metric.
+
+\end{document}

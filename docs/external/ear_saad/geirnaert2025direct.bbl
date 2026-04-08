@@ -1,0 +1,593 @@
+\begin{thebibliography}{10}
+\urlstyle{rm}
+\expandafter\ifx\csname url\endcsname\relax
+  \def\url#1{\texttt{#1}}\fi
+\expandafter\ifx\csname urlprefix\endcsname\relax\def\urlprefix{URL }\fi
+\expandafter\ifx\csname doiprefix\endcsname\relax\def\doiprefix{DOI: }\fi
+\providecommand{\bibinfo}[2]{#2}
+\providecommand{\eprint}[2][]{\url{#2}}
+
+\bibitem{osullivan2014attentional}
+\bibinfo{author}{O'Sullivan, J.~A.} \emph{et~al.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{Attentional Selection in a
+  Cocktail Party Environment Can Be Decoded from Single-Trial EEG}}}.
+\newblock {\emph{\JournalTitle{Cerebral Cortex}}}
+  \textbf{\bibinfo{volume}{25}}, \bibinfo{pages}{1697--1706},
+  \doiprefix\url{https://doi.org/10.1093/cercor/bht355} (\bibinfo{year}{2014}).
+
+\bibitem{geirnaert2021eegBased}
+\bibinfo{author}{Geirnaert, S.} \emph{et~al.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{Electroencephalography-Based
+  Auditory Attention Decoding: Toward Neurosteered Hearing Devices}}}.
+\newblock {\emph{\JournalTitle{IEEE Signal Processing Magazine}}}
+  \textbf{\bibinfo{volume}{38}}, \bibinfo{pages}{89--102},
+  \doiprefix\url{https://doi.org/10.1109/MSP.2021.3075932}
+  (\bibinfo{year}{2021}).
+
+\bibitem{nicolasAlonso2012brain}
+\bibinfo{author}{Nicolas-Alonso, L.~F.} \& \bibinfo{author}{Gomez-Gil, J.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{Brain Computer Interfaces, a
+  Review}}}.
+\newblock {\emph{\JournalTitle{Sensors}}} \textbf{\bibinfo{volume}{12}},
+  \bibinfo{pages}{1211--1279},
+  \doiprefix\url{https://doi.org/10.3390/s120201211} (\bibinfo{year}{2012}).
+
+\bibitem{mesgarani2012selective}
+\bibinfo{author}{Mesgarani, N.} \& \bibinfo{author}{Chang, E.~F.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{Selective cortical representation
+  of attended speaker in multi-talker speech perception}}}.
+\newblock {\emph{\JournalTitle{Nature}}} \textbf{\bibinfo{volume}{485}},
+  \bibinfo{pages}{233--236},
+  \doiprefix\url{https://doi.org/10.1038/nature11020} (\bibinfo{year}{2012}).
+
+\bibitem{ding2012emergence}
+\bibinfo{author}{Ding, N.} \& \bibinfo{author}{Simon, J.~Z.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{Emergence of neural encoding of
+  auditory objects while listening to competing speakers}}}.
+\newblock {\emph{\JournalTitle{Proceedings of the National Academy of Sciences
+  of the United States of America}}} \textbf{\bibinfo{volume}{109}},
+  \bibinfo{pages}{11854--11859},
+  \doiprefix\url{https://doi.org/10.1073/pnas.1205381109}
+  (\bibinfo{year}{2012}).
+
+\bibitem{diLiberto2015low}
+\bibinfo{author}{{Di Liberto}, G.~M.}, \bibinfo{author}{O'Sullivan, J.~A.} \&
+  \bibinfo{author}{Lalor, E.~C.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{Low-Frequency Cortical Entrainment
+  to Speech Reflects Phoneme-Level Processing}}}.
+\newblock {\emph{\JournalTitle{Current Biology}}}
+  \textbf{\bibinfo{volume}{25}}, \bibinfo{pages}{2457--2465},
+  \doiprefix\url{https://doi.org/10.1016/j.cub.2015.08.030}
+  (\bibinfo{year}{2015}).
+
+\bibitem{gillis2021neural}
+\bibinfo{author}{Gillis, M.}, \bibinfo{author}{Vanthornhout, J.},
+  \bibinfo{author}{Simon, J.~Z.}, \bibinfo{author}{Francart, T.} \&
+  \bibinfo{author}{Brodbeck, C.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{Neural Markers of Speech
+  Comprehension: Measuring EEG Tracking of Linguistic Speech Representations,
+  Controlling the Speech Acoustics}}}.
+\newblock {\emph{\JournalTitle{Journal of Neuroscience}}}
+  \textbf{\bibinfo{volume}{41}}, \bibinfo{pages}{10316--10329},
+  \doiprefix\url{https://doi.org/10.1523/JNEUROSCI.0812-21.2021}
+  (\bibinfo{year}{2021}).
+
+\bibitem{geirnaert2020fast}
+\bibinfo{author}{Geirnaert, S.}, \bibinfo{author}{Francart, T.} \&
+  \bibinfo{author}{Bertrand, A.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{Fast EEG-based decoding of the
+  directional focus of auditory attention using common spatial patterns}}}.
+\newblock {\emph{\JournalTitle{IEEE Transactions on Biomedical Engineering}}}
+  \textbf{\bibinfo{volume}{68}}, \bibinfo{pages}{1557--1568},
+  \doiprefix\url{https://doi.org/10.1109/tbme.2020.3033446}
+  (\bibinfo{year}{2021}).
+
+\bibitem{vandecappelle2021eeg}
+\bibinfo{author}{Vandecappelle, S.} \emph{et~al.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{EEG-based detection of the locus
+  of auditory attention with convolutional neural networks}}}.
+\newblock {\emph{\JournalTitle{eLife}}} \textbf{\bibinfo{volume}{10}},
+  \doiprefix\url{https://doi.org/10.7554/eLife.56481} (\bibinfo{year}{2021}).
+
+\bibitem{geirnaert2021riemannian}
+\bibinfo{author}{Geirnaert, S.}, \bibinfo{author}{Francart, T.} \&
+  \bibinfo{author}{Bertrand, A.}
+\newblock \bibinfo{title}{{Riemannian Geometry-Based Decoding of the
+  Directional Focus of Auditory Attention Using EEG}}.
+\newblock In \emph{\bibinfo{booktitle}{2021 IEEE International Conference on
+  Acoustics, Speech and Signal Processing (ICASSP)}},
+  \bibinfo{pages}{1115--1119},
+  \doiprefix\url{https://doi.org/10.1109/ICASSP39728.2021.9413404}
+  (\bibinfo{year}{2021}).
+
+\bibitem{puffay2023relating}
+\bibinfo{author}{Puffay, C.} \emph{et~al.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{Relating EEG to continuous speech
+  using deep neural networks: a review}}}.
+\newblock {\emph{\JournalTitle{Journal of Neural Engineering}}}
+  \textbf{\bibinfo{volume}{20}}, \bibinfo{pages}{041003},
+  \doiprefix\url{https://doi.org/10.1088/1741-2552/ace73f}
+  (\bibinfo{year}{2023}).
+
+\bibitem{nguyen2024aadnet}
+\bibinfo{author}{Nguyen, N. D.~T.}, \bibinfo{author}{Phan, H.},
+  \bibinfo{author}{Geirnaert, S.}, \bibinfo{author}{Mikkelsen, K.} \&
+  \bibinfo{author}{Kidmose, P.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{AADNet: An End-to-End Deep
+  Learning Model for Auditory Attention Decoding}}}.
+\newblock {\emph{\JournalTitle{IEEE Transactions on Neural Systems and
+  Rehabilitation Engineering}}} \textbf{\bibinfo{volume}{33}},
+  \bibinfo{pages}{2695--2706},
+  \doiprefix\url{https://doi.org/10.1109/TNSRE.2025.3587637}
+  (\bibinfo{year}{2025}).
+
+\bibitem{rotaru2023what}
+\bibinfo{author}{Rotaru, I.} \emph{et~al.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{What are we really decoding?
+  Unveiling biases in EEG-based decoding of the spatial focus of auditory
+  attention}}}.
+\newblock {\emph{\JournalTitle{Journal of Neural Engineering}}}
+  \textbf{\bibinfo{volume}{21}}, \bibinfo{pages}{016017},
+  \doiprefix\url{https://doi.org/10.1088/1741-2552/ad2214}
+  (\bibinfo{year}{2024}).
+
+\bibitem{ivucic2024impact}
+\bibinfo{author}{Ivucic, G.} \emph{et~al.}
+\newblock \bibinfo{title}{{The Impact of Cross-Validation Schemes for EEG-Based
+  Auditory Attention Detection with Deep Neural Networks}}.
+\newblock In \emph{\bibinfo{booktitle}{2024 46th Annual International
+  Conference of the IEEE Engineering in Medicine and Biology Society (EMBC)}},
+  \bibinfo{pages}{1--4},
+  \doiprefix\url{https://doi.org/10.1109/EMBC53108.2024.10782636}
+  (\bibinfo{year}{2024}).
+
+\bibitem{yan25overestimated}
+\bibinfo{author}{Yan, Y.} \emph{et~al.}
+\newblock \bibinfo{title}{{Overestimated performance of auditory attention
+  decoding caused by experimental design in EEG recordings}}.
+\newblock In \emph{\bibinfo{booktitle}{{Interspeech 2025}}},
+  \bibinfo{pages}{1053--1057},
+  \doiprefix\url{https://doi.org/10.21437/Interspeech.2025-85}
+  (\bibinfo{year}{2025}).
+
+\bibitem{mirkovic2015decoding}
+\bibinfo{author}{Mirkovic, B.}, \bibinfo{author}{Debener, S.},
+  \bibinfo{author}{Jaeger, M.} \& \bibinfo{author}{{De Vos}, M.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{Decoding the attended speech
+  stream with multi-channel EEG: implications for online, daily-life
+  applications}}}.
+\newblock {\emph{\JournalTitle{Journal of Neural Engineering}}}
+  \textbf{\bibinfo{volume}{12}}, \bibinfo{pages}{46007},
+  \doiprefix\url{https://doi.org/10.1088/1741-2560/12/4/046007}
+  (\bibinfo{year}{2015}).
+
+\bibitem{narayanan2020analysis}
+\bibinfo{author}{{Mundanad Narayanan}, A.} \& \bibinfo{author}{Bertrand, A.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{Analysis of Miniaturization
+  Effects and Channel Selection Strategies for EEG Sensor Networks with
+  Application to Auditory Attention Detection}}}.
+\newblock {\emph{\JournalTitle{IEEE Transactions on Biomedical Engineering}}}
+  \textbf{\bibinfo{volume}{67}}, \bibinfo{pages}{234--244},
+  \doiprefix\url{https://doi.org/10.1109/TBME.2019.2911728}
+  (\bibinfo{year}{2020}).
+
+\bibitem{narayanan2021eeg}
+\bibinfo{author}{{Mundanad Narayanan}, A.}, \bibinfo{author}{Zink, R.} \&
+  \bibinfo{author}{Bertrand, A.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{EEG miniaturization limits for
+  stimulus decoding with EEG sensor networks}}}.
+\newblock {\emph{\JournalTitle{Journal of Neural Engineering}}}
+  \textbf{\bibinfo{volume}{18}}, \bibinfo{pages}{056042},
+  \doiprefix\url{https://doi.org/10.1088/1741-2552/ac2629}
+  (\bibinfo{year}{2021}).
+
+\bibitem{ciccarelli2019comparison}
+\bibinfo{author}{Ciccarelli, G.~A.} \emph{et~al.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{Comparison of Two-Talker Attention
+  Decoding from EEG with Nonlinear Neural Networks and Linear Methods}}}.
+\newblock {\emph{\JournalTitle{Scientific Reports}}}
+  \textbf{\bibinfo{volume}{9}}, \bibinfo{pages}{11538},
+  \doiprefix\url{https://doi.org/10.1038/s41598-019-47795-0}
+  (\bibinfo{year}{2019}).
+
+\bibitem{straetmans2021neural}
+\bibinfo{author}{Straetmans, L.}, \bibinfo{author}{Holtze, B.},
+  \bibinfo{author}{Debener, S.}, \bibinfo{author}{Jaeger, M.} \&
+  \bibinfo{author}{Mirkovic, B.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{Neural tracking to go: auditory
+  attention decoding and saliency detection with mobile EEG}}}.
+\newblock {\emph{\JournalTitle{Journal of Neural Engineering}}}
+  \textbf{\bibinfo{volume}{18}}, \bibinfo{pages}{066054},
+  \doiprefix\url{https://doi.org/10.1088/1741-2552/ac42b5}
+  (\bibinfo{year}{2021}).
+
+\bibitem{ha2023validation}
+\bibinfo{author}{Ha, J.}, \bibinfo{author}{Baek, S.-C.}, \bibinfo{author}{Lim,
+  Y.} \& \bibinfo{author}{Chung, J.~H.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{Validation of cost-efficient EEG
+  experimental setup for neural tracking in an auditory attention task}}}.
+\newblock {\emph{\JournalTitle{Scientific Reports}}}
+  \textbf{\bibinfo{volume}{13}}, \bibinfo{pages}{22682},
+  \doiprefix\url{https://doi.org/10.1038/s41598-023-49990-6}
+  (\bibinfo{year}{2023}).
+
+\bibitem{straetmans2024neural}
+\bibinfo{author}{Straetmans, L.}, \bibinfo{author}{Adiloglu, K.} \&
+  \bibinfo{author}{Debener, S.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{Neural speech tracking and
+  auditory attention decoding in everyday life}}}.
+\newblock {\emph{\JournalTitle{Frontiers in Human Neuroscience}}}
+  \textbf{\bibinfo{volume}{18}}, \bibinfo{pages}{1483024},
+  \doiprefix\url{https://doi.org/10.3389/fnhum.2024.1483024}
+  (\bibinfo{year}{2024}).
+
+\bibitem{hjortkjaer2025real}
+\bibinfo{author}{Hjortkj{\ae}r, J.} \emph{et~al.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{Real-time control of a hearing
+  instrument with EEG-based attention decoding}}}.
+\newblock {\emph{\JournalTitle{Journal of Neural Engineering}}}
+  \textbf{\bibinfo{volume}{22}}, \bibinfo{pages}{016027},
+  \doiprefix\url{https://doi.org/10.1088/1741-2552/ad867c}
+  (\bibinfo{year}{2025}).
+
+\bibitem{debener2015unobtrusive}
+\bibinfo{author}{Debener, S.}, \bibinfo{author}{Emkes, R.},
+  \bibinfo{author}{{De Vos}, M.} \& \bibinfo{author}{Bleichner, M.~G.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{Unobtrusive ambulatory EEG using a
+  smartphone and flexible printed electrodes around the ear}}}.
+\newblock {\emph{\JournalTitle{Scientific Reports}}}
+  \textbf{\bibinfo{volume}{5}},
+  \doiprefix\url{https://doi.org/10.1038/srep16743} (\bibinfo{year}{2015}).
+
+\bibitem{bleichner2017concealed}
+\bibinfo{author}{Bleichner, M.~G.} \& \bibinfo{author}{Debener, S.}
+\newblock \bibinfo{journal}{\bibinfo{title}{Concealed, unobtrusive ear-centered
+  eeg acquisition: ceegrids for transparent eeg}}.
+\newblock {\emph{\JournalTitle{Frontiers in Human Neuroscience}}}
+  \textbf{\bibinfo{volume}{11}},
+  \doiprefix\url{https://doi.org/10.3389/fnhum.2017.00163}
+  (\bibinfo{year}{2017}).
+
+\bibitem{mikkelsen2019machine}
+\bibinfo{author}{Mikkelsen, K.~B.} \emph{et~al.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{Machine-learning-derived
+  sleep–wake staging from around-the-ear electroencephalogram outperforms
+  manual scoring and actigraphy}}}.
+\newblock {\emph{\JournalTitle{Journal of Sleep Research}}}
+  \textbf{\bibinfo{volume}{28}}, \bibinfo{pages}{e12786},
+  \doiprefix\url{https://doi.org/10.1111/jsr.12786} (\bibinfo{year}{2019}).
+
+\bibitem{gu2017comparison}
+\bibinfo{author}{Gu, Y.} \emph{et~al.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{Comparison between Scalp EEG and
+  Behind-the-Ear EEG for Development of a Wearable Seizure Detection System for
+  Patients with Focal Epilepsy}}}.
+\newblock {\emph{\JournalTitle{Sensors}}} \textbf{\bibinfo{volume}{18}},
+  \bibinfo{pages}{29}, \doiprefix\url{https://doi.org/10.3390/s18010029}
+  (\bibinfo{year}{2017}).
+
+\bibitem{cretot2023assessing}
+\bibinfo{author}{Crétot-Richert, G.}, \bibinfo{author}{De~Vos, M.},
+  \bibinfo{author}{Debener, S.}, \bibinfo{author}{Bleichner, M.~G.} \&
+  \bibinfo{author}{Voix, J.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{Assessing focus through ear-EEG: a
+  comparative study between conventional cap EEG and mobile in- and
+  around-the-ear EEG systems}}}.
+\newblock {\emph{\JournalTitle{Frontiers in Neuroscience}}}
+  \textbf{\bibinfo{volume}{17}},
+  \doiprefix\url{https://doi.org/10.3389/fnins.2023.895094}
+  (\bibinfo{year}{2023}).
+
+\bibitem{looney2012in}
+\bibinfo{author}{Looney, D.} \emph{et~al.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{The In-the-Ear Recording Concept:
+  User-Centered and Wearable Brain Monitoring}}}.
+\newblock {\emph{\JournalTitle{IEEE Pulse}}} \textbf{\bibinfo{volume}{3}},
+  \bibinfo{pages}{32--42},
+  \doiprefix\url{https://doi.org/10.1109/MPUL.2012.2216717}
+  (\bibinfo{year}{2012}).
+
+\bibitem{mikkelsen2015eeg}
+\bibinfo{author}{Mikkelsen, K.~B.}, \bibinfo{author}{Kappel, S.~L.},
+  \bibinfo{author}{Mandic, D.~P.} \& \bibinfo{author}{Kidmose, P.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{EEG Recorded from the Ear:
+  Characterizing the Ear-EEG Method}}}.
+\newblock {\emph{\JournalTitle{Frontiers in Neuroscience}}}
+  \textbf{\bibinfo{volume}{9}}, \bibinfo{pages}{438},
+  \doiprefix\url{https://doi.org/10.3389/fnins.2015.00438}
+  (\bibinfo{year}{2015}).
+
+\bibitem{kappel2019dry}
+\bibinfo{author}{Kappel, S.~L.}, \bibinfo{author}{Rank, M.~L.},
+  \bibinfo{author}{Toft, H.~O.}, \bibinfo{author}{Andersen, M.} \&
+  \bibinfo{author}{Kidmose, P.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{Dry-Contact Electrode Ear-EEG}}}.
+\newblock {\emph{\JournalTitle{IEEE Transactions on Biomedical Engineering}}}
+  \textbf{\bibinfo{volume}{66}}, \bibinfo{pages}{150--158},
+  \doiprefix\url{https://doi.org/10.1109/TBME.2018.2835778}
+  (\bibinfo{year}{2019}).
+
+\bibitem{mikkelsen2019accurate}
+\bibinfo{author}{Mikkelsen, K.~B.} \emph{et~al.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{Accurate whole-night sleep
+  monitoring with dry-contact ear-EEG}}}.
+\newblock {\emph{\JournalTitle{Scientific Reports}}}
+  \textbf{\bibinfo{volume}{9}},
+  \doiprefix\url{https://doi.org/10.1038/s41598-019-53115-3}
+  (\bibinfo{year}{2019}).
+
+\bibitem{christensen2018toward}
+\bibinfo{author}{Christensen, C.~B.}, \bibinfo{author}{Hietkamp, R.~K.},
+  \bibinfo{author}{Harte, J.~M.}, \bibinfo{author}{Lunner, T.} \&
+  \bibinfo{author}{Kidmose, P.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{Toward EEG-Assisted Hearing Aids:
+  Objective Threshold Estimation Based on Ear-EEG in Subjects With
+  Sensorineural Hearing Loss}}}.
+\newblock {\emph{\JournalTitle{Trends in Hearing}}}
+  \textbf{\bibinfo{volume}{22}}, \bibinfo{pages}{2331216518816203},
+  \doiprefix\url{https://doi.org/10.1177/2331216518816203}
+  (\bibinfo{year}{2018}).
+
+\bibitem{ding2025synchronized}
+\bibinfo{author}{Ding, R.}, \bibinfo{author}{Geirnaert, S.},
+  \bibinfo{author}{Hovine, C.} \& \bibinfo{author}{Bertrand, A.}
+\newblock \bibinfo{title}{Synchronized eeg with two galvanically-separated
+  miniature wireless behind-the-ear eeg sensors}.
+\newblock In \emph{\bibinfo{booktitle}{7th Annual International Conference of
+  the IEEE Engineering in Medicine and Biology Society (EMBC)}},
+  \doiprefix\url{https://doi.org/10.1101/2025.03.15.643275}
+  (\bibinfo{year}{2025}).
+
+\bibitem{mirkovic2016target}
+\bibinfo{author}{Mirkovic, B.}, \bibinfo{author}{Bleichner, M.~G.},
+  \bibinfo{author}{{De Vos}, M.} \& \bibinfo{author}{Debener, S.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{Target Speaker Detection with
+  Concealed EEG Around the Ear}}}.
+\newblock {\emph{\JournalTitle{Frontiers in Neuroscience}}}
+  \textbf{\bibinfo{volume}{10}},
+  \doiprefix\url{https://doi.org/10.3389/fnins.2016.00349}
+  (\bibinfo{year}{2016}).
+
+\bibitem{holtze2022ear}
+\bibinfo{author}{Holtze, B.}, \bibinfo{author}{Rosenkranz, M.},
+  \bibinfo{author}{Jaeger, M.}, \bibinfo{author}{Debener, S.} \&
+  \bibinfo{author}{Mirkovic, B.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{Ear-EEG Measures of Auditory
+  Attention to Continuous Speech}}}.
+\newblock {\emph{\JournalTitle{Frontiers in Neuroscience}}}
+  \textbf{\bibinfo{volume}{16}},
+  \doiprefix\url{https://doi.org/10.3389/fnins.2022.869426}
+  (\bibinfo{year}{2022}).
+
+\bibitem{nogueira2019decoding}
+\bibinfo{author}{Nogueira, W.} \emph{et~al.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{Decoding Selective Attention in
+  Normal Hearing Listeners and Bilateral Cochlear Implant Users With Concealed
+  Ear EEG}}}.
+\newblock {\emph{\JournalTitle{Frontiers in Neuroscience}}}
+  \textbf{\bibinfo{volume}{13}},
+  \doiprefix\url{https://doi.org/10.3389/fnins.2019.00720}
+  (\bibinfo{year}{2019}).
+
+\bibitem{zhu2025using}
+\bibinfo{author}{Zhu, H.} \emph{et~al.}
+\newblock \bibinfo{title}{{Using Ear-EEG to Decode Auditory Attention in
+  Multiple-speaker Environment}}.
+\newblock In \emph{\bibinfo{booktitle}{ICASSP 2025 - 2025 IEEE International
+  Conference on Acoustics, Speech and Signal Processing (ICASSP)}},
+  \bibinfo{pages}{1--5},
+  \doiprefix\url{https://doi.org/10.1109/ICASSP49660.2025.10890810}
+  (\bibinfo{year}{2025}).
+
+\bibitem{fiedler2017single}
+\bibinfo{author}{Fiedler, L.} \emph{et~al.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{Single-channel in-ear-EEG detects
+  the focus of auditory attention to concurrent tone streams and mixed
+  speech}}}.
+\newblock {\emph{\JournalTitle{Journal of Neural Engineering}}}
+  \textbf{\bibinfo{volume}{14}}, \bibinfo{pages}{036020},
+  \doiprefix\url{https://doi.org/10.1088/1741-2552/aa66dd}
+  (\bibinfo{year}{2017}).
+
+\bibitem{thornton2024comparison}
+\bibinfo{author}{Thornton, M.}, \bibinfo{author}{Mandic, D.} \&
+  \bibinfo{author}{Reichenbach, T.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{Comparison of linear and nonlinear
+  methods for decoding selective attention to speech from ear-EEG
+  recordings}}}.
+\newblock {\emph{\JournalTitle{arXiv}}}
+  \doiprefix\url{https://doi.org/10.48550/arXiv.2401.05187}
+  (\bibinfo{year}{2024}).
+
+\bibitem{nguyen2025cognitive}
+\bibinfo{author}{Nguyen, N. D.~T.}, \bibinfo{author}{Mikkelsen, K.} \&
+  \bibinfo{author}{Kidmose, P.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{Cognitive component of auditory
+  attention to natural speech events}}}.
+\newblock {\emph{\JournalTitle{Frontiers in Human Neuroscience}}}
+  \textbf{\bibinfo{volume}{18}},
+  \doiprefix\url{https://doi.org/10.3389/fnhum.2024.1460139}
+  (\bibinfo{year}{2025}).
+
+\bibitem{geirnaert2025ear}
+\bibinfo{author}{Geirnaert, S.}, \bibinfo{author}{Kappel, S.~L.} \&
+  \bibinfo{author}{Kidmose, P.}
+\newblock \bibinfo{title}{{Ear-SAAD dataset [Data set]}}.
+\newblock \bibinfo{howpublished}{Zenodo},
+  \doiprefix\url{https://doi.org/10.5281/zenodo.16536441}
+  (\bibinfo{year}{2025}).
+
+\bibitem{deoisres2023continuous}
+\bibinfo{author}{Deoisres, S.}, \bibinfo{author}{Lu, Y.},
+  \bibinfo{author}{Vanheusden, F.~J.}, \bibinfo{author}{Bell, S.~L.} \&
+  \bibinfo{author}{Simpson, D.~M.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{Continuous speech with pauses
+  inserted between words increases cortical tracking of speech envelope}}}.
+\newblock {\emph{\JournalTitle{PLoS ONE}}} \textbf{\bibinfo{volume}{18}},
+  \bibinfo{pages}{e0289288},
+  \doiprefix\url{https://doi.org/10.1371/journal.pone.0289288}
+  (\bibinfo{year}{2023}).
+
+\bibitem{kidmose2013study}
+\bibinfo{author}{Kidmose, P.}, \bibinfo{author}{Looney, D.},
+  \bibinfo{author}{Ungstrup, M.}, \bibinfo{author}{Rank, M.~L.} \&
+  \bibinfo{author}{Mandic, D.~P.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{A Study of Evoked Potentials From
+  Ear-EEG}}}.
+\newblock {\emph{\JournalTitle{IEEE Transactions on Biomedical Engineering}}}
+  \textbf{\bibinfo{volume}{60}}, \bibinfo{pages}{2824--2830},
+  \doiprefix\url{https://doi.org/10.1109/TBME.2013.2264956}
+  (\bibinfo{year}{2013}).
+
+\bibitem{kappel2022characterization}
+\bibinfo{author}{Kappel, S.~L.} \& \bibinfo{author}{Kidmose, P.}
+\newblock \bibinfo{title}{{Characterization of Dry-Contact EEG Electrodes and
+  an Empirical Comparison of Ag/AgCl and IrO2 Electrodes}}.
+\newblock In \emph{\bibinfo{booktitle}{2022 44th Annual International
+  Conference of the IEEE Engineering in Medicine \& Biology Society (EMBC)}},
+  \bibinfo{pages}{3127--3130},
+  \doiprefix\url{https://doi.org/10.1109/EMBC48229.2022.9871923}
+  (\bibinfo{year}{2022}).
+
+\bibitem{holle2023recording}
+\bibinfo{author}{Hölle, D.} \& \bibinfo{author}{Bleichner, M.~G.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{Recording Brain Activity with
+  Ear-Electroencephalography}}}.
+\newblock {\emph{\JournalTitle{JoVE}}} \bibinfo{pages}{e64897},
+  \doiprefix\url{https://doi.org/doi:10.3791/64897} (\bibinfo{year}{2023}).
+
+\bibitem{geirnaert2022timeAdaptive}
+\bibinfo{author}{Geirnaert, S.}, \bibinfo{author}{Francart, T.} \&
+  \bibinfo{author}{Bertrand, A.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{Time-adaptive Unsupervised
+  Auditory Attention Decoding Using EEG-based Stimulus Reconstruction}}}.
+\newblock {\emph{\JournalTitle{IEEE Journal of Biomedical and Health
+  Informatics}}} \textbf{\bibinfo{volume}{26}}, \bibinfo{pages}{3767--3778},
+  \doiprefix\url{https://doi.org/10.1109/JBHI.2022.3162760}
+  (\bibinfo{year}{2022}).
+
+\bibitem{biesmans2017auditory}
+\bibinfo{author}{Biesmans, W.}, \bibinfo{author}{Das, N.},
+  \bibinfo{author}{Francart, T.} \& \bibinfo{author}{Bertrand, A.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{Auditory-Inspired Speech Envelope
+  Extraction Methods for Improved EEG-Based Auditory Attention Detection in a
+  Cocktail Party Scenario}}}.
+\newblock {\emph{\JournalTitle{IEEE Transactions on Neural Systems and
+  Rehabilitation Engineering}}} \textbf{\bibinfo{volume}{25}},
+  \bibinfo{pages}{402--412},
+  \doiprefix\url{https://doi.org/10.1109/TNSRE.2016.2571900}
+  (\bibinfo{year}{2017}).
+
+\bibitem{ledoit2004well}
+\bibinfo{author}{Ledoit, O.} \& \bibinfo{author}{Wolf, M.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{A well-conditioned estimator for
+  large-dimensional covariance matrices}}}.
+\newblock {\emph{\JournalTitle{Journal of Multivariate Analysis}}}
+  \textbf{\bibinfo{volume}{88}}, \bibinfo{pages}{365--411},
+  \doiprefix\url{https://doi.org/10.1016/S0047-259X(03)00096-4}
+  (\bibinfo{year}{2004}).
+
+\bibitem{geirnaert2021unsupervised}
+\bibinfo{author}{Geirnaert, S.}, \bibinfo{author}{Francart, T.} \&
+  \bibinfo{author}{Bertrand, A.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{Unsupervised Self-Adaptive
+  Auditory Attention Decoding}}}.
+\newblock {\emph{\JournalTitle{IEEE Journal on Biomedical and Health
+  Informatics}}} \textbf{\bibinfo{volume}{25}}, \bibinfo{pages}{3955--3966},
+  \doiprefix\url{https://doi.org/10.1109/JBHI.2021.3075631}
+  (\bibinfo{year}{2021}).
+
+\bibitem{delorme2004eeglab}
+\bibinfo{author}{Delorme, A.} \& \bibinfo{author}{Makeig, S.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{EEGLAB: an open source toolbox for
+  analysis of single-trial EEG dynamics including independent component
+  analysis}}}.
+\newblock {\emph{\JournalTitle{Journal of Neuroscience Methods}}}
+  \textbf{\bibinfo{volume}{134}}, \bibinfo{pages}{9--21},
+  \doiprefix\url{https://doi.org/10.1016/j.jneumeth.2003.10.009}
+  (\bibinfo{year}{2004}).
+
+\bibitem{chang2020evaluation}
+\bibinfo{author}{Chang, C.-Y.}, \bibinfo{author}{Hsu, S.-H.},
+  \bibinfo{author}{Pion-Tonachini, L.} \& \bibinfo{author}{Jung, T.-P.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{Evaluation of Artifact Subspace
+  Reconstruction for Automatic Artifact Components Removal in Multi-Channel EEG
+  Recordings}}}.
+\newblock {\emph{\JournalTitle{IEEE Transactions on Biomedical Engineering}}}
+  \textbf{\bibinfo{volume}{67}}, \bibinfo{pages}{1114--1121},
+  \doiprefix\url{https://doi.org/10.1109/TBME.2019.2930186}
+  (\bibinfo{year}{2020}).
+
+\bibitem{geirnaert2020interpretable}
+\bibinfo{author}{Geirnaert, S.}, \bibinfo{author}{Francart, T.} \&
+  \bibinfo{author}{Bertrand, A.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{An Interpretable Performance
+  Metric for Auditory Attention Decoding Algorithms in a Context of
+  Neuro-Steered Gain Control}}}.
+\newblock {\emph{\JournalTitle{IEEE Transactions on Neural Systems and
+  Rehabilitation Engineering}}} \textbf{\bibinfo{volume}{28}},
+  \bibinfo{pages}{307--317},
+  \doiprefix\url{https://doi.org/10.1109/TNSRE.2019.2952724}
+  (\bibinfo{year}{2020}).
+
+\bibitem{gordo2025unsupervised}
+\bibinfo{author}{Lopez-Gordo, M.~A.}, \bibinfo{author}{Geirnaert, S.} \&
+  \bibinfo{author}{Bertrand, A.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{Unsupervised Accuracy Estimation
+  for Brain-Computer Interfaces based on Selective Auditory Attention
+  Decoding}}}.
+\newblock {\emph{\JournalTitle{IEEE Transactions on Biomedical Engineering}}}
+  \doiprefix\url{https://doi.org/10.1109/TBME.2025.3542253}
+  (\bibinfo{year}{2025}).
+
+\bibitem{kappel2017physiological}
+\bibinfo{author}{Kappel, S.~L.}, \bibinfo{author}{Looney, D.},
+  \bibinfo{author}{Mandic, D.~P.} \& \bibinfo{author}{Kidmose, P.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{Physiological artifacts in scalp
+  EEG and ear-EEG}}}.
+\newblock {\emph{\JournalTitle{BioMedical Engineering OnLine}}}
+  \textbf{\bibinfo{volume}{16}},
+  \doiprefix\url{https://doi.org/10.1186/s12938-017-0391-2}
+  (\bibinfo{year}{2017}).
+
+\bibitem{kappel2019ear}
+\bibinfo{author}{Kappel, S.~L.}, \bibinfo{author}{Makeig, S.} \&
+  \bibinfo{author}{Kidmose, P.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{Ear-EEG Forward Models: Improved
+  Head-Models for Ear-EEG}}}.
+\newblock {\emph{\JournalTitle{Frontiers in Neuroscience}}}
+  \textbf{\bibinfo{volume}{13}},
+  \doiprefix\url{https://doi.org/10.3389/fnins.2019.00943}
+  (\bibinfo{year}{2019}).
+
+\bibitem{sergeeva2022investigation}
+\bibinfo{author}{Sergeeva, A.}, \bibinfo{author}{Christensen, C.~B.} \&
+  \bibinfo{author}{Kidmose, P.}
+\newblock \bibinfo{title}{{Investigation of the Effect of Spatial Filtering for
+  Detecting Auditory Steady-State Responses Recorded from Ear-EEG}}.
+\newblock In \emph{\bibinfo{booktitle}{2022 44th Annual International
+  Conference of the IEEE Engineering in Medicine \& Biology Society (EMBC)}},
+  \bibinfo{pages}{56--59},
+  \doiprefix\url{https://doi.org/10.1109/embc48229.2022.9871170}
+  (\bibinfo{year}{2022}).
+
+\bibitem{casson2019wearable}
+\bibinfo{author}{Casson, A.~J.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{Wearable EEG and beyond}}}.
+\newblock {\emph{\JournalTitle{Biomedical Engineering Letters}}}
+  \textbf{\bibinfo{volume}{9}}, \bibinfo{pages}{53--71},
+  \doiprefix\url{https://doi.org/10.1007/s13534-018-00093-6}
+  (\bibinfo{year}{2019}).
+
+\bibitem{fuglsang2020effects}
+\bibinfo{author}{Fuglsang, S.~A.}, \bibinfo{author}{M{\"{a}}rcher-R{\o}rsted,
+  J.}, \bibinfo{author}{Dau, T.} \& \bibinfo{author}{Hjortkj{\ae}r, J.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{Effects of Sensorineural Hearing
+  Loss on Cortical Synchronization to Competing Speech during Selective
+  Attention}}}.
+\newblock {\emph{\JournalTitle{Journal of Neuroscience}}}
+  \textbf{\bibinfo{volume}{40}}, \bibinfo{pages}{2562--2572},
+  \doiprefix\url{https://doi.org/10.1523/JNEUROSCI.1936-19.2020}
+  (\bibinfo{year}{2020}).
+
+\end{thebibliography}

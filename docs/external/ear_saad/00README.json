@@ -1,0 +1,37 @@
+{
+   "sources" : [
+      {
+         "usage" : "toplevel",
+         "filename" : "geirnaert2025direct.tex"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "bib-v2.bib"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "geirnaert2025direct.out"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "jabbrv-ltwa-all.ldf"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "jabbrv-ltwa-en.ldf"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "jabbrv.sty"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "naturemag-doi.bst"
+      }
+   ],
+   "spec_version" : 1,
+   "texlive_version" : "2025",
+   "process" : {
+      "compiler" : "pdflatex"
+   }
+}

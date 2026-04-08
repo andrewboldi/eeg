@@ -1,0 +1,42 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,booktabs,hyperref,float}
+
+\title{Iteration 027: PLS Regression Init + FIR}
+\author{Autoresearch Loop}
+\date{April 8, 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+PLS regression initialization (covariance-maximizing) followed by FIR fine-tuning
+achieves $r=0.377$, comparable to the CF-initialized FIR ($r=0.378$). The
+PLS and OLS solutions are nearly identical for this data, confirming that
+MSE-optimal and covariance-optimal solutions coincide.
+\end{abstract}
+
+\section{Method}
+Flatten training windows to $(N \cdot T, C_{in})$ and $(N \cdot T, C_{out})$.
+Fit PLS regression with 12 components, extract spatial filter $W$, initialize
+FIR center-tap. Fine-tune 150 epochs with combined loss + corr validation.
+
+\section{Results}
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrr}
+\toprule
+Model & Mean $r$ & Std $r$ & SNR (dB) \\
+\midrule
+CF + FIR (iter017) & 0.378 & 0.078 & 0.61 \\
+PLS + FIR & 0.377 & 0.077 & 0.61 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Analysis}
+PLS and OLS give essentially the same spatial filter because the cross-covariance
+matrix $R_{YX}$ has relatively low rank (12 in-ear channels). Both find the
+same dominant directions. The initialization matters less than the fine-tuning.
+
+\end{document}

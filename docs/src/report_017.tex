@@ -1,0 +1,58 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,booktabs,hyperref,float,xcolor}
+\definecolor{good}{rgb}{0.0,0.5,0.0}
+
+\title{Iteration 017: Combined Loss + Correlation Validation}
+\author{Autoresearch Loop}
+\date{April 8, 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Using a combined loss (0.5 MSE + 0.5 correlation) with correlation-based early
+stopping achieves a new best $r=0.378$ (+0.5\% over iter011). This fixes the
+train/validation metric mismatch identified in iter015 and produces the best
+result to date.
+\end{abstract}
+
+\section{Hypothesis}
+Iter015 showed that correlation loss alone with MSE-based validation selects
+suboptimal checkpoints. A combined loss provides stable gradients (from MSE)
+while optimizing correlation, and validation on correlation ensures early stopping
+selects the correlation-optimal model.
+
+\section{Method}
+Loss: $\mathcal{L} = 0.5 \cdot \text{MSE} + 0.5 \cdot (1 - \bar{r})$.
+Validation: mean Pearson $r$ across channels (higher is better).
+Model: FIR (7 taps) + 15\% channel dropout + CF init. AdamW ($\text{lr}=10^{-3}$),
+cosine annealing, 150 epochs.
+
+\section{Results}
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrr}
+\toprule
+Model & Mean $r$ & Std $r$ & SNR (dB) \\
+\midrule
+FIR + dropout (iter011) & 0.376 & 0.076 & 0.61 \\
+\textbf{Combined loss + corr val} & \textcolor{good}{\textbf{0.378}} & 0.078 & 0.61 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Analysis}
+The improvement is small (+0.002) but establishes a new best. The combined loss
+provides MSE's stable gradients in early training while the correlation component
+refines the solution for the actual evaluation metric. The slightly higher std
+suggests the model optimizes for per-channel correlation at the expense of some
+consistency, which is the correct tradeoff for our metric.
+
+Key insight: matching the training objective to the evaluation metric matters
+more than model architecture changes in this regime.
+
+\section{Next}
+Iteration 018: Euclidean alignment for cross-subject transfer.
+
+\end{document}

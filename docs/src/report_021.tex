@@ -1,0 +1,56 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,booktabs,hyperref,float}
+
+\title{Iteration 021: Mixture of FIR Experts}
+\author{Autoresearch Loop}
+\date{April 8, 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+A Mixture of Experts model with 4 parallel FIR filters and input-dependent
+gating achieves $r=0.375$, not improving over the baseline ($r=0.378$).
+The gating network does not learn meaningful expert specialization, and
+InstanceNorm at input further reduces performance.
+\end{abstract}
+
+\section{Hypothesis}
+Different test subjects need different spatial filters. An MoE model with
+$K=4$ experts learns multiple FIR filters and selects them based on input
+channel statistics, adapting to different head geometries without subject labels.
+
+\section{Method}
+Architecture: InstanceNorm $\to$ 4 parallel FIR experts (each $27 \to 12$,
+7 taps) $\to$ gating network (channel means $\to$ softmax weights) $\to$
+weighted combination. All experts CF-initialized with small perturbation.
+Combined loss + corr validation + 15\% channel dropout.
+
+\section{Results}
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrr}
+\toprule
+Model & Mean $r$ & Std $r$ & SNR (dB) \\
+\midrule
+Combined loss (iter017) & 0.378 & 0.078 & 0.61 \\
+MoE (4 experts) & 0.375 & 0.077 & 0.63 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Analysis}
+Two compounding issues: (1) InstanceNorm removes useful amplitude information
+(consistent with iter020), and (2) the experts start from nearly identical
+CF initializations, making it difficult for the gating network to learn
+meaningful specialization. With only 12 training subjects, there may not be
+enough diversity to drive expert divergence.
+
+The slightly higher SNR but lower $r$ matches the InstanceNorm pattern seen
+across iterations 020--025: better amplitude matching but worse waveform shape.
+
+\section{Next}
+Test augmentation techniques (mixup, noise, TTA) without InstanceNorm.
+
+\end{document}

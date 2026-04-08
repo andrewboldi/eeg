@@ -1,0 +1,52 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,booktabs,hyperref,float}
+
+\title{Iteration 024: Mixup Augmentation + InstanceNorm}
+\author{Autoresearch Loop}
+\date{April 8, 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Mixup augmentation ($\lambda \sim \text{Beta}(0.4, 0.4)$) with InstanceNorm
+achieves $r=0.375$, not improving over the baseline ($r=0.378$). The
+InstanceNorm component masks any potential benefit from mixup. Iter030
+re-tests mixup without InstanceNorm to isolate its effect.
+\end{abstract}
+
+\section{Hypothesis}
+Mixup creates virtual intermediate subjects by interpolating training windows:
+$\tilde{x} = \lambda x_i + (1-\lambda) x_j$, $\tilde{y} = \lambda y_i + (1-\lambda) y_j$.
+Since the mapping is approximately linear ($y \approx Wx$), mixup is theoretically
+well-motivated. Combined with InstanceNorm for amplitude invariance.
+
+\section{Method}
+During training, each batch is mixed with a random permutation using
+$\lambda \sim \text{Beta}(0.4, 0.4)$. Architecture: InstanceNorm + FIR (7 taps).
+Combined loss + corr validation + 15\% channel dropout.
+
+\section{Results}
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrr}
+\toprule
+Model & Mean $r$ & Std $r$ & SNR (dB) \\
+\midrule
+Combined loss (iter017) & 0.378 & 0.078 & 0.61 \\
+Mixup + InstanceNorm & 0.375 & 0.076 & 0.61 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Analysis}
+The result is confounded by InstanceNorm, which consistently degrades $r$
+by $\sim$0.003. Mixup itself may be neutral or slightly positive, but we
+cannot determine this from this experiment alone. Iter030 tests mixup
+without InstanceNorm for a clean comparison.
+
+\section{Next}
+Re-test promising techniques (mixup, cosine loss, noise) without InstanceNorm.
+
+\end{document}

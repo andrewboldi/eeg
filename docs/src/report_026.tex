@@ -1,0 +1,46 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,booktabs,hyperref,float}
+
+\title{Iteration 026: Gaussian Noise Augmentation}
+\author{Autoresearch Loop}
+\date{April 8, 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+SNR-preserving Gaussian noise augmentation with InstanceNorm achieves $r=0.375$,
+not improving over the baseline ($r=0.378$). The InstanceNorm component degrades
+performance, consistent with iterations 020--025.
+\end{abstract}
+
+\section{Hypothesis}
+Measurement noise varies across subjects and electrodes. Adding channel-wise
+Gaussian noise ($\sigma = 0.1 \times \text{channel std}$) during training
+makes the model robust to these differences.
+
+\section{Method}
+During training, add Gaussian noise scaled to 10\% of each channel's
+per-window standard deviation. Architecture: InstanceNorm + FIR (7 taps).
+Combined loss + corr validation + 15\% channel dropout.
+
+\section{Results}
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrr}
+\toprule
+Model & Mean $r$ & Std $r$ & SNR (dB) \\
+\midrule
+Combined loss (iter017) & 0.378 & 0.078 & 0.61 \\
+Noise + InstanceNorm & 0.375 & 0.077 & 0.62 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Analysis}
+Same InstanceNorm degradation pattern. The noise augmentation idea may have
+merit without InstanceNorm, but was not separately tested in this round due
+to the confounding InstanceNorm effect.
+
+\end{document}

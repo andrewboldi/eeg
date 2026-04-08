@@ -1,0 +1,52 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,booktabs,hyperref,float}
+
+\title{Iteration 010: Deep Temporal Convolution}
+\author{Autoresearch Loop}
+\date{April 7, 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+A deeper convolutional model with depthwise-separable convolutions and residual
+connections achieves $r=0.372$, matching but not exceeding the simpler FIR filter
+($r=0.373$). The added capacity does not improve over the linear spatio-temporal
+baseline, confirming that the 1--9\,Hz mapping is approximately linear.
+\end{abstract}
+
+\section{Hypothesis}
+Stacking temporal convolutions with nonlinear activations could capture nonlinear
+temporal dynamics that the linear FIR misses. Depthwise-separable convolutions
+reduce parameter count while maintaining a larger receptive field.
+
+\section{Method}
+Architecture: depthwise 1D conv (per-channel temporal filtering) followed by
+pointwise 1D conv (cross-channel mixing), with residual connections and ReLU
+activations. Trained 100 epochs with AdamW, CF center-tap initialization.
+
+\section{Results}
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrr}
+\toprule
+Model & Mean $r$ & Std $r$ & SNR (dB) \\
+\midrule
+FIR baseline (iter009) & 0.373 & 0.074 & 0.61 \\
+Deep temporal conv & 0.372 & 0.076 & 0.62 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Analysis}
+The nonlinear model offers no improvement. In the 1--9\,Hz band at 20\,Hz,
+the scalp-to-inear relationship is well-captured by a linear spatio-temporal
+filter. Adding depth and nonlinearity introduces more parameters to overfit
+without learning useful nonlinear features. Future iterations should focus
+on regularization and robustness rather than model capacity.
+
+\section{Next}
+Iteration 011: channel dropout augmentation to improve cross-subject robustness.
+
+\end{document}

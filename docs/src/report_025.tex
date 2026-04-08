@@ -1,0 +1,51 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,booktabs,hyperref,float}
+
+\title{Iteration 025: Cosine Loss Schedule}
+\author{Autoresearch Loop}
+\date{April 8, 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+A cosine-annealed loss schedule from 80\% MSE to 20\% MSE over 150 epochs,
+combined with InstanceNorm, achieves $r=0.376$, not improving over the
+fixed 50/50 loss ($r=0.378$). InstanceNorm degrades performance and masks
+any benefit from loss scheduling.
+\end{abstract}
+
+\section{Hypothesis}
+Early training benefits from MSE (stable gradients for large initial errors),
+while late training should emphasize correlation loss (optimizes the actual
+metric). A cosine schedule from $\alpha=0.8$ (MSE-heavy) to $\alpha=0.2$
+(corr-heavy) gives the model stable convergence then metric-optimal refinement.
+
+\section{Method}
+$\alpha(t) = 0.2 + 0.5(0.8-0.2)(1+\cos(\pi t/T))$, decaying from 0.8 to 0.2.
+Architecture: InstanceNorm + FIR (7 taps). Corr validation for early stopping.
+
+\section{Results}
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrr}
+\toprule
+Model & Mean $r$ & Std $r$ & SNR (dB) \\
+\midrule
+Combined loss (iter017) & 0.378 & 0.078 & 0.61 \\
+Cosine schedule + InstanceNorm & 0.376 & 0.077 & 0.63 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Analysis}
+The cosine loss schedule shows the highest SNR of any model tested (0.63\,dB),
+suggesting the loss scheduling helps with amplitude prediction. However, the
+lower $r$ indicates InstanceNorm is the dominant factor. The loss scheduling
+idea may have merit without InstanceNorm --- worth revisiting.
+
+\section{Next}
+Clean variants: mixup, pure corr loss, and high channel dropout --- all without InstanceNorm.
+
+\end{document}

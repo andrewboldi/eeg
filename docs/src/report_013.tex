@@ -1,0 +1,51 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,booktabs,hyperref,float}
+
+\title{Iteration 013: Band-Specific Spatial Filters}
+\author{Autoresearch Loop}
+\date{April 8, 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Splitting the 1--9\,Hz signal into sub-bands (delta: 1--4\,Hz, theta: 4--9\,Hz)
+and learning separate spatial filters per band yields $r=0.343$, significantly
+worse than the unified model ($r=0.376$). Splitting destroys cross-band
+coherence information that the unified filter exploits.
+\end{abstract}
+
+\section{Hypothesis}
+Different frequency bands may have different optimal spatial filters due to
+frequency-dependent volume conduction. Per-band CF solutions could capture
+these differences.
+
+\section{Method}
+Bandpass filter input into delta (1--4\,Hz) and theta (4--9\,Hz) using FIR
+filters. Learn separate closed-form spatial filters per band, then sum outputs.
+
+\section{Results}
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrr}
+\toprule
+Model & Mean $r$ & Std $r$ & SNR (dB) \\
+\midrule
+FIR + dropout (iter011) & 0.376 & 0.076 & 0.61 \\
+Band-specific CF & 0.343 & 0.063 & 0.51 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Analysis}
+A clear negative result ($-$0.033). The 1--9\,Hz band is narrow enough that
+sub-band splitting reduces effective sample size and destroys phase coherence
+between delta and theta, which the unified filter uses. The lower std suggests
+the model is consistently worse, not just more variable. Band splitting is
+contraindicated for this narrowband regime.
+
+\section{Next}
+Iteration 014: longer FIR filters with dropout and warm restarts.
+
+\end{document}

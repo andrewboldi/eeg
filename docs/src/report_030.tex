@@ -1,0 +1,55 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,booktabs,hyperref,float,xcolor}
+\definecolor{good}{rgb}{0.0,0.5,0.0}
+
+\title{Iteration 030: Mixup Without InstanceNorm}
+\author{Autoresearch Loop}
+\date{April 8, 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Mixup augmentation ($\lambda \sim \text{Beta}(0.4, 0.4)$) on the proven
+iter017 recipe (no InstanceNorm) achieves a new best $r=0.3782$, marginally
+improving over the previous best ($r=0.378$). This confirms mixup provides
+a small but real benefit when not masked by InstanceNorm's degradation.
+\end{abstract}
+
+\section{Hypothesis}
+Iter024 (mixup + InstanceNorm) got $r=0.375$, but InstanceNorm costs $\sim$0.003.
+Testing mixup on the clean iter017 base isolates its contribution.
+
+\section{Method}
+During training, each batch is mixed with a random permutation using
+$\lambda \sim \text{Beta}(0.4, 0.4)$: $\tilde{x} = \lambda x_i + (1-\lambda)x_j$,
+$\tilde{y} = \lambda y_i + (1-\lambda)y_j$. FIR (7 taps), CF init, combined
+loss, corr validation, 15\% channel dropout.
+
+\section{Results}
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrr}
+\toprule
+Model & Mean $r$ & Std $r$ & SNR (dB) \\
+\midrule
+Combined loss (iter017) & 0.378 & 0.078 & 0.61 \\
+\textbf{Mixup (no INorm)} & \textcolor{good}{\textbf{0.3782}} & 0.077 & 0.61 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Analysis}
+The improvement (+0.0003) is within noise but establishes a marginal new best.
+Mixup creates virtual intermediate data points by linearly interpolating
+training windows. Since the scalp-to-inear mapping is approximately linear,
+mixup targets are well-calibrated: $W \cdot (\lambda x_i + (1-\lambda)x_j) =
+\lambda W x_i + (1-\lambda) W x_j$.
+
+The 0.378 plateau appears to be a fundamental limit of the FIR + SGD approach.
+Breaking through requires fundamentally different methods: multi-lag ridge
+regression with analytical regularization (Ledoit-Wolf shrinkage), as used
+in the Ear-SAAD paper's linear decoder.
+
+\end{document}

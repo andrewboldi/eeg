@@ -1,0 +1,51 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,booktabs,hyperref,float}
+
+\title{Iteration 015: Correlation Loss}
+\author{Autoresearch Loop}
+\date{April 8, 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Training with Pearson correlation loss ($1-r$) instead of MSE achieves $r=0.373$,
+not improving over the MSE-trained FIR ($r=0.376$). The model was trained on
+correlation loss but early stopping used MSE validation, selecting a model from
+the MSE-dominated warm-start phase rather than the correlation-optimized phase.
+\end{abstract}
+
+\section{Hypothesis}
+Since the benchmark metric is Pearson $r$, directly optimizing correlation should
+outperform MSE, which also penalizes scale/offset errors irrelevant to $r$.
+
+\section{Method}
+Loss: $\mathcal{L} = 1 - \bar{r}$, where $\bar{r}$ is mean Pearson correlation
+across channels. Model: FIR (7 taps) + channel dropout. Early stopping on
+validation MSE (this was the critical mistake).
+
+\section{Results}
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrr}
+\toprule
+Model & Mean $r$ & Std $r$ & SNR (dB) \\
+\midrule
+FIR + dropout (iter011) & 0.376 & 0.076 & 0.61 \\
+Correlation loss & 0.373 & 0.076 & 0.61 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Analysis}
+The mismatch between training loss (correlation) and validation metric (MSE)
+for early stopping was the key failure mode. Early stopping selected a model
+from early training when MSE gradients still dominated, before the correlation
+loss had time to refine the model. This motivates iter017: using correlation-based
+validation for early stopping.
+
+\section{Next}
+Iterations 016--017: residual learning and combined loss with matched validation.
+
+\end{document}

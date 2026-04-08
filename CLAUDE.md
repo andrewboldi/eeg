@@ -57,30 +57,32 @@ uv run python scripts/benchmark.py --model-fn models/iter{NNN}_{name}.py --name 
 ### 7. REPEAT
 
 ## Research Queue (prioritized by expected impact)
-1. **[NEXT — GPU REQUIRED] Transformer architectures** (iter022: temporal attention, iter023: channel attention)
-   - iter022: Temporal self-attention over T=40 timesteps, InstanceNorm, combined loss
-   - iter023: Channel self-attention (each channel = token), cross-attention to output
-   - Run: `PYTHONPATH=. uv run python scripts/benchmark.py --model-fn models/iter022_transformer.py --name iter022_transformer`
-   - Run: `PYTHONPATH=. uv run python scripts/benchmark.py --model-fn models/iter023_channel_transformer.py --name iter023_channel_transformer`
-2. **[NEXT] InstanceNorm + FIR** (iter020) and **MoE** (iter021) — CPU-limited, need GPU
-   - Run: `PYTHONPATH=. uv run python scripts/benchmark.py --model-fn models/iter020_instance_norm_fir.py --name iter020_inorm_fir`
-   - Run: `PYTHONPATH=. uv run python scripts/benchmark.py --model-fn models/iter021_mixture_of_experts.py --name iter021_moe`
-3. Broadband prediction (download raw BIDS data, 1-45 Hz at 256 Hz)
-4. Multi-task learning (predict scalp+around-ear+in-ear jointly)
-5. Subject-specific fine-tuning (few-shot adaptation with target-subject data)
-6. Contrastive pre-training on scalp EEG, then fine-tune for in-ear
-7. Graph neural networks (model electrode spatial relationships)
-8. Around-ear channel prediction (19 cEEGrid channels as targets)
-9. Domain adaptation techniques for cross-subject transfer
+1. **Broadband prediction** (download raw BIDS data, 1-45 Hz at 256 Hz) — highest potential impact
+2. **[GPU REQUIRED] Transformer architectures** (iter022/023) — need GPU for training
+3. Multi-task learning (predict scalp+around-ear+in-ear jointly)
+4. Subject-specific fine-tuning (few-shot adaptation with target-subject data)
+5. Contrastive pre-training on scalp EEG, then fine-tune for in-ear
+6. GEVD-based spatial pre-filtering (maximize SNR before temporal model)
+7. Around-ear channel prediction (19 cEEGrid channels as targets)
+8. Domain adaptation techniques for cross-subject transfer
 
-## Key Findings from Iterations 013-021
+## Key Findings from Iterations 013-036
 - **Cross-subject variability is the bottleneck**, not model capacity
 - Subject 14 consistently ~0.27 r; Subject 13 consistently ~0.46 r
 - Longer FIR filters (11, 15 taps) don't help — 7 taps is sufficient for 1-9 Hz
 - Combined MSE+corr loss + corr-based early stopping gives marginal improvement
 - Band-specific splitting and Euclidean alignment hurt performance
 - Residual learning and ensembles don't improve over direct FIR
-- **Need input-adaptive models** (attention, MoE) to handle subject differences
+- **InstanceNorm consistently hurts** (~-0.003 r) — removes useful amplitude dynamics
+- MoE, noise augmentation, Huber loss all fail when combined with InstanceNorm
+- Mixup helps marginally (+0.0003) when used WITHOUT InstanceNorm
+- **Causal-only multi-lag models perform worse** than acausal FIR — acausal is critical
+- PLS and OLS give nearly identical spatial filters for this data
+- Pure correlation loss produces degenerate scale (terrible SNR)
+- The 0.378 plateau appears to be a fundamental limit of 7-tap FIR + SGD on 1-9 Hz data
+- **Ear-SAAD paper** uses Ledoit-Wolf shrinkage + 400ms temporal filter — testing in iter036
+
+### Current Best: r = 0.378 (iter030: Mixup + FIR + combined loss + corr val)
 
 ## Leaderboard
 | Iter | Model | Mean r | Std r | SNR (dB) | Key Idea |
@@ -88,16 +90,28 @@ uv run python scripts/benchmark.py --model-fn models/iter{NNN}_{name}.py --name 
 | 007 | closed_form_baseline | 0.366 | 0.072 | 0.59 | Linear spatial filter W*=R_YX @ inv(R_XX) |
 | 008 | regularization_sweep | 0.366 | 0.074 | 0.59 | Tikhonov reg sweep (no improvement) |
 | 009 | fir_spatio_temporal | **0.373** | 0.074 | 0.61 | FIR filter with CF center-tap init, 150 epochs |
-| 010 | deep_temporal_conv | 0.372 | 0.076 | 0.62 | Depthwise-sep conv + residual, 100 epochs (no improvement) |
+| 010 | deep_temporal_conv | 0.372 | 0.076 | 0.62 | Depthwise-sep conv + residual (no improvement) |
 | 011 | fir_channel_dropout | **0.376** | 0.076 | 0.61 | FIR + 15% channel dropout augmentation |
 | 012 | cf_fir_ensemble | 0.375 | 0.076 | 0.61 | Weighted avg of CF + FIR (no improvement) |
-| 013 | band_specific | 0.343 | 0.063 | 0.51 | Per-band CF spatial filters (worse — lost cross-band coherence) |
-| 014 | long_fir_dropout | 0.375 | 0.076 | 0.61 | Longer FIR (7,11,15) + dropout + warm restarts (no improvement) |
-| 015 | correlation_loss | 0.373 | 0.076 | 0.61 | Corr loss but MSE validation selected MSE-optimal model |
+| 013 | band_specific | 0.343 | 0.063 | 0.51 | Per-band CF spatial filters (worse) |
+| 014 | long_fir_dropout | 0.375 | 0.076 | 0.61 | Longer FIR + dropout + warm restarts (no improvement) |
+| 015 | correlation_loss | 0.373 | 0.076 | 0.61 | Corr loss + MSE validation (mismatch) |
 | 016 | residual_fir | 0.375 | 0.077 | 0.61 | CF + learned FIR residual (no improvement) |
-| 017 | corr_val | **0.378** | 0.078 | 0.61 | Combined MSE+corr loss + corr validation (new best) |
-| 018 | euclidean_align | 0.369 | 0.072 | 0.60 | Per-batch whitening at test time (worse — noisy batch cov) |
+| 017 | corr_val | **0.378** | 0.078 | 0.61 | Combined MSE+corr loss + corr validation |
+| 018 | euclidean_align | 0.369 | 0.072 | 0.60 | Per-batch whitening (worse — noisy batch cov) |
 | 019 | swa_combined | **0.378** | 0.078 | 0.61 | SWA + combined loss (matches iter017) |
+| 020 | instance_norm_fir | 0.375 | 0.077 | 0.63 | InstanceNorm hurts r despite better SNR |
+| 021 | mixture_of_experts | 0.375 | 0.077 | 0.63 | 4 experts + InstanceNorm (no improvement) |
+| 024 | mixup_inorm | 0.375 | 0.076 | 0.61 | Mixup + InstanceNorm (INorm masks benefit) |
+| 025 | cosine_loss_schedule | 0.376 | 0.077 | 0.63 | MSE→corr annealing + INorm (no improvement) |
+| 026 | noise_augment | 0.375 | 0.077 | 0.62 | Gaussian noise + INorm (no improvement) |
+| 027 | pls_regression | 0.377 | 0.077 | 0.61 | PLS init ≈ CF init |
+| 028 | huber_corr | 0.375 | 0.075 | 0.62 | Huber loss + INorm (lowest std but no improvement) |
+| 030 | mixup_no_inorm | **0.378** | 0.077 | 0.61 | Mixup without INorm — new best |
+| 031 | pure_corr | 0.375 | 0.077 | -5.96 | Pure corr loss — degenerate scale |
+| 032 | high_dropout | 0.378 | 0.079 | 0.60 | 25% dropout (no improvement over 15%) |
+| 034 | cca_ridge | 0.365 | 0.072 | 0.59 | Causal-only lags hurt performance |
+| 035 | ledoit_wolf | 0.369 | 0.075 | 0.59 | LW shrinkage + causal lags (still worse) |
 
 ## Reading Papers
 When referencing arXiv papers:

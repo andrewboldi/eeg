@@ -1,0 +1,59 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,booktabs,hyperref,float}
+
+\title{Iteration 020: InstanceNorm + FIR}
+\author{Autoresearch Loop}
+\date{April 8, 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Per-window InstanceNorm before the FIR filter achieves $r=0.375$, slightly
+below the best ($r=0.378$). Normalizing each 2s window independently removes
+useful amplitude information that the FIR filter exploits for prediction.
+\end{abstract}
+
+\section{Hypothesis}
+Cross-subject covariance differences are the bottleneck. InstanceNorm normalizes
+each window independently per channel, making the model invariant to local
+amplitude fluctuations. Unlike trial-level z-scoring in preprocessing, this
+normalizes \emph{each window}, removing within-trial amplitude dynamics.
+
+\section{Method}
+Architecture: InstanceNorm1d (affine=True) $\to$ FIR (7 taps, CF init).
+Training: combined MSE+corr loss, corr validation, 15\% channel dropout,
+150 epochs. Same hyperparameters as iter017.
+
+\section{Results}
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrr}
+\toprule
+Model & Mean $r$ & Std $r$ & SNR (dB) \\
+\midrule
+Combined loss (iter017) & 0.378 & 0.078 & 0.61 \\
+InstanceNorm + FIR & 0.375 & 0.077 & 0.63 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Analysis}
+InstanceNorm slightly hurts correlation despite improving SNR (+0.02\,dB). The
+per-window normalization removes slow amplitude modulations (e.g., alpha power
+fluctuations within a trial) that correlate between scalp and in-ear channels.
+These correlated amplitude dynamics carry useful information for prediction.
+
+Notably, the higher SNR indicates that InstanceNorm helps with absolute scale
+matching, but the lower Pearson $r$ shows it removes temporal structure that
+matters for waveform shape prediction.
+
+This result suggests that the preprocessing z-scoring (per trial) is already
+near-optimal: it removes cross-subject scale differences while preserving
+within-trial dynamics.
+
+\section{Next}
+Iteration 021: Mixture of Experts to allow input-adaptive spatial filtering.
+
+\end{document}

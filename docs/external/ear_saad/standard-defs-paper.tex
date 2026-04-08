@@ -1,0 +1,114 @@
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\usepackage[english]{babel}
+
+% mathematics
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{mathtools}
+\usepackage[binary-units=true]{siunitx}
+\usepackage{wasysym} % for the diameter command 
+\sisetup{list-units=single,range-units =single,range-phrase=\textup{--},product-units = single}
+
+% graphics
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{graphicx}
+\usepackage{xcolor, colortbl}
+
+% tables
+\usepackage{booktabs}
+\usepackage{tabularx}
+
+% tikz
+\usepackage{tikz}
+\usetikzlibrary{external,automata,trees,shadows,matrix,fit,decorations,positioning,shapes,plotmarks,patterns,arrows,calc,quotes,tikzmark,arrows.meta}
+
+%----------------------------------------------------------------------------------------
+%	MATHEMATICS
+%----------------------------------------------------------------------------------------
+
+
+% Math notations (vec, ten, mat, ...)
+\newcommand{\mat}[1]{\ensuremath{{\mathbf{\MakeUppercase{#1}}}}}
+\newcommand{\ten}[1]{\ensuremath{\mathbf{\mathcal{\MakeUppercase{#1}}}}}
+\makeatletter
+\renewcommand{\vec}[1]{%
+	\ifcat\relax\noexpand#1%
+	\ensuremath{\boldsymbol{\lowercase{#1}}}%
+	\else
+	\ensuremath{\mathbf{\lowercase{#1}}}%
+	\fi
+}
+\makeatother
+% short notation for matrix
+\newcommand{\textmat}[1]{\ensuremath{[\begin{matrix} #1 \end{matrix}]}}
+\newcommand{\shortmat}[1]{\ensuremath{\begin{bmatrix} #1 \end{bmatrix}}}
+\newcommand{\order}[1]{\ensuremath{\mathcal{O}\left(#1\right)}}
+\newcommand{\vectorize}[1]{\ensuremath{\text{vec}\left(#1\right)}}
+
+% Operators
+\newcommand{\kron}{\ensuremath{\otimes}}
+\newcommand{\kr}{\ensuremath{\odot}}
+\newcommand{\hadamard}{\ensuremath{\mathbin{\mathlarger{\mathlarger{*}}}}}
+\newcommand{\op}{\ensuremath{\mathbin{\text{\raisebox{1.2pt}{$\scriptscriptstyle{\bm\otimes}$}}}}}
+\newcommand{\opold}{\ensuremath{\circ}}
+\newcommand{\ip}[2]{\ensuremath{\left\langle #1, #2 \right\rangle}}
+\newcommand{\tmprod}[1]{\ensuremath{\bm{\cdot}_{#1}}}
+\newcommand{\unfold}[2]{\mat{#1}_{(#2)}}
+\newcommand{\ev}[1]{\ensuremath{\mathbb{E}\{{#1}\}}}
+\newcommand{\integral}[4]{\ensuremath{\int\limits_{#1}^{#2}\!#3\,d#4}}
+\newcommand{\sumlim}[2]{\ensuremath{\sum\limits_{#1}^{#2}}}
+\makeatother
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\makeatletter
+\newcommand\eval[3]{\ensuremath{\left.#1\right\rvert_{#2}^{#3}}}
+% Decompositions
+\newcommand{\cp}[1]{\ensuremath{\left\llbracket{#1}\right\rrbracket}}
+\renewcommand{\iff}{%
+	\Leftrightarrow
+}
+\newcommand{\abs}[1]{\ensuremath{\left|{#1}\right|}}
+\newcommand{\sign}[1]{\ensuremath{\text{sign}\!\left(#1\right)}}
+
+% Minimum, maximum
+\newcommand{\argmin}[1]{\ensuremath{\underset{#1}{\text{argmin }}}}
+\renewcommand{\min}[1]{\ensuremath{\underset{#1}{\text{min }}}}
+\newcommand{\argmax}[1]{\ensuremath{\underset{#1}{\text{argmax }}}}
+\renewcommand{\max}[1]{\ensuremath{\underset{#1}{\text{max }}}}
+
+% Matrix operators
+\newcommand{\transpose}[1]{\ensuremath{{#1}^{\textsc{t}}}}
+\newcommand{\conjtranspose}[1]{\ensuremath{{#1}^{\textsc{h}}}}
+\newcommand{\inverse}[1]{\ensuremath{{#1}^{-1}}}
+\newcommand{\pseudoinverse}[1]{\ensuremath{#1^{\dagger}}}
+\newcommand{\pinv}[1]{\pseudoinverse{#1}}
+\newcommand{\trace}[1]{\ensuremath{\text{Tr}\left(#1\right)}}
+
+% Fields
+\newcommand{\N}{\ensuremath{\mathbb{N}}}
+\newcommand{\Z}{\ensuremath{\mathbb{Z}}}
+\newcommand{\R}{\ensuremath{\mathbb{R}}}
+\newcommand{\C}{\ensuremath{\mathbb{C}}}
+\newcommand{\K}{\ensuremath{\mathbb{K}}}
+
+% Norm
+\newcommand{\norm}[1]{\left|\left|#1\right|\right|}
+
+% Equalities
+\newcommand{\eqdef}{\ensuremath{\stackrel{\text{def}}{=}}}
+
+%----------------------------------------------------------------------------------------
+%	SYMBOLS
+%----------------------------------------------------------------------------------------
+
+\newcommand{\bigO}[1]{\ensuremath{\mathcal{O}\!\left({#1}\right)}}
+
+% Check and x-mark
+\usepackage{pifont}
+\newcommand{\xmark}{\ding{55}}
+\newcommand{\cmark}{\ding{51}}

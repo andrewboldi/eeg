@@ -1,0 +1,57 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,booktabs,hyperref,float}
+
+\title{Iteration 019: Stochastic Weight Averaging}
+\author{Autoresearch Loop}
+\date{April 8, 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Stochastic Weight Averaging (SWA) with combined loss matches the best result
+at $r=0.378$, tying iter017. SWA finds a flatter minimum but does not
+improve peak performance, suggesting the loss landscape is already smooth
+in this regime.
+\end{abstract}
+
+\section{Hypothesis}
+SWA (Izmailov et al., 2018) averages weights from multiple points along the
+training trajectory, finding solutions in flatter regions of the loss landscape
+that generalize better. This could improve cross-subject transfer.
+
+\section{Method}
+Train with the iter017 recipe for 100 epochs, then collect SWA averages over
+epochs 100--150 with a cyclical learning rate. Final model uses the SWA-averaged
+weights with updated batch normalization statistics.
+
+\section{Results}
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrr}
+\toprule
+Model & Mean $r$ & Std $r$ & SNR (dB) \\
+\midrule
+Combined loss (iter017) & 0.378 & 0.078 & 0.61 \\
+SWA + combined loss & 0.378 & 0.078 & 0.61 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Analysis}
+SWA matches but does not exceed iter017, suggesting the FIR model with CF init
+already converges to a broad minimum. The loss landscape for this linear-ish
+problem is relatively convex, so weight averaging provides no additional benefit.
+The 0.378 plateau may represent a fundamental limit of linear spatio-temporal
+filtering on this narrowband data.
+
+Breaking past 0.378 likely requires either: (1) input-adaptive models that handle
+cross-subject differences (attention, MoE), (2) broader frequency content, or
+(3) fundamentally different data augmentation strategies.
+
+\section{Next}
+Iterations 020--023: InstanceNorm, Mixture of Experts, and transformer architectures
+to explore input-adaptive approaches.
+
+\end{document}

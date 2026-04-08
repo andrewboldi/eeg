@@ -1,0 +1,50 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,booktabs,hyperref,float}
+
+\title{Iteration 016: Residual FIR Learning}
+\author{Autoresearch Loop}
+\date{April 8, 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Learning a residual correction on top of the frozen closed-form solution
+achieves $r=0.375$, not improving over the end-to-end FIR ($r=0.376$).
+The residual signal is too weak for the FIR to reliably learn.
+\end{abstract}
+
+\section{Hypothesis}
+Instead of fine-tuning the entire FIR from CF initialization, freeze the CF
+spatial filter and learn only a residual FIR correction:
+$\hat{y} = W^*x + \text{FIR}_\text{residual}(x)$. This decomposes the problem
+into a known linear part and a learnable correction.
+
+\section{Method}
+Two-branch model: (1) frozen CF spatial filter, (2) trainable FIR filter (7 taps)
+initialized to zero. Outputs are summed. Trained 150 epochs with channel dropout.
+
+\section{Results}
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrr}
+\toprule
+Model & Mean $r$ & Std $r$ & SNR (dB) \\
+\midrule
+FIR + dropout (iter011) & 0.376 & 0.076 & 0.61 \\
+CF + residual FIR & 0.375 & 0.077 & 0.61 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Analysis}
+The residual approach performs identically to the baseline. The mapping is so
+close to linear that the residual FIR learns nearly the same correction as
+end-to-end fine-tuning from CF init. Residual decomposition adds complexity
+without benefit when the base model is already near-optimal.
+
+\section{Next}
+Iteration 017: combined MSE+correlation loss with correlation-based validation.
+
+\end{document}
