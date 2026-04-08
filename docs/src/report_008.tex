@@ -1,0 +1,48 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,booktabs,hyperref,float}
+
+\title{Iteration 008: Regularization Sweep (Negative Result)}
+\author{Autoresearch Loop}
+\date{April 7, 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We tested whether optimizing the Tikhonov regularization parameter $\lambda$
+for the closed-form spatial filter could improve over the default $\lambda=10^{-4}$.
+Sweeping $\lambda \in \{10^{-6}, \ldots, 10^{-1}\}$, the best result was
+$r=0.366$, identical to the baseline. \textbf{Negative result}: the closed-form
+solution is already well-regularized; marginal improvements require fundamentally
+different approaches (temporal context, nonlinear models, or actual subject-specific
+calibration data).
+\end{abstract}
+
+\section{Method}
+Computed $\mathbf{W}^* = \mathbf{R}_{YX}(\mathbf{R}_{XX} + \lambda\mathbf{I})^{-1}$
+for six values of $\lambda$, selecting the best on the validation set (10\% of
+training subjects 1--12).
+
+\section{Results}
+\begin{table}[H]
+\centering
+\begin{tabular}{lrr}
+\toprule
+Model & Mean $r$ & SNR (dB) \\
+\midrule
+Baseline ($\lambda=10^{-4}$) & 0.366 & 0.59 \\
+Best regularization & 0.366 & 0.59 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+No $\lambda$ value meaningfully changes performance. The cross-covariance
+estimate is stable with 12 subjects of training data.
+
+\section{Lesson}
+The bottleneck is not regularization but the \emph{model class}: a static
+spatial filter cannot capture temporal dynamics or nonlinear volume conduction.
+Next iteration will add temporal context via FIR filters or attention mechanisms.
+
+\end{document}

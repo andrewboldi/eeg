@@ -1,1 +1,2 @@
 {"model": "closed_form_baseline", "mean_r": 0.3657340349936611, "std_r": 0.07201515166376792, "mean_snr": 0.5874260564645132, "timestamp": "2026-04-07 18:35:45"}
+{"model": "iter008_subject_finetune", "mean_r": 0.3659130382774241, "std_r": 0.07346362520786402, "mean_snr": 0.5865514973799387, "timestamp": "2026-04-07 18:45:54"}
