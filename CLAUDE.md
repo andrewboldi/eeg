@@ -10,7 +10,7 @@
 - **Script**: `uv run python scripts/benchmark.py --baseline` (or `--model-fn models/your_model.py`)
 - **Leaderboard**: `results/benchmark/leaderboard.jsonl`
 
-### Current Best: r = 0.376 (FIR + channel dropout, iter011)
+### Current Best: r = 0.378 (Combined loss + corr validation, iter017/019)
 
 ## Autoresearch Loop Protocol
 
@@ -57,16 +57,30 @@ uv run python scripts/benchmark.py --model-fn models/iter{NNN}_{name}.py --name 
 ### 7. REPEAT
 
 ## Research Queue (prioritized by expected impact)
-1. Subject-specific fine-tuning (few-shot adaptation with target-subject data)
-2. Temporal context models (FIR/RNN/attention over longer windows)
+1. **[NEXT — GPU REQUIRED] Transformer architectures** (iter022: temporal attention, iter023: channel attention)
+   - iter022: Temporal self-attention over T=40 timesteps, InstanceNorm, combined loss
+   - iter023: Channel self-attention (each channel = token), cross-attention to output
+   - Run: `PYTHONPATH=. uv run python scripts/benchmark.py --model-fn models/iter022_transformer.py --name iter022_transformer`
+   - Run: `PYTHONPATH=. uv run python scripts/benchmark.py --model-fn models/iter023_channel_transformer.py --name iter023_channel_transformer`
+2. **[NEXT] InstanceNorm + FIR** (iter020) and **MoE** (iter021) — CPU-limited, need GPU
+   - Run: `PYTHONPATH=. uv run python scripts/benchmark.py --model-fn models/iter020_instance_norm_fir.py --name iter020_inorm_fir`
+   - Run: `PYTHONPATH=. uv run python scripts/benchmark.py --model-fn models/iter021_mixture_of_experts.py --name iter021_moe`
 3. Broadband prediction (download raw BIDS data, 1-45 Hz at 256 Hz)
 4. Multi-task learning (predict scalp+around-ear+in-ear jointly)
-5. Data augmentation (time-shift, noise injection, channel dropout)
+5. Subject-specific fine-tuning (few-shot adaptation with target-subject data)
 6. Contrastive pre-training on scalp EEG, then fine-tune for in-ear
-7. Frequency-band-specific models (separate delta/theta/alpha predictions)
-8. Graph neural networks (model electrode spatial relationships)
-9. Around-ear channel prediction (19 cEEGrid channels as targets)
-10. Domain adaptation techniques for cross-subject transfer
+7. Graph neural networks (model electrode spatial relationships)
+8. Around-ear channel prediction (19 cEEGrid channels as targets)
+9. Domain adaptation techniques for cross-subject transfer
+
+## Key Findings from Iterations 013-021
+- **Cross-subject variability is the bottleneck**, not model capacity
+- Subject 14 consistently ~0.27 r; Subject 13 consistently ~0.46 r
+- Longer FIR filters (11, 15 taps) don't help — 7 taps is sufficient for 1-9 Hz
+- Combined MSE+corr loss + corr-based early stopping gives marginal improvement
+- Band-specific splitting and Euclidean alignment hurt performance
+- Residual learning and ensembles don't improve over direct FIR
+- **Need input-adaptive models** (attention, MoE) to handle subject differences
 
 ## Leaderboard
 | Iter | Model | Mean r | Std r | SNR (dB) | Key Idea |
@@ -77,6 +91,13 @@ uv run python scripts/benchmark.py --model-fn models/iter{NNN}_{name}.py --name 
 | 010 | deep_temporal_conv | 0.372 | 0.076 | 0.62 | Depthwise-sep conv + residual, 100 epochs (no improvement) |
 | 011 | fir_channel_dropout | **0.376** | 0.076 | 0.61 | FIR + 15% channel dropout augmentation |
 | 012 | cf_fir_ensemble | 0.375 | 0.076 | 0.61 | Weighted avg of CF + FIR (no improvement) |
+| 013 | band_specific | 0.343 | 0.063 | 0.51 | Per-band CF spatial filters (worse — lost cross-band coherence) |
+| 014 | long_fir_dropout | 0.375 | 0.076 | 0.61 | Longer FIR (7,11,15) + dropout + warm restarts (no improvement) |
+| 015 | correlation_loss | 0.373 | 0.076 | 0.61 | Corr loss but MSE validation selected MSE-optimal model |
+| 016 | residual_fir | 0.375 | 0.077 | 0.61 | CF + learned FIR residual (no improvement) |
+| 017 | corr_val | **0.378** | 0.078 | 0.61 | Combined MSE+corr loss + corr validation (new best) |
+| 018 | euclidean_align | 0.369 | 0.072 | 0.60 | Per-batch whitening at test time (worse — noisy batch cov) |
+| 019 | swa_combined | **0.378** | 0.078 | 0.61 | SWA + combined loss (matches iter017) |
 
 ## Reading Papers
 When referencing arXiv papers:
