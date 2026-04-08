@@ -10,7 +10,7 @@
 - **Script**: `uv run python scripts/benchmark.py --baseline` (or `--model-fn models/your_model.py`)
 - **Leaderboard**: `results/benchmark/leaderboard.jsonl`
 
-### Current Best: r = 0.376 (FIR + channel dropout, iter011)
+### Current Best: r = 0.378 (Combined loss + corr validation, iter017/019)
 
 ## Autoresearch Loop Protocol
 
@@ -77,6 +77,13 @@ uv run python scripts/benchmark.py --model-fn models/iter{NNN}_{name}.py --name 
 | 010 | deep_temporal_conv | 0.372 | 0.076 | 0.62 | Depthwise-sep conv + residual, 100 epochs (no improvement) |
 | 011 | fir_channel_dropout | **0.376** | 0.076 | 0.61 | FIR + 15% channel dropout augmentation |
 | 012 | cf_fir_ensemble | 0.375 | 0.076 | 0.61 | Weighted avg of CF + FIR (no improvement) |
+| 013 | band_specific | 0.343 | 0.063 | 0.51 | Per-band CF spatial filters (worse — lost cross-band coherence) |
+| 014 | long_fir_dropout | 0.375 | 0.076 | 0.61 | Longer FIR (7,11,15) + dropout + warm restarts (no improvement) |
+| 015 | correlation_loss | 0.373 | 0.076 | 0.61 | Corr loss but MSE validation selected MSE-optimal model |
+| 016 | residual_fir | 0.375 | 0.077 | 0.61 | CF + learned FIR residual (no improvement) |
+| 017 | corr_val | **0.378** | 0.078 | 0.61 | Combined MSE+corr loss + corr validation (new best) |
+| 018 | euclidean_align | 0.369 | 0.072 | 0.60 | Per-batch whitening at test time (worse — noisy batch cov) |
+| 019 | swa_combined | **0.378** | 0.078 | 0.61 | SWA + combined loss (matches iter017) |
 
 ## Reading Papers
 When referencing arXiv papers:
