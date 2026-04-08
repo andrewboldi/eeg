@@ -76,6 +76,7 @@ uv run python scripts/benchmark.py --model-fn models/iter{NNN}_{name}.py --name 
 | 009 | fir_spatio_temporal | **0.373** | 0.074 | 0.61 | FIR filter with CF center-tap init, 150 epochs |
 | 010 | deep_temporal_conv | 0.372 | 0.076 | 0.62 | Depthwise-sep conv + residual, 100 epochs (no improvement) |
 | 011 | fir_channel_dropout | **0.376** | 0.076 | 0.61 | FIR + 15% channel dropout augmentation |
+| 012 | cf_fir_ensemble | 0.375 | 0.076 | 0.61 | Weighted avg of CF + FIR (no improvement) |
 
 ## Reading Papers
 When referencing arXiv papers:
