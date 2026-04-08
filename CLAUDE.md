@@ -37,10 +37,12 @@ Only after convergence criteria are met:
 - **Next extension ideas** (prioritized):
   1. ~~Cross-subject generalization~~ DONE (Iter 005): LOSO r=0.861+/-0.012
   2. ~~Electrode subset selection~~ DONE (Iter 006): 5 channels (Fp1,F7,F8,T7,T8) maintain r>=0.80
-  3. Nonlinear forward models (test Conv Encoder advantage)
-  4. Real EEG datasets (KU Leuven / DTU in-ear)
-  5. Auditory attention decoding (downstream BCI application)
-  6. Online/streaming causal prediction
+  3. ~~Real EEG data~~ DONE (Iter 007): Ear-SAAD dataset, CF r=0.343, LOSO r=0.326+/-0.092
+  4. Broadband prediction (raw BIDS data at full bandwidth 1-45 Hz)
+  5. Subject-specific fine-tuning (adapt pooled model with target-subject data)
+  6. Around-ear channel prediction (include 19 cEEGrid channels)
+  7. Auditory attention decoding (downstream BCI application)
+  8. Online/streaming causal prediction
 
 ### Iteration History
 | Iter | Key Change | FIR r | Conv r | Status |
@@ -51,6 +53,7 @@ Only after convergence criteria are met:
 | 004 | FIR center-tap CF init | 0.887 | 0.886 | ALL CONVERGED |
 | 005 | Cross-subject LOSO eval | --- | --- | CF LOSO r=0.861+/-0.012 |
 | 006 | Electrode subset selection | --- | --- | 5ch (Fp1,F7,F8,T7,T8) r=0.818 |
+| 007 | Real EEG data (Ear-SAAD) | --- | 0.348 | CF r=0.343, LOSO r=0.326+/-0.092 |
 
 ## File Structure
 - `docs/src/report_NNN.tex` - LaTeX source for iteration NNN

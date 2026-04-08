@@ -1,0 +1,185 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{float}
+
+\definecolor{good}{rgb}{0.0,0.5,0.0}
+\definecolor{moderate}{rgb}{0.7,0.5,0.0}
+
+\title{EEG Scalp-to-In-Ear Signal Prediction:\\
+  Extension 007 --- Real EEG Data (Ear-SAAD)}
+\author{Automated Research Loop}
+\date{April 7, 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We evaluate scalp-to-in-ear EEG prediction on the Ear-SAAD dataset
+(Geirnaert et al.\ 2025): 15 subjects with simultaneous 27-channel scalp
+and 12-channel in-ear recordings at 20\,Hz (1--9\,Hz band). The closed-form
+spatial filter achieves $r=0.343$ (pooled) and $r=0.326 \pm 0.092$ (LOSO).
+The convolutional encoder provides negligible improvement ($r=0.348$).
+These are the first real-data results for this pipeline, demonstrating that
+scalp-to-in-ear prediction is feasible but substantially harder than on
+synthetic data ($r=0.887$), with large inter-subject variability.
+\end{abstract}
+
+\section{Dataset}
+
+The Ear-SAAD dataset (Zenodo record 16536441) provides simultaneous scalp,
+around-ear, and in-ear EEG from 15 subjects performing an auditory attention
+decoding task (competing speakers). Data is preprocessed to 1--9\,Hz at 20\,Hz
+sampling rate, with artifact segments marked as NaN.
+
+\begin{itemize}
+  \item \textbf{Scalp}: 27 channels (10-20 positions, excluding mastoids M1/M2
+    and reference Fp1-cr)
+  \item \textbf{In-ear}: 12 channels (6 per ear: ELA, ELB, ELC, ELE, ELI, ELT,
+    ERA, ERB, ERC, ERE, ERI, ERT)
+  \item \textbf{Trials}: 6 per subject $\times$ 10 minutes = 60 minutes total
+  \item \textbf{Windowing}: 2-second windows (40 samples) with 1-second stride
+  \item \textbf{NaN handling}: Linear interpolation within channels
+\end{itemize}
+
+\section{Results}
+
+\subsection{Pooled Evaluation}
+
+\begin{table}[H]
+\centering
+\caption{Pooled results (70/15/15 chronological split across all subjects).}
+\begin{tabular}{lrrr}
+\toprule
+Model & Mean $r$ & RMSE & SNR (dB) \\
+\midrule
+Closed-form & 0.343 & 0.898 & 0.52 \\
+Conv Encoder & 0.348 & 0.897 & 0.54 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Per-channel Pearson $r$ (pooled, closed-form).}
+\begin{tabular}{lrlr}
+\toprule
+Channel & $r$ & Channel & $r$ \\
+\midrule
+ELA & \textcolor{good}{0.455} & ERA & 0.335 \\
+ELB & 0.343 & ERB & 0.382 \\
+ELC & 0.242 & ERC & 0.395 \\
+ELE & 0.264 & ERE & 0.362 \\
+ELI & 0.258 & ERI & \textcolor{good}{0.410} \\
+ELT & 0.267 & ERT & 0.402 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Leave-One-Subject-Out (LOSO)}
+
+\begin{table}[H]
+\centering
+\caption{LOSO per-subject results (closed-form).}
+\begin{tabular}{rrrr|rrrr}
+\toprule
+Subj & $r$ & SNR & & Subj & $r$ & SNR \\
+\midrule
+1  & 0.293 & 0.34 &  & 9  & \textcolor{good}{0.500} & 1.08 \\
+2  & \textcolor{moderate}{0.143} & $-0.15$ & & 10 & 0.268 & 0.31 \\
+3  & \textcolor{good}{0.424} & 0.80 &  & 11 & 0.408 & 0.76 \\
+4  & 0.240 & 0.22 &  & 12 & 0.272 & 0.36 \\
+5  & 0.349 & 0.54 &  & 13 & \textcolor{good}{0.443} & 0.80 \\
+6  & 0.345 & 0.55 &  & 14 & 0.265 & 0.25 \\
+7  & 0.327 & 0.50 &  & 15 & 0.391 & 0.69 \\
+8  & 0.230 & 0.10 &  &    &       &      \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{LOSO summary: real vs.\ synthetic data.}
+\begin{tabular}{lrrrr}
+\toprule
+& $r$ (mean) & $r$ (std) & SNR mean & SNR std \\
+\midrule
+Real data (LOSO) & 0.326 & 0.092 & 0.48 & 0.31 \\
+Synthetic (LOSO) & 0.861 & 0.012 & 5.69 & 0.35 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Analysis}
+
+\subsection{Real vs.\ Synthetic: The Gap}
+
+The $\Delta r = 0.535$ gap between real ($r=0.326$) and synthetic ($r=0.861$)
+LOSO performance reflects fundamental differences:
+
+\begin{enumerate}
+  \item \textbf{Nonlinear volume conduction}: Real skull/tissue conductivity is
+    frequency-dependent and nonlinear, not a simple mixing matrix.
+  \item \textbf{Subject-specific anatomy}: Each subject has unique skull geometry,
+    causing inter-subject $\sigma_r = 0.092$ (vs.\ 0.012 on synthetic).
+  \item \textbf{Low bandwidth}: The 1--9\,Hz preprocessed data captures only
+    delta/theta activity; higher frequencies may carry more spatial information.
+  \item \textbf{Independent noise}: Scalp and in-ear electrodes pick up
+    different artifacts (muscle, motion), reducing correlations.
+\end{enumerate}
+
+\subsection{Conv Encoder vs.\ Closed-Form}
+
+The conv encoder ($r=0.348$) barely outperforms the closed-form ($r=0.343$),
+a $\Delta r = +0.005$ margin. This suggests:
+\begin{itemize}
+  \item The scalp-to-in-ear mapping is approximately linear in this frequency
+    band, consistent with volume conduction physics.
+  \item The 12K-parameter conv encoder cannot extract nonlinear structure
+    from 2-second windows at 20\,Hz (only 40 time points).
+  \item Higher sampling rates or broader frequency bands may reveal
+    nonlinear dependencies.
+\end{itemize}
+
+\subsection{Per-Channel and Per-Subject Variation}
+
+The best-predicted channels (ELA: $r=0.455$, ERI: $r=0.410$) likely have
+electrode positions most proximal to scalp channels with high volume
+conduction overlap. The worst (ELC: $r=0.242$) may sit deeper in the ear
+canal with less scalp coupling.
+
+Subject variability is striking: subject~9 ($r=0.500$) is 3.5$\times$
+better than subject~2 ($r=0.143$). This likely reflects anatomical
+differences in ear canal geometry and electrode contact quality.
+
+\section{Significance}
+
+\textbf{These are the first real-data results for this pipeline.} Despite
+modest correlations, we have demonstrated:
+\begin{enumerate}
+  \item Scalp EEG \emph{does} contain information predictive of in-ear EEG
+    ($r=0.34$, $p \ll 0.001$).
+  \item A simple 27$\times$12 linear spatial filter captures most of the
+    extractable signal.
+  \item Cross-subject transfer is feasible (LOSO $r=0.326$) but variable.
+  \item The synthetic pipeline was a useful development tool but
+    dramatically overestimates real-world performance.
+\end{enumerate}
+
+\section{Next Steps}
+
+\begin{enumerate}
+  \item \textbf{Broadband prediction}: Obtain raw data (12.2\,GB BIDS archive)
+    to test at full bandwidth (e.g., 1--45\,Hz at 256\,Hz).
+  \item \textbf{Subject-specific fine-tuning}: Use a few minutes of
+    target-subject data to adapt the pooled model.
+  \item \textbf{Temporal context}: Use FIR filters or RNNs to capture
+    cross-lag dependencies at higher sampling rates.
+  \item \textbf{Around-ear channels}: Include the 19 around-ear (cEEGrid)
+    channels as additional targets or features.
+\end{enumerate}
+
+\end{document}
