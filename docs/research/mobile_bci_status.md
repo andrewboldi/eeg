@@ -41,9 +41,10 @@ Each file contains:
 ## Download Status
 
 - **Local path**: `/home/andrew/eeg/data/raw/mobile_bci_ear/`
-- **Files downloaded**: 298 (scalp + ear only, IMU excluded)
-- **Total download size**: ~6.2 GB (6,372 MB)
+- **Files downloaded**: 298/298 (scalp + ear only, IMU excluded) -- COMPLETE
+- **Total download size**: 6,372 MB (6.2 GB) -- ALL VERIFIED
 - **IMU files excluded**: 147 files, 2,167 MB (not needed for EEG prediction)
+- **Disk space remaining**: ~5.7 GB (was 27 GB before download)
 
 ### File counts per type:
 - Ear files: 149 (~1,134 MB)
@@ -119,7 +120,8 @@ This 25/27 overlap is excellent for pretraining scalp spatial filters.
 A model trained on the 25 shared channels can directly transfer.
 
 ## Next Steps
-1. Verify all downloads completed successfully
-2. Write preprocessing script to extract raw continuous EEG
-3. Design pretraining strategy accounting for non-simultaneous recordings
+1. ~~Verify all downloads completed successfully~~ DONE (298/298 verified)
+2. Write preprocessing script to extract raw continuous EEG from .mat files
+3. Design pretraining strategy accounting for non-simultaneous scalp/ear recordings
 4. Test scalp encoder pretraining on 25 shared channels
+5. WARNING: Only 5.7 GB disk space remaining -- may need to clean up or process in streaming fashion

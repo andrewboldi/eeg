@@ -90,5 +90,28 @@
     "duration_per_subject_s": 1358.21484375,
     "mb_per_subject": 20.550339698791504,
     "disk_gb_total": 0.16082895174622536
+  },
+  "BNCI2014_009": {
+    "name": "BNCI2014_009",
+    "n_subjects_total": 10,
+    "subjects_downloaded": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "complete": true,
+    "n_channels": 16,
+    "sfreq": 256.0,
+    "paradigm": "p300",
+    "duration_per_subject_s": 196.02734375,
+    "mb_per_subject": 0.0,
+    "disk_gb_total": 0.08629066217690706
   }
 }
