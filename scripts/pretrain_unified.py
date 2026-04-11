@@ -810,6 +810,12 @@ def main():
         default=[],
         help="Datasets to skip (hbn, mobile_bci, eesm, moabb, ear_saad)",
     )
+    parser.add_argument(
+        "--max-subjects-per-dataset",
+        type=int,
+        default=50,
+        help="Max subjects to load per dataset (default 50 to fit in RAM)",
+    )
     args = parser.parse_args()
 
     if args.device == "auto":
@@ -839,6 +845,12 @@ def main():
         t0 = time.time()
         data = loader_fn()
         dt = time.time() - t0
+
+        # Limit subjects per dataset to fit in RAM
+        max_subj = args.max_subjects_per_dataset
+        if data and len(data) > max_subj:
+            logger.info(f"  Limiting {name} from {len(data)} to {max_subj} subjects")
+            data = data[:max_subj]
 
         if data:
             n_subjects = len(data)
