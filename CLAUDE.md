@@ -19,7 +19,20 @@
 - **Script**: `uv run python scripts/benchmark.py --baseline` (or `--model-fn models/your_model.py`)
 - **Leaderboard**: `results/benchmark/leaderboard.jsonl`
 
-### Current Best: r = 0.378 (Combined loss + corr validation, iter017/019)
+### Current Best: r = 0.638 (Tiny deep model, 46ch broadband, iter039)
+### Narrowband Best: r = 0.378 (iter017/019)
+### Full 15-subject LOSO CF: r = 0.645 (95% CI [0.563, 0.728])
+
+## Key Findings (iter038-054)
+- **Around-ear channels are critical**: +0.15 r from adding 19 cEEGrid channels as input
+- **Broadband (1-45 Hz)**: +0.06 r over narrowband (1-9 Hz)
+- **Scaling law is flat**: 55K→7M params gains only +0.008 test r
+- **15 architecture variants tested**: NONE beat the plain tiny model (r=0.638)
+- **Normalization always hurts**: RevIN, EA, InstanceNorm all destroy useful signal
+- **Bottleneck is physiological**: subject difficulty correlates with scalp-inear coupling (r=0.77)
+- **Subject variance is huge**: r=0.38 (Subject 8) to r=0.94 (Subject 3) on CF
+- **20-subject pretraining insufficient**: HBN-EEG pilot didn't help (montage mismatch + too few subjects)
+- **Original Ear-SAAD paper** does AAD classification, not scalp-to-in-ear prediction (novel task)
 
 ## Autoresearch Loop Protocol
 
