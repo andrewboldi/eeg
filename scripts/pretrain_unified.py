@@ -890,7 +890,7 @@ def main():
 
     del all_windows, train_windows, val_windows
 
-    num_workers = min(4, os.cpu_count() or 1)
+    num_workers = 0  # Workers fork entire dataset (~10GB), causing OOM with 178K windows
     train_loader = DataLoader(
         train_ds,
         batch_size=args.batch_size,
