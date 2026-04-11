@@ -19,12 +19,13 @@ logger = logging.getLogger(__name__)
 
 TEST_SUBJECTS = [13, 14, 15]
 TRAIN_SUBJECTS = list(range(1, 13))
-DATA_PATH = Path("data/processed/broadband_46ch.h5")
+DATA_PATH_DEFAULT = Path("data/processed/broadband_46ch.h5")
 LEADERBOARD_PATH = Path("results/benchmark/leaderboard_broadband_46ch.jsonl")
 
 
-def load_all_subjects():
-    with h5py.File(DATA_PATH, "r") as f:
+def load_all_subjects(data_path=None):
+    data_path = data_path or DATA_PATH_DEFAULT
+    with h5py.File(data_path, "r") as f:
         fs = float(f.attrs["fs"])
         C_in = int(f.attrs["C_scalp"])
         C_out = int(f.attrs["C_inear"])
@@ -53,7 +54,8 @@ def evaluate_model(model, test_ds, device, fs):
 
 
 def run_benchmark(args):
-    data, C_in, C_out, fs = load_all_subjects()
+    data_path = Path(args.data) if hasattr(args, 'data') and args.data else None
+    data, C_in, C_out, fs = load_all_subjects(data_path)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     logger.info(f"Device: {device}")
 
@@ -103,4 +105,5 @@ if __name__ == "__main__":
     p.add_argument("--baseline", action="store_true")
     p.add_argument("--model-fn", type=str)
     p.add_argument("--name", type=str)
+    p.add_argument("--data", type=str, help="Override data path (e.g. for 4s windows)")
     run_benchmark(p.parse_args())
