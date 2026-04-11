@@ -1,0 +1,181 @@
+{
+  "timestamp": "2026-04-11 16:02:19",
+  "data": "data/processed/broadband_46ch.h5",
+  "full_model": {
+    "train_subjects": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ],
+    "mean_r": 0.562282,
+    "per_test_r": {
+      "13": 0.710687,
+      "14": 0.411398,
+      "15": 0.56476
+    }
+  },
+  "loo_results": [
+    {
+      "subject": 12,
+      "n_windows": 3594,
+      "mean_r_without": 0.556515,
+      "per_test_r_without": {
+        "13": 0.703813,
+        "14": 0.409338,
+        "15": 0.556395
+      },
+      "marginal_value": 0.005766
+    },
+    {
+      "subject": 5,
+      "n_windows": 3594,
+      "mean_r_without": 0.557249,
+      "per_test_r_without": {
+        "13": 0.705984,
+        "14": 0.407526,
+        "15": 0.558236
+      },
+      "marginal_value": 0.005033
+    },
+    {
+      "subject": 10,
+      "n_windows": 3594,
+      "mean_r_without": 0.557976,
+      "per_test_r_without": {
+        "13": 0.70526,
+        "14": 0.409404,
+        "15": 0.559265
+      },
+      "marginal_value": 0.004305
+    },
+    {
+      "subject": 9,
+      "n_windows": 3594,
+      "mean_r_without": 0.559054,
+      "per_test_r_without": {
+        "13": 0.707135,
+        "14": 0.408176,
+        "15": 0.561852
+      },
+      "marginal_value": 0.003227
+    },
+    {
+      "subject": 6,
+      "n_windows": 3594,
+      "mean_r_without": 0.560037,
+      "per_test_r_without": {
+        "13": 0.709133,
+        "14": 0.409965,
+        "15": 0.561012
+      },
+      "marginal_value": 0.002245
+    },
+    {
+      "subject": 3,
+      "n_windows": 3594,
+      "mean_r_without": 0.560567,
+      "per_test_r_without": {
+        "13": 0.708621,
+        "14": 0.410172,
+        "15": 0.562908
+      },
+      "marginal_value": 0.001715
+    },
+    {
+      "subject": 11,
+      "n_windows": 3594,
+      "mean_r_without": 0.560693,
+      "per_test_r_without": {
+        "13": 0.707209,
+        "14": 0.410481,
+        "15": 0.564388
+      },
+      "marginal_value": 0.001589
+    },
+    {
+      "subject": 8,
+      "n_windows": 3594,
+      "mean_r_without": 0.561382,
+      "per_test_r_without": {
+        "13": 0.710749,
+        "14": 0.408206,
+        "15": 0.56519
+      },
+      "marginal_value": 0.0009
+    },
+    {
+      "subject": 7,
+      "n_windows": 3594,
+      "mean_r_without": 0.562756,
+      "per_test_r_without": {
+        "13": 0.713622,
+        "14": 0.407456,
+        "15": 0.56719
+      },
+      "marginal_value": -0.000475
+    },
+    {
+      "subject": 2,
+      "n_windows": 3594,
+      "mean_r_without": 0.565832,
+      "per_test_r_without": {
+        "13": 0.712971,
+        "14": 0.41308,
+        "15": 0.571446
+      },
+      "marginal_value": -0.003551
+    },
+    {
+      "subject": 1,
+      "n_windows": 3594,
+      "mean_r_without": 0.566451,
+      "per_test_r_without": {
+        "13": 0.715476,
+        "14": 0.417941,
+        "15": 0.565937
+      },
+      "marginal_value": -0.00417
+    },
+    {
+      "subject": 4,
+      "n_windows": 3594,
+      "mean_r_without": 0.568165,
+      "per_test_r_without": {
+        "13": 0.714685,
+        "14": 0.416455,
+        "15": 0.573356
+      },
+      "marginal_value": -0.005884
+    }
+  ],
+  "harmful_subjects": [
+    7,
+    2,
+    1,
+    4
+  ],
+  "elapsed_seconds": 63.3,
+  "drop_all_harmful": {
+    "kept_subjects": [
+      3,
+      5,
+      6,
+      8,
+      9,
+      10,
+      11,
+      12
+    ],
+    "mean_r": 0.5752,
+    "improvement": 0.012918
+  }
+}
