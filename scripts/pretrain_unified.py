@@ -874,20 +874,21 @@ def main():
         logger.info(f"  {name}: {stats['subjects']} subj, {stats['windows']} win, {stats['channels']}ch")
     logger.info(f"{'='*70}\n")
 
-    # ── Create dataset and loaders ─────────────────────────────────────────
-    dataset = UnifiedEEGDataset(all_windows)
-    logger.info(f"Dataset: {len(dataset)} total windows")
+    # ── Split by SUBJECT (not by window) to measure real generalization ───
+    n_subjects = len(all_windows)
+    rng = np.random.RandomState(42)
+    indices = rng.permutation(n_subjects)
+    n_val_subj = max(1, int(n_subjects * 0.15))
+    val_indices = set(indices[:n_val_subj])
+    train_windows = [all_windows[i] for i in range(n_subjects) if i not in val_indices]
+    val_windows = [all_windows[i] for i in range(n_subjects) if i in val_indices]
+    logger.info(f"Subject split: {n_subjects - n_val_subj} train subjects, {n_val_subj} val subjects")
 
-    # Free the numpy arrays
-    del all_windows
+    train_ds = UnifiedEEGDataset(train_windows)
+    val_ds = UnifiedEEGDataset(val_windows)
+    logger.info(f"Train: {len(train_ds)} windows, Val: {len(val_ds)} windows")
 
-    # Split 90/10 train/val
-    n_val = max(1, int(len(dataset) * 0.1))
-    n_train = len(dataset) - n_val
-    train_ds, val_ds = random_split(
-        dataset, [n_train, n_val], generator=torch.Generator().manual_seed(42)
-    )
-    logger.info(f"Train: {n_train}, Val: {n_val}")
+    del all_windows, train_windows, val_windows
 
     num_workers = min(4, os.cpu_count() or 1)
     train_loader = DataLoader(
