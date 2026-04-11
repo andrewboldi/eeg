@@ -13,3 +13,4 @@
 {"model": "iter052_cross_attn_decoder_46ch", "mean_r": 0.5962422392633006, "std_r": 0.11577685750767536, "mean_snr": 2.0014949639638266, "timestamp": "2026-04-11 06:30:31"}
 {"model": "iter053_spectral_loss_46ch", "mean_r": 0.6036226008812505, "std_r": 0.12074864767553657, "mean_snr": 2.043229957421621, "timestamp": "2026-04-11 07:02:00"}
 {"model": "iter045_long_context_4s", "mean_r": 0.6061555995932832, "std_r": 0.11996266908566484, "mean_snr": 2.1026239593823752, "timestamp": "2026-04-11 07:21:23"}
+{"model": "iter054_pretrained_finetune", "mean_r": 0.5886352234429474, "std_r": 0.11726652192505768, "mean_snr": 1.938257873058319, "timestamp": "2026-04-11 08:04:41"}

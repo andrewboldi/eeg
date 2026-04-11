@@ -272,7 +272,7 @@ def build_and_train(
     pretrained_loaded = False
     if PRETRAINED_PATH.exists():
         try:
-            ckpt = torch.load(PRETRAINED_PATH, map_location=device, weights_only=True)
+            ckpt = torch.load(PRETRAINED_PATH, map_location=device, weights_only=False)
             encoder_state = ckpt["encoder_state_dict"]
             # The pretrained encoder has the same architecture, load weights
             model.temporal_encoder.load_state_dict(encoder_state, strict=False)
