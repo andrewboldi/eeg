@@ -1,0 +1,94 @@
+{
+  "BNCI2014_001": {
+    "name": "BNCI2014_001",
+    "n_subjects_total": 9,
+    "subjects_downloaded": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "complete": true,
+    "n_channels": 22,
+    "sfreq": 250.0,
+    "paradigm": "imagery",
+    "duration_per_subject_s": 386.936,
+    "mb_per_subject": 0.0,
+    "disk_gb_total": 0.645681582391262
+  },
+  "BNCI2014_002": {
+    "name": "BNCI2014_002",
+    "n_subjects_total": 14,
+    "subjects_downloaded": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14
+    ],
+    "complete": true,
+    "n_channels": 15,
+    "sfreq": 512.0,
+    "paradigm": "imagery",
+    "duration_per_subject_s": 222.998046875,
+    "mb_per_subject": 60.61979103088379,
+    "disk_gb_total": 0.8278304794803262
+  },
+  "BNCI2014_004": {
+    "name": "BNCI2014_004",
+    "n_subjects_total": 9,
+    "subjects_downloaded": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "complete": true,
+    "n_channels": 3,
+    "sfreq": 250.0,
+    "paradigm": "imagery",
+    "duration_per_subject_s": 2419.208,
+    "mb_per_subject": 50.35272026062012,
+    "disk_gb_total": 0.44515474792569876
+  },
+  "BNCI2014_008": {
+    "name": "BNCI2014_008",
+    "n_subjects_total": 8,
+    "subjects_downloaded": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "complete": true,
+    "n_channels": 8,
+    "sfreq": 256.0,
+    "paradigm": "p300",
+    "duration_per_subject_s": 1358.21484375,
+    "mb_per_subject": 20.550339698791504,
+    "disk_gb_total": 0.16082895174622536
+  }
+}

@@ -42,11 +42,13 @@ MAX_EPOCHS = 150
 class MultiScaleConv(nn.Module):
     def __init__(self, C_in, H, kernels=(3, 7, 15, 31)):
         super().__init__()
-        h = H // len(kernels)
+        n = len(kernels)
+        sizes = [H // n] * n
+        sizes[-1] = H - sum(sizes[:-1])  # last branch absorbs remainder
         self.convs = nn.ModuleList([
-            nn.Sequential(nn.Conv1d(C_in, h, k, padding=k // 2, bias=False),
-                          nn.BatchNorm1d(h), nn.GELU())
-            for k in kernels
+            nn.Sequential(nn.Conv1d(C_in, s, k, padding=k // 2, bias=False),
+                          nn.BatchNorm1d(s), nn.GELU())
+            for k, s in zip(kernels, sizes)
         ])
 
     def forward(self, x):
