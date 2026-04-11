@@ -1,0 +1,65 @@
+[
+  {
+    "name": "cf_baseline",
+    "n_params": 552,
+    "test_r": 0.7167341709136963,
+    "best_val_r": 0.7167341709136963,
+    "H": 0,
+    "n_blocks": 0
+  },
+  {
+    "name": "tiny",
+    "H": 32,
+    "n_blocks": 2,
+    "n_params": 55360,
+    "best_val_r": 0.6792498826980591,
+    "test_r": 0.7496724128723145,
+    "best_epoch": 85,
+    "total_epochs": 115,
+    "train_time_s": 456.03657054901123
+  },
+  {
+    "name": "small",
+    "H": 64,
+    "n_blocks": 2,
+    "n_params": 175680,
+    "best_val_r": 0.6820468306541443,
+    "test_r": 0.7550972700119019,
+    "best_epoch": 52,
+    "total_epochs": 82,
+    "train_time_s": 339.6530935764313
+  },
+  {
+    "name": "medium",
+    "H": 128,
+    "n_blocks": 4,
+    "n_params": 1009472,
+    "best_val_r": 0.686637818813324,
+    "test_r": 0.7507979273796082,
+    "best_epoch": 55,
+    "total_epochs": 85,
+    "train_time_s": 886.2154920101166
+  },
+  {
+    "name": "large",
+    "H": 192,
+    "n_blocks": 6,
+    "n_params": 3091776,
+    "best_val_r": 0.688328206539154,
+    "test_r": 0.758246898651123,
+    "best_epoch": 38,
+    "total_epochs": 68,
+    "train_time_s": 1955.1493272781372
+  },
+  {
+    "name": "xl",
+    "H": 256,
+    "n_blocks": 8,
+    "n_params": 7012416,
+    "best_val_r": 0.6886264681816101,
+    "test_r": 0.752411425113678,
+    "best_epoch": 67,
+    "total_epochs": 97,
+    "train_time_s": 5038.876431465149
+  }
+]

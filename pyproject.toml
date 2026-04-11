@@ -15,6 +15,9 @@ dependencies = [
     "scikit-learn>=1.2",
     "tqdm>=4.65",
     "optuna>=3.1",
+    "pandas>=2.3.3",
+    "braindecode>=1.2.0",
+    "transformers>=5.5.3",
 ]
 
 [build-system]

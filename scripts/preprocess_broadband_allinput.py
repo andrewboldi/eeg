@@ -1,0 +1,133 @@
+"""Preprocess with scalp + around-ear as input (46 channels), 128 Hz.
+
+Memory-friendly version using 128 Hz sampling.
+Input: 27 scalp + 19 around-ear = 46 channels
+Output: 12 in-ear channels
+"""
+
+from __future__ import annotations
+
+import logging
+from pathlib import Path
+
+import h5py
+import mne
+import numpy as np
+import pandas as pd
+from scipy.signal import butter, filtfilt, resample_poly
+from math import gcd
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s: %(message)s")
+logger = logging.getLogger(__name__)
+
+BIDS_ROOT = Path("data/raw/ear_saad/bids_dataset")
+INEAR_CHANNELS = {"ELA", "ELB", "ELC", "ELE", "ELI", "ELT",
+                  "ERA", "ERB", "ERC", "ERE", "ERI", "ERT"}
+EXCLUDE_CHANNELS = {"M1", "M2", "Fp1-cr", "EOGvu", "EOGvo", "EOGhl", "EOGhr",
+                     "EOG1", "EOG2", "EOG3", "EOG4"}
+
+BP_LOW, BP_HIGH = 1.0, 45.0
+FS_TARGET = 128
+WINDOW_SIZE = 256  # 2s at 128 Hz
+WINDOW_STRIDE = 128
+
+
+def process_subject(subject_id):
+    sub_id = f"{subject_id:02d}"
+    set_file = BIDS_ROOT / f"sub-{sub_id}/ses-01/eeg/sub-{sub_id}_ses-01_task-selectiveAttention_eeg.set"
+    events_file = BIDS_ROOT / f"sub-{sub_id}/ses-01/eeg/sub-{sub_id}_ses-01_task-selectiveAttention_events.tsv"
+
+    raw = mne.io.read_raw_eeglab(str(set_file), preload=True, verbose=False)
+    data = raw.get_data() * 1e6
+    fs = raw.info['sfreq']
+    ch_names = raw.ch_names
+
+    input_idx, inear_idx = [], []
+    for i, ch in enumerate(ch_names):
+        c = ch.strip()
+        if c in EXCLUDE_CHANNELS or 'EOG' in c.upper():
+            continue
+        elif c in INEAR_CHANNELS:
+            inear_idx.append(i)
+        else:
+            input_idx.append(i)  # scalp + around-ear
+
+    inp_data, ine_data = data[input_idx], data[inear_idx]
+    n_scalp = len([ch_names[i] for i in input_idx if not ch_names[i].strip().startswith('cE')])
+    n_around = len(input_idx) - n_scalp
+    logger.info(f"Subject {subject_id}: {n_scalp} scalp + {n_around} around-ear -> {len(inear_idx)} in-ear")
+
+    events = pd.read_csv(events_file, sep='\t') if events_file.exists() else None
+    nyq = fs / 2.0
+    b, a = butter(4, [BP_LOW/nyq, BP_HIGH/nyq], btype='band')
+
+    all_inp, all_ine = [], []
+    for _, row in (events.iterrows() if events is not None else []):
+        onset = int(row['onset'] * fs)
+        dur = int(row['duration'] * fs)
+        if onset + dur > data.shape[1]:
+            continue
+
+        # Filter and downsample one trial at a time (memory friendly)
+        inp = filtfilt(b, a, inp_data[:, onset:onset+dur], axis=-1).astype(np.float32)
+        ine = filtfilt(b, a, ine_data[:, onset:onset+dur], axis=-1).astype(np.float32)
+
+        up, down = FS_TARGET, int(fs)
+        g = gcd(up, down)
+        inp = resample_poly(inp, up//g, down//g, axis=-1).astype(np.float32)
+        ine = resample_poly(ine, up//g, down//g, axis=-1).astype(np.float32)
+
+        # NaN interp
+        for arr in [inp, ine]:
+            for c in range(arr.shape[0]):
+                nans = np.isnan(arr[c])
+                if nans.all(): arr[c] = 0.0
+                elif nans.any():
+                    good = ~nans
+                    arr[c, nans] = np.interp(np.flatnonzero(nans), np.flatnonzero(good), arr[c, good])
+
+        inp = (inp - inp.mean(1, keepdims=True)) / (inp.std(1, keepdims=True) + 1e-8)
+        ine = (ine - ine.mean(1, keepdims=True)) / (ine.std(1, keepdims=True) + 1e-8)
+
+        T = inp.shape[1]
+        for start in range(0, T - WINDOW_SIZE + 1, WINDOW_STRIDE):
+            all_inp.append(inp[:, start:start+WINDOW_SIZE])
+            all_ine.append(ine[:, start:start+WINDOW_SIZE])
+
+    if not all_inp:
+        return None, None
+    return np.stack(all_inp), np.stack(all_ine)
+
+
+def main():
+    out = Path("data/processed/broadband_46ch.h5")
+    out.parent.mkdir(parents=True, exist_ok=True)
+    subjects = {}
+    C_in = C_out = None
+
+    for s in range(1, 16):
+        try:
+            inp, ine = process_subject(s)
+            if inp is not None:
+                subjects[s] = (inp, ine)
+                if C_in is None:
+                    C_in, C_out = inp.shape[1], ine.shape[1]
+                    logger.info(f"Config: {C_in} input -> {C_out} output")
+        except Exception as e:
+            logger.warning(f"Subject {s} failed: {e}")
+
+    with h5py.File(out, "w") as f:
+        f.attrs.update(fs=FS_TARGET, bp_low=BP_LOW, bp_high=BP_HIGH,
+                       window_size=WINDOW_SIZE, window_stride=WINDOW_STRIDE,
+                       C_scalp=int(C_in), C_inear=int(C_out))
+        for s, (inp, ine) in subjects.items():
+            grp = f.create_group(f"subject_{s:02d}")
+            grp.create_dataset("scalp", data=inp, compression="gzip")
+            grp.create_dataset("inear", data=ine, compression="gzip")
+
+    total = sum(i.shape[0] for i, _ in subjects.values())
+    logger.info(f"Saved {len(subjects)} subjects, {total} windows, {C_in}->{C_out} to {out}")
+
+
+if __name__ == "__main__":
+    main()
