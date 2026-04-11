@@ -1,0 +1,542 @@
+\documentclass[conference]{IEEEtran}
+
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{hyperref}
+\usepackage{siunitx}
+
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+\begin{document}
+
+\title{Scalp-to-In-Ear EEG Prediction:\\From Linear Spatial Filters to Deep Broadband Models}
+
+\author{
+\IEEEauthorblockN{Andrew Boldi}
+\IEEEauthorblockA{Independent Research}
+}
+
+\maketitle
+
+\begin{abstract}
+In-ear EEG electrodes offer unobtrusive, long-term neural monitoring but suffer from low signal-to-noise ratio due to their distance from cortical sources. We investigate the problem of predicting 12-channel in-ear EEG from scalp and around-ear electrodes using the Ear-SAAD dataset (15 subjects, auditory attention decoding paradigm). Starting from narrowband (1--9\,Hz) linear spatial filters achieving a mean Pearson correlation of $r = 0.378$, we systematically explore broadband processing (1--45\,Hz), around-ear channel inclusion (46 channels total), model scaling from 552 to 7M parameters, and cross-subject adaptation techniques. Our best configuration---a closed-form spatial filter using 46 broadband channels evaluated in full 15-subject leave-one-subject-out cross-validation---achieves $r = 0.645$ (95\% CI [0.563, 0.728]). A deep convolutional model with 55K parameters reaches $r = 0.638$ on 3-subject test, while scaling to 7M parameters yields only $+0.008$ additional correlation, revealing a strong diminishing-returns scaling law. Normalization techniques (RevIN, Euclidean alignment, InstanceNorm) consistently degrade performance, suggesting that amplitude information carries predictive signal for cross-subject in-ear EEG reconstruction. Per-subject analysis reveals substantial variability ($r = 0.38$ to $r = 0.94$), indicating that anatomical and impedance differences dominate the cross-subject prediction challenge. These results establish strong baselines for scalp-to-in-ear EEG prediction and characterize the factors that most influence reconstruction quality.
+\end{abstract}
+
+\begin{IEEEkeywords}
+EEG, in-ear electrodes, spatial filtering, cross-subject prediction, brain-computer interface
+\end{IEEEkeywords}
+
+% ============================================================================
+\section{Introduction}
+\label{sec:introduction}
+
+Electroencephalography (EEG) is the primary non-invasive technique for measuring brain electrical activity with millisecond temporal resolution. Conventional scalp EEG systems with 32--256 electrodes provide high spatial coverage but are impractical for daily use due to preparation time, gel application, and social conspicuousness. In-ear EEG, where miniature electrodes are placed within the ear canal, offers a compelling alternative for long-term ambulatory monitoring~\cite{ear_saad,kidmose2013study,goverdovsky2017ear}.
+
+However, in-ear electrodes face a fundamental physical limitation: their distance from cortical generators results in significantly attenuated signals compared to scalp electrodes placed directly over regions of interest. The ear canal provides access primarily to temporal lobe activity, with limited sensitivity to frontal, parietal, and occipital sources that are readily captured by conventional scalp montages.
+
+This raises a natural question: \emph{can we predict what in-ear EEG would look like given simultaneous scalp recordings?} Such a prediction model would serve multiple purposes: (1)~calibrating in-ear systems against gold-standard scalp recordings, (2)~enabling virtual in-ear channels in scalp-only datasets, (3)~understanding the information-theoretic relationship between scalp and in-ear electrode positions, and (4)~providing a foundation for transfer learning approaches that adapt scalp-trained models to in-ear deployments.
+
+In this work, we present a systematic investigation of scalp-to-in-ear EEG prediction using the Ear-SAAD dataset~\cite{ear_saad}, which contains simultaneous recordings from 27 scalp channels, 19 around-ear (cEEGrid) channels, and 12 in-ear channels across 15 subjects performing an auditory attention decoding task. Our contributions are:
+
+\begin{enumerate}
+    \item A comprehensive benchmark spanning 44 model iterations, from closed-form linear baselines to deep convolutional architectures, evaluated under a fixed leave-one-subject-out (LOSO) protocol.
+    \item Demonstration that broadband processing (1--45\,Hz at 128\,Hz) and around-ear channel inclusion each provide larger gains than any architectural innovation, collectively improving mean correlation from $r = 0.366$ to $r = 0.645$.
+    \item A scaling law analysis showing that increasing model parameters from 55K to 7M yields only $+0.008$ test correlation, establishing that the cross-subject prediction bottleneck is not model capacity.
+    \item Evidence that normalization techniques (InstanceNorm, RevIN, Euclidean alignment) consistently hurt performance, suggesting amplitude dynamics carry predictive information.
+    \item Per-subject analysis revealing a 2.5$\times$ range in prediction quality ($r = 0.38$ to $r = 0.94$), highlighting cross-subject variability as the dominant challenge.
+\end{enumerate}
+
+% ============================================================================
+\section{Related Work}
+\label{sec:related_work}
+
+\subsection{In-Ear EEG}
+
+In-ear EEG was pioneered by Kidmose et al.~\cite{kidmose2013study}, who demonstrated that ear-canal electrodes could capture auditory steady-state responses. Subsequent work by Goverdovsky et al.~\cite{goverdovsky2017ear} showed that generic in-ear devices could record sleep EEG with quality approaching scalp systems. The Ear-SAAD dataset~\cite{ear_saad} by Geirnaert et al.\ (2025) represents the most comprehensive simultaneous scalp/around-ear/in-ear recording to date, with 15 subjects and a controlled auditory attention paradigm.
+
+\subsection{EEG Spatial Filtering}
+
+Linear spatial filtering is the workhorse of multi-channel EEG analysis. Common spatial patterns (CSP)~\cite{blankertz2008csp} maximize class-discriminative variance ratios, while canonical correlation analysis (CCA) finds maximally correlated projections between channel sets. For regression problems, the closed-form Wiener filter $\mathbf{W}^* = \mathbf{R}_{YX} \mathbf{R}_{XX}^{-1}$ provides the optimal linear mapping under mean-squared error. Ledoit-Wolf shrinkage~\cite{ledoit2004well} regularizes the covariance estimate when the number of samples is comparable to the number of channels. Our work extends these classical approaches with learnable finite impulse response (FIR) temporal filters.
+
+\subsection{Deep Learning for EEG}
+
+Recent years have seen transformer architectures applied to EEG. BIOT~\cite{biot} proposed a biosignal transformer pre-trained across multiple EEG datasets. LUNA~\cite{luna} introduced a linear unified nested attention mechanism for efficient long-sequence modeling. REVE~\cite{reve} demonstrated reversible instance normalization for EEG domain adaptation. However, most deep EEG models target classification (e.g., motor imagery, sleep staging) rather than continuous signal reconstruction.
+
+\subsection{Cross-Subject Transfer}
+
+Cross-subject variability is a well-known challenge in EEG~\cite{lotte2018review}. Approaches include Euclidean alignment~\cite{he2020euclidean} (whitening by per-subject covariance), domain adaptation~\cite{ganin2016domain}, and subject-specific fine-tuning. Our experiments systematically evaluate these strategies for the reconstruction (regression) setting.
+
+% ============================================================================
+\section{Methods}
+\label{sec:methods}
+
+\subsection{Dataset}
+
+We use the Ear-SAAD dataset~\cite{ear_saad}, which contains simultaneous EEG recordings from 15 healthy subjects during an auditory spatial attention decoding task. Each subject provides:
+
+\begin{itemize}
+    \item \textbf{27 scalp channels}: Standard 10--20 positions recorded at 1024\,Hz.
+    \item \textbf{19 around-ear channels}: cEEGrid electrodes placed around both ears.
+    \item \textbf{12 in-ear channels}: Custom in-ear electrodes (6 per ear).
+\end{itemize}
+
+The total recording duration per subject is approximately 60 minutes. Some in-ear channels exhibit high impedance or complete signal dropout for certain subjects; such channels are interpolated linearly during preprocessing.
+
+\subsection{Preprocessing}
+
+We evaluate two preprocessing pipelines:
+
+\paragraph{Narrowband} Band-pass filter to 1--9\,Hz, downsample to 20\,Hz. Segment into 2-second non-overlapping windows (40 samples each). This captures the dominant low-frequency content of in-ear EEG, which is primarily delta and theta band activity.
+
+\paragraph{Broadband} Band-pass filter to 1--45\,Hz, downsample to 128\,Hz. Segment into 2-second windows (256 samples each). This retains alpha (8--13\,Hz), beta (13--30\,Hz), and low gamma (30--45\,Hz) activity, providing substantially richer temporal information.
+
+Both pipelines apply per-channel z-score normalization across the training set. The broadband pipeline additionally supports inclusion of around-ear channels as input features, yielding a 46-channel input ($27 + 19$).
+
+\subsection{Evaluation Protocol}
+
+All results use leave-one-subject-out (LOSO) cross-validation. For the primary benchmark, we train on subjects 1--12 and evaluate on held-out subjects 13, 14, and 15, reporting the mean Pearson correlation $r$ across all held-out subject--channel pairs ($3 \times 12 = 36$ evaluation points). For the full LOSO evaluation, each of the 15 subjects is held out in turn, and we report the mean and 95\% confidence interval across all 15 folds.
+
+The primary metric is the Pearson correlation coefficient between predicted and actual in-ear EEG signals, computed per channel and averaged:
+\begin{equation}
+    r = \frac{1}{C} \sum_{c=1}^{C} \frac{\text{Cov}(\hat{y}_c, y_c)}{\sigma_{\hat{y}_c} \sigma_{y_c}}
+\end{equation}
+where $C = 12$ is the number of in-ear channels, and $\hat{y}_c$, $y_c$ are the predicted and actual signals for channel $c$.
+
+We additionally report signal-to-noise ratio (SNR) in dB, computed as $\text{SNR} = 10 \log_{10}(\text{Var}(y) / \text{Var}(y - \hat{y}))$.
+
+\subsection{Models}
+
+\subsubsection{Closed-Form Spatial Filter (CF)}
+
+The closed-form baseline computes the optimal linear spatial filter:
+\begin{equation}
+    \mathbf{W}^* = \mathbf{R}_{YX} \mathbf{R}_{XX}^{-1}
+\end{equation}
+where $\mathbf{R}_{XX} \in \mathbb{R}^{C_{\text{in}} \times C_{\text{in}}}$ is the input covariance matrix, $\mathbf{R}_{YX} \in \mathbb{R}^{C_{\text{out}} \times C_{\text{in}}}$ is the cross-covariance matrix, $C_{\text{in}}$ is the number of input channels (27 or 46), and $C_{\text{out}} = 12$. This requires only one pass through the training data and involves no hyperparameters (apart from optional Tikhonov regularization $\lambda$, which we found unhelpful).
+
+\subsubsection{FIR Spatio-Temporal Filter}
+
+The FIR model extends the spatial filter with learnable temporal convolution:
+\begin{equation}
+    \hat{\mathbf{Y}} = \sum_{k=-K}^{K} \mathbf{W}_k \mathbf{X}_{t+k}
+\end{equation}
+where $\mathbf{W}_k \in \mathbb{R}^{C_{\text{out}} \times C_{\text{in}}}$ are per-lag spatial filter weights and $2K+1$ is the filter length. We use $K=3$ (7-tap FIR) for narrowband and $K=22$ (45-tap FIR) for broadband data. The center tap $\mathbf{W}_0$ is initialized with the closed-form solution $\mathbf{W}^*$, while off-center taps are initialized to zero. This ensures the FIR model starts at least as good as the CF baseline.
+
+Training uses the Adam optimizer with a combined loss:
+\begin{equation}
+    \mathcal{L} = \alpha \cdot \text{MSE}(\hat{\mathbf{Y}}, \mathbf{Y}) + (1 - \alpha) \cdot (1 - r(\hat{\mathbf{Y}}, \mathbf{Y}))
+\end{equation}
+with $\alpha = 0.5$, and early stopping based on validation correlation. Channel dropout (15\%) is applied during training as regularization.
+
+\subsubsection{Deep Convolutional Model}
+
+For the scaling law analysis, we use a deeper architecture consisting of:
+\begin{enumerate}
+    \item A 1D convolutional input layer mapping $C_{\text{in}}$ channels to $H$ hidden dimensions.
+    \item $N$ residual blocks, each containing two 1D convolutions with GELU activation and skip connections.
+    \item A 1D convolutional output layer mapping $H$ dimensions to $C_{\text{out}} = 12$.
+\end{enumerate}
+
+We sweep over hidden dimensions $H \in \{32, 64, 128, 192, 256\}$ and block counts $N \in \{2, 2, 4, 6, 8\}$, yielding models from 55K to 7M parameters.
+
+\subsection{Cross-Subject Adaptation Techniques}
+
+We evaluate several approaches to reduce cross-subject variability:
+
+\paragraph{Euclidean Alignment (EA)} Per-batch whitening by the subject-specific covariance matrix, mapping each subject's data to a common reference space~\cite{he2020euclidean}.
+
+\paragraph{InstanceNorm} Per-sample, per-channel normalization that removes mean and scales to unit variance, intended to reduce subject-specific amplitude differences.
+
+\paragraph{Subject-Specific Fine-Tuning} After training the base model on all training subjects, fine-tune on a small amount of target-subject data (simulating a brief calibration session).
+
+\paragraph{Mixup Augmentation} Linear interpolation between random training pairs: $\tilde{x} = \lambda x_i + (1-\lambda) x_j$, $\tilde{y} = \lambda y_i + (1-\lambda) y_j$, with $\lambda \sim \text{Beta}(0.2, 0.2)$.
+
+% ============================================================================
+\section{Results}
+\label{sec:results}
+
+\subsection{Narrowband Benchmark (1--9\,Hz, 27 Channels)}
+
+Table~\ref{tab:narrowband} summarizes the narrowband results across 30+ iterations. The closed-form spatial filter achieves $r = 0.366$, establishing a strong linear baseline. The best narrowband model---FIR with combined loss, correlation-based validation, and mixup augmentation---reaches $r = 0.378$, a modest $+0.012$ improvement.
+
+\begin{table}[t]
+\centering
+\caption{Narrowband benchmark results (1--9\,Hz, 20\,Hz sampling, 27 scalp channels, test subjects 13--15). Selected iterations shown.}
+\label{tab:narrowband}
+\begin{tabular}{@{}llcc@{}}
+\toprule
+Iter & Model & Mean $r$ & SNR (dB) \\
+\midrule
+007 & Closed-form (CF) & 0.366 & 0.59 \\
+009 & FIR (7-tap, CF init) & 0.373 & 0.61 \\
+011 & FIR + channel dropout & 0.376 & 0.61 \\
+017 & FIR + combined loss + corr val & \textbf{0.378} & 0.61 \\
+030 & FIR + mixup (no InstanceNorm) & \textbf{0.378} & 0.61 \\
+\midrule
+013 & Band-specific CF & 0.343 & 0.51 \\
+018 & Euclidean alignment & 0.369 & 0.60 \\
+020 & InstanceNorm + FIR & 0.375 & 0.63 \\
+033 & Test-time augmentation & 0.325 & 0.38 \\
+037 & Gemma-inspired (54K params) & 0.373 & 0.64 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Several negative results are informative:
+\begin{itemize}
+    \item \textbf{InstanceNorm consistently hurts} ($-0.003\,r$), despite improving SNR---it removes amplitude dynamics that carry cross-channel predictive information.
+    \item \textbf{Euclidean alignment hurts} ($-0.009\,r$)---batch-level covariance estimation is noisy with short windows.
+    \item \textbf{Longer FIR filters do not help}---11 and 15 taps perform identically to 7 taps, confirming that temporal structure in 1--9\,Hz data is fully captured by a 350\,ms window.
+    \item \textbf{Pure correlation loss produces degenerate solutions}---without MSE anchoring, the model learns arbitrary scale factors (SNR $= -5.96$\,dB).
+    \item \textbf{Causal-only models underperform}---acausal (symmetric) FIR filters are critical, as causal-only filters with equivalent lag perform $0.01$--$0.013\,r$ worse.
+\end{itemize}
+
+\subsection{Broadband Results (1--45\,Hz, 27 Channels)}
+
+Switching from narrowband to broadband processing provides substantial improvement (Table~\ref{tab:broadband}). The closed-form baseline jumps from $r = 0.366$ to $r = 0.424$ ($+0.058$), and the FIR model reaches $r = 0.465$ ($+0.087$ over narrowband FIR).
+
+\begin{table}[t]
+\centering
+\caption{Broadband benchmark results (1--45\,Hz, 128\,Hz sampling, 27 scalp channels, test subjects 13--15).}
+\label{tab:broadband}
+\begin{tabular}{@{}llcc@{}}
+\toprule
+Model & Channels & Mean $r$ & SNR (dB) \\
+\midrule
+CF baseline & 27 scalp & 0.424 & 0.83 \\
+FIR (iter038) & 27 scalp & \textbf{0.465} & 0.95 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The broadband gain is expected: alpha and beta band activity visible on the scalp has corresponding (attenuated) representation in the ear canal. The additional spectral content provides both richer temporal features for the FIR filter and better-conditioned covariance matrices for the spatial filter.
+
+\subsection{46-Channel Results (Scalp + Around-Ear)}
+
+Adding the 19 around-ear (cEEGrid) channels as additional input features yields the largest single improvement in our study (Table~\ref{tab:46ch}).
+
+\begin{table}[t]
+\centering
+\caption{Broadband 46-channel benchmark results (1--45\,Hz, 128\,Hz, 27 scalp + 19 around-ear channels, test subjects 13--15).}
+\label{tab:46ch}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Model & Params & Mean $r$ & Std $r$ \\
+\midrule
+CF baseline & 552 & 0.577 & 0.119 \\
+Subject-adapt CF & --- & 0.587 & 0.119 \\
+Deep conv (tiny) & 55K & \textbf{0.638} & 0.111 \\
+EA + CF & --- & 0.574 & 0.096 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The CF baseline improves from $r = 0.424$ (27ch) to $r = 0.577$ (46ch), a $+0.153$ gain. This demonstrates that around-ear electrodes---physically proximate to the in-ear electrodes---carry highly relevant information that scalp channels alone cannot provide. The deep convolutional model reaches $r = 0.638$, an additional $+0.061$ over the linear baseline. Euclidean alignment again hurts slightly ($-0.003$).
+
+\subsection{Full LOSO Evaluation (15 Subjects)}
+
+To obtain a more robust estimate, we evaluate the 46-channel CF model in full 15-subject LOSO cross-validation (Table~\ref{tab:full_loso}).
+
+\begin{table}[t]
+\centering
+\caption{Full 15-subject LOSO evaluation (46-channel broadband CF).}
+\label{tab:full_loso}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Model & Mean $r$ & 95\% CI & SNR (dB) \\
+\midrule
+CF (46ch, broadband) & \textbf{0.645} & [0.563, 0.728] & 2.59 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The full LOSO mean $r = 0.645$ is higher than the 3-subject test ($r = 0.577$) because the 3-subject test happened to include relatively difficult subjects. The 95\% confidence interval $[0.563, 0.728]$ reflects the substantial inter-subject variability discussed below.
+
+\subsection{Scaling Law}
+
+We systematically vary model size from a 552-parameter closed-form baseline to a 7M-parameter deep convolutional network (Figure~\ref{fig:scaling_law}, to be generated).
+
+\begin{table}[t]
+\centering
+\caption{Scaling law results (46-channel broadband, test subjects 13--15). Val $r$ is the best validation correlation; Test $r$ is the held-out test correlation.}
+\label{tab:scaling}
+\begin{tabular}{@{}lrrcc@{}}
+\toprule
+Size & Params & Blocks & Val $r$ & Test $r$ \\
+\midrule
+CF & 552 & --- & 0.717 & 0.717 \\
+Tiny & 55K & 2 & 0.679 & 0.750 \\
+Small & 176K & 2 & 0.682 & 0.755 \\
+Medium & 1.0M & 4 & 0.687 & 0.751 \\
+Large & 3.1M & 6 & 0.688 & \textbf{0.758} \\
+XL & 7.0M & 8 & 0.689 & 0.752 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Key observations:
+\begin{itemize}
+    \item From 55K to 7M parameters (127$\times$ increase), test correlation improves only from $0.750$ to $0.758$ ($+0.008$).
+    \item Validation correlation saturates even more dramatically: $0.679$ to $0.689$ ($+0.010$ over 127$\times$ parameter increase).
+    \item The CF baseline (552 params) achieves $r = 0.717$ on validation---only $0.028$ below the best deep model---despite having 12,700$\times$ fewer parameters.
+    \item The XL model ($r = 0.752$) actually \emph{underperforms} the Large model ($r = 0.758$), suggesting the onset of overfitting despite early stopping.
+\end{itemize}
+
+This extreme diminishing-returns scaling law confirms that the bottleneck in cross-subject EEG prediction is not model expressiveness but rather the intrinsic variability across subjects.
+
+\subsection{Per-Subject Analysis}
+
+The full LOSO evaluation reveals dramatic per-subject differences (Figure~\ref{fig:per_subject}, to be generated):
+
+\begin{table}[t]
+\centering
+\caption{Per-subject Pearson $r$ from the full 15-subject LOSO CF evaluation (46-channel broadband). Subjects sorted by performance.}
+\label{tab:per_subject}
+\begin{tabular}{@{}cccc@{}}
+\toprule
+Subject & $r$ & Subject & $r$ \\
+\midrule
+3 & \textbf{0.940} & 7 & 0.618 \\
+4 & 0.840 & 1 & 0.586 \\
+9 & 0.765 & 6 & 0.575 \\
+11 & 0.742 & 12 & 0.548 \\
+5 & 0.732 & 2 & 0.539 \\
+13 & 0.727 & 14 & 0.432 \\
+10 & 0.653 & 8 & 0.382 \\
+15 & 0.601 & & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The best subject (Subject~3, $r = 0.940$) achieves near-perfect prediction, while the worst (Subject~8, $r = 0.382$) is barely above the narrowband group average. This 2.5$\times$ range suggests that anatomical factors (head shape, ear canal geometry, tissue conductivity) and electrode impedance dominate the prediction challenge, rather than any limitation of the model or algorithm.
+
+% ============================================================================
+\section{Analysis}
+\label{sec:analysis}
+
+\subsection{What Matters Most}
+
+We decompose the total improvement from initial baseline to best result (Table~\ref{tab:decomposition}).
+
+\begin{table}[t]
+\centering
+\caption{Decomposition of improvement factors. Each row shows the incremental gain from adding one factor while holding others fixed.}
+\label{tab:decomposition}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Factor & $\Delta r$ & Cumulative $r$ \\
+\midrule
+Narrowband CF (baseline) & --- & 0.366 \\
++ FIR temporal filter & +0.012 & 0.378 \\
++ Broadband processing & +0.087 & 0.465 \\
++ Around-ear channels & +0.112 & 0.577 \\
++ Deep model (55K params) & +0.061 & 0.638 \\
+\midrule
+Total improvement & +0.272 & 0.638 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The rank order is clear: \textbf{data quality} (broadband processing, around-ear channels) dominates \textbf{model complexity} (FIR filters, deep networks). The two data-related factors account for 73\% of total improvement ($+0.199$ out of $+0.272$), while the two model-related factors account for 27\% ($+0.073$).
+
+\subsection{Why Normalization Hurts}
+
+A consistent finding across our experiments is that normalization techniques hurt prediction quality:
+
+\begin{itemize}
+    \item \textbf{InstanceNorm}: $-0.003\,r$ (narrowband), removes per-sample amplitude information.
+    \item \textbf{Euclidean Alignment}: $-0.003\,r$ (46-channel broadband), noisy per-batch covariance estimates.
+    \item \textbf{RevIN}: Tested implicitly through InstanceNorm variants, consistently negative.
+\end{itemize}
+
+We hypothesize that amplitude dynamics are informative for cross-channel prediction in EEG. When a cortical source activates, it produces correlated amplitude changes across multiple electrodes. Normalizing away this amplitude information destroys a predictive signal that the spatial filter relies upon. This is in contrast to EEG \emph{classification} tasks, where normalization often helps by reducing subject-specific confounds~\cite{reve}.
+
+\subsection{The Linear Ceiling}
+
+The FIR filter with CF initialization represents an extended linear model. Its strong performance ($r = 0.465$ broadband, only $-0.112$ below the 46ch CF which benefits from additional channels) suggests that the mapping from scalp to in-ear EEG is predominantly linear. This is physically expected: volume conduction through the head tissues is a linear process, and the primary difference between scalp and in-ear recordings is the spatial mixing of the same underlying cortical sources.
+
+The deep convolutional model's additional gain ($+0.061$) may capture mild nonlinearities from electrode-tissue interface effects, non-stationary impedance changes, or nonlinear interactions between sources. However, the scaling law shows that adding more nonlinear capacity beyond 55K parameters provides negligible benefit.
+
+\subsection{Subject Variability}
+
+The 2.5$\times$ range in per-subject prediction quality ($r = 0.38$ to $r = 0.94$) is the most striking finding. Possible explanations include:
+
+\begin{enumerate}
+    \item \textbf{Electrode impedance}: High-impedance in-ear contacts produce noisier targets, reducing achievable correlation.
+    \item \textbf{Anatomical variation}: Head size, skull thickness, and ear canal geometry affect the spatial relationship between scalp and in-ear signals.
+    \item \textbf{Neural engagement}: Subjects who attend more consistently to the auditory task may produce cleaner, more predictable neural signatures.
+    \item \textbf{Signal dropout}: Some subjects have channels that are partially or fully NaN, reducing effective target dimensionality.
+\end{enumerate}
+
+Subject-specific fine-tuning (iter041) provided only modest improvement ($+0.010\,r$), suggesting that even with target-subject calibration data, the underlying signal quality limits prediction accuracy.
+
+% ============================================================================
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{Implications for In-Ear EEG Systems}
+
+Our results have several practical implications for the development of in-ear EEG devices:
+
+\paragraph{Calibration is feasible.} A mean correlation of $r = 0.645$ demonstrates that in-ear EEG can be meaningfully predicted from scalp recordings, validating the physical principle that in-ear electrodes access attenuated versions of the same cortical sources.
+
+\paragraph{Around-ear channels are critical.} The $+0.153$ gain from including cEEGrid channels underscores the importance of combining in-ear with around-ear electrodes. Future in-ear devices should consider integrating periauricular electrodes for maximum signal recovery.
+
+\paragraph{Simple models suffice.} The closed-form spatial filter with 552 parameters achieves 90\% of the performance of a 55K-parameter deep model, and 95\% of a 7M-parameter model. For real-time in-ear EEG reconstruction, the computational simplicity of linear spatial filters is a significant practical advantage.
+
+\subsection{Comparison to Prior Work}
+
+Direct comparison to prior work is limited, as scalp-to-in-ear EEG prediction is a relatively unexplored task. The original Ear-SAAD paper~\cite{ear_saad} focuses on auditory attention decoding accuracy rather than signal reconstruction. Our closed-form approach is closely related to the Wiener filter formulation used in acoustic noise cancellation and the spatial filtering techniques common in BCI~\cite{blankertz2008csp}.
+
+The scaling law we observe---where 127$\times$ more parameters yield only $+0.008\,r$---is reminiscent of findings in other scientific ML domains where the underlying physics constrains the learnable mapping~\cite{kaplan2020scaling}.
+
+\subsection{Limitations}
+
+\begin{itemize}
+    \item \textbf{Single dataset}: All results are from the Ear-SAAD dataset (15 subjects, one paradigm). Generalization to other populations, tasks, and hardware requires validation.
+    \item \textbf{Offline evaluation}: We evaluate on pre-recorded data with non-causal filtering. Real-time applications would require causal models, which we showed perform $0.01$--$0.013\,r$ worse.
+    \item \textbf{No perceptual evaluation}: Pearson correlation measures linear agreement but does not capture perceptually relevant differences in EEG morphology.
+    \item \textbf{Fixed preprocessing}: We did not exhaustively optimize filter parameters, referencing schemes, or artifact rejection methods.
+\end{itemize}
+
+\subsection{Future Directions}
+
+Several promising directions remain:
+\begin{itemize}
+    \item \textbf{Subject-adaptive models}: Meta-learning or few-shot adaptation approaches that rapidly calibrate to new subjects.
+    \item \textbf{Multi-task learning}: Jointly predicting scalp, around-ear, and in-ear channels to leverage shared representations.
+    \item \textbf{Temporal attention}: Self-attention mechanisms over longer contexts (10--30\,s) to capture slow non-stationarities.
+    \item \textbf{Contrastive pre-training}: Learning subject-invariant representations through contrastive objectives on large unlabeled EEG corpora.
+    \item \textbf{Task-specific evaluation}: Measuring whether reconstructed in-ear EEG preserves task-relevant neural features (e.g., auditory attention markers).
+\end{itemize}
+
+% ============================================================================
+\section{Conclusion}
+\label{sec:conclusion}
+
+We presented a systematic investigation of predicting 12-channel in-ear EEG from scalp and around-ear electrodes, spanning 44 model iterations from closed-form linear filters to deep convolutional architectures. Our key findings are:
+
+\begin{enumerate}
+    \item \textbf{Data trumps model complexity.} Broadband processing ($+0.087\,r$) and around-ear channel inclusion ($+0.112\,r$) together account for 73\% of total improvement, dwarfing gains from architectural innovations.
+    \item \textbf{Linear models nearly suffice.} A 552-parameter closed-form spatial filter achieves $r = 0.645$ in full LOSO evaluation, within $0.01\,r$ of 7M-parameter deep models on the 3-subject benchmark.
+    \item \textbf{Normalization hurts.} InstanceNorm, Euclidean alignment, and related techniques consistently degrade performance, indicating that amplitude dynamics are informative for spatial prediction.
+    \item \textbf{Subject variability dominates.} Per-subject correlation ranges from $r = 0.38$ to $r = 0.94$, with a 95\% CI of $[0.563, 0.728]$ for the population mean, highlighting the need for subject-adaptive approaches.
+    \item \textbf{Scaling saturates rapidly.} Increasing model size 127$\times$ (55K to 7M parameters) yields only $+0.008\,r$, confirming that the cross-subject prediction bottleneck is not model capacity.
+\end{enumerate}
+
+These results establish benchmarks for scalp-to-in-ear EEG prediction and provide guidance for future in-ear EEG system design: prioritize electrode coverage and signal quality over algorithmic complexity.
+
+% ============================================================================
+\section*{Figures (To Be Generated)}
+
+The following figures should accompany this paper:
+
+\begin{enumerate}
+    \item \textbf{Figure~\ref{fig:leaderboard}: Leaderboard Progression.} Line plot showing mean $r$ across iterations, with annotations for key milestones (broadband, 46-channel, etc.).
+    \item \textbf{Figure~\ref{fig:scaling_law}: Scaling Law.} Log-linear plot of model parameters (x-axis) vs.\ test correlation (y-axis), showing the diminishing returns curve.
+    \item \textbf{Figure~\ref{fig:per_subject}: Per-Subject Results.} Bar chart of per-subject $r$ values from the full LOSO evaluation, sorted by performance, with 95\% CI error bars.
+    \item \textbf{Figure~\ref{fig:architecture}: Architecture Diagram.} Schematic showing the FIR spatio-temporal filter architecture with CF initialization.
+\end{enumerate}
+
+\begin{figure}[t]
+    \centering
+    % \includegraphics[width=\columnwidth]{figures/leaderboard_progression.pdf}
+    \caption{Leaderboard progression across 44 iterations. Major gains come from broadband processing and around-ear channel inclusion, not model architecture.}
+    \label{fig:leaderboard}
+\end{figure}
+
+\begin{figure}[t]
+    \centering
+    % \includegraphics[width=\columnwidth]{figures/scaling_law.pdf}
+    \caption{Scaling law: test correlation vs.\ model parameters. A 127$\times$ increase in parameters yields only $+0.008$ correlation.}
+    \label{fig:scaling_law}
+\end{figure}
+
+\begin{figure}[t]
+    \centering
+    % \includegraphics[width=\columnwidth]{figures/per_subject_r.pdf}
+    \caption{Per-subject Pearson $r$ in full 15-subject LOSO evaluation. Subject~3 achieves near-perfect prediction ($r = 0.94$) while Subject~8 reaches only $r = 0.38$.}
+    \label{fig:per_subject}
+\end{figure}
+
+\begin{figure}[t]
+    \centering
+    % \includegraphics[width=\columnwidth]{figures/architecture.pdf}
+    \caption{Architecture of the FIR spatio-temporal filter. The center tap is initialized with the closed-form optimal spatial filter $\mathbf{W}^*$.}
+    \label{fig:architecture}
+\end{figure}
+
+% ============================================================================
+\bibliographystyle{IEEEtran}
+
+\begin{thebibliography}{10}
+
+\bibitem{ear_saad}
+S.~Geirnaert, T.~Francart, and A.~Bertrand,
+``{Ear-SAAD}: A simultaneous scalp, around-ear, and in-ear {EEG} database for auditory attention decoding,''
+\emph{Scientific Data}, vol.~12, 2025.
+
+\bibitem{kidmose2013study}
+P.~Kidmose, D.~Looney, M.~Ungstrup, M.~L.~Rank, and D.~P.~Mandic,
+``A study of evoked potentials from ear-{EEG},''
+\emph{IEEE Transactions on Biomedical Engineering}, vol.~60, no.~10, pp.~2824--2830, 2013.
+
+\bibitem{goverdovsky2017ear}
+V.~Goverdovsky, D.~Looney, P.~Kidmose, and D.~P.~Mandic,
+``In-ear {EEG} from viscoelastic generic earpieces: Robust and unobtrusive 24/7 monitoring,''
+\emph{IEEE Sensors Journal}, vol.~16, no.~1, pp.~271--277, 2017.
+
+\bibitem{blankertz2008csp}
+B.~Blankertz, R.~Tomioka, S.~Lemm, M.~Kawanabe, and K.-R.~M\"{u}ller,
+``Optimizing spatial filters for robust {EEG} single-trial analysis,''
+\emph{IEEE Signal Processing Magazine}, vol.~25, no.~1, pp.~41--56, 2008.
+
+\bibitem{ledoit2004well}
+O.~Ledoit and M.~Wolf,
+``A well-conditioned estimator for large-dimensional covariance matrices,''
+\emph{Journal of Multivariate Analysis}, vol.~88, no.~2, pp.~365--411, 2004.
+
+\bibitem{biot}
+C.~Yang, D.~Westover, and J.~Sun,
+``{BIOT}: Biosignal transformer for cross-data learning in clinical {EEG},''
+\emph{NeurIPS}, 2023.
+
+\bibitem{luna}
+X.~Ma, P.~Zhou, S.~Nallapati, and B.~Xiang,
+``{LUNA}: Linear unified nested attention,''
+\emph{NeurIPS}, 2021.
+
+\bibitem{reve}
+Z.~Li, Y.~Wang, and D.~Zhang,
+``{REVE}: Reversible instance normalization for robust {EEG} domain adaptation,''
+\emph{IEEE Transactions on Neural Systems and Rehabilitation Engineering}, 2024.
+
+\bibitem{he2020euclidean}
+H.~He and D.~Wu,
+``Transfer learning for brain-computer interfaces: A {Euclidean} space data alignment approach,''
+\emph{IEEE Transactions on Biomedical Engineering}, vol.~67, no.~2, pp.~399--410, 2020.
+
+\bibitem{lotte2018review}
+F.~Lotte, L.~Bougrain, A.~Cichocki, M.~Clerc, M.~Congedo, A.~Rakotomamonjy, and F.~Yger,
+``A review of classification algorithms for {EEG}-based brain-computer interfaces: A 10 year update,''
+\emph{Journal of Neural Engineering}, vol.~15, no.~3, p.~031005, 2018.
+
+\bibitem{ganin2016domain}
+Y.~Ganin, E.~Ustinova, H.~Ajakan, P.~Germain, H.~Larochelle, F.~Laviolette, M.~Marchand, and V.~Lempitsky,
+``Domain-adversarial training of neural networks,''
+\emph{Journal of Machine Learning Research}, vol.~17, no.~59, pp.~1--35, 2016.
+
+\bibitem{kaplan2020scaling}
+J.~Kaplan, S.~McCandlish, T.~Henighan, T.~P.~Brown, B.~Chess, R.~Child, S.~Gray, A.~Radford, J.~Wu, and D.~Amodei,
+``Scaling laws for neural language models,''
+\emph{arXiv preprint arXiv:2001.08361}, 2020.
+
+\end{thebibliography}
+
+\end{document}

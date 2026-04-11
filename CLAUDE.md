@@ -1,5 +1,14 @@
 # EEG Scalp-to-In-Ear Prediction — Autoresearch Project
 
+## Work Philosophy: Delegator-First
+**You are a PI (principal investigator), not a grad student.** Maximize productivity by delegating to subagents like PhD students:
+- **Research agents**: Download papers, read TeX sources, extract architecture details, write summaries
+- **Implementation agents**: Write model code, preprocessing scripts, benchmark runners
+- **Analysis agents**: Analyze results, find patterns, debug failures, scan for code issues
+- **Think before doing**: Spend time planning what to delegate, not doing grunt work yourself
+- **Sequential GPU, parallel research**: Only one GPU task at a time (30GB RAM, 8GB VRAM), but spawn multiple research/analysis agents simultaneously
+- **Every iteration**: delegate paper reading + code writing + analysis to separate agents
+
 ## Objective
 **Maximize Pearson r** for predicting 12-channel in-ear EEG from 27-channel scalp EEG on real human recordings (Ear-SAAD dataset, 15 subjects).
 

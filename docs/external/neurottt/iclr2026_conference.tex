@@ -1,0 +1,332 @@
+ 
+\documentclass{article} % For LaTeX2e
+\usepackage{iclr2026_conference,times}
+
+% Optional math commands from https://github.com/goodfeli/dlbook_notation.
+\input{math_commands.tex}
+
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{graphicx}
+\usepackage{makecell}
+\newcommand{\suli}[1]{{\color{blue} #1}}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{setspace}
+
+\title{NeuroTTT: Bridging Pretrain–Downstream Task Misalignment in EEG Foundation Models via Test-Time Training}
+% Adaptive Brain Signal Generalization via Domain-Specific Self-Supervision and Test-Time Personalization
+
+
+% Authors must not appear in the submitted version. They should be hidden
+% as long as the \iclrfinalcopy macro remains commented out below.
+% Non-anonymous submissions will be rejected without review.
+
+\author{Suli~Wang\textsuperscript{\rm 1}, 
+Yangshen~Deng\textsuperscript{\rm 2}, 
+Zhenghua~Bao\textsuperscript{\rm 1}, 
+Xinyu~Zhan\textsuperscript{\rm 1}, 
+Yiqun~Duan \textsuperscript{\rm 3}\thanks{Corresponding author.} \\
+\textsuperscript{\rm 1}Technical University of Darmstadt, Germany\\
+\textsuperscript{\rm 2}University of Edinburgh, UK\\
+\textsuperscript{\rm 3}University of Technology Sydney, Australia\\
+\texttt{\href{mailto:wsuli615@gmail.com}{wsuli615@gmail.com}, \href{mailto:yiqun.duan-1@uts.edu.au}{yiqun.duan-1@uts.edu.au}.} \\
+% \And
+% Ji Q. Ren \& Yevgeny LeNet \\
+% Department of Computational Neuroscience \\
+% University of the Witwatersrand \\
+% Joburg, South Africa \\
+% \texttt{\{robot,net\}@wits.ac.za} \\
+% \AND
+% Coauthor \\
+% Affiliation \\
+% Address \\
+% \texttt{email}
+}
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to \LaTeX{} to determine where to break
+% the lines. Using \AND forces a linebreak at that point. So, if \LaTeX{}
+% puts 3 of 4 authors names on the first line, and the last on the second
+% line, try using \AND instead of \And before the third author name.
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+
+\iclrfinalcopy % Uncomment for camera-ready version, but NOT for submission.
+\begin{document}
+
+
+\maketitle
+
+\begin{abstract}
+
+Large-scale foundation models for EEG signals offer a promising path to generalizable brain–computer interface (BCI) applications, but they often suffer from misalignment between pretraining objectives and downstream tasks, as well as significant fine-tuning and test-time distribution shifts. We introduce NeuroTTT, a two-stage alignment strategy that bridges the gap between generic pretraining and task-specific EEG decoding tasks. First, we perform a domain-specific self-supervised fine-tuning paradigm that augments the foundation model with task-relevant self-supervised objectives, aligning latent representations to important spectral, spatial, and temporal EEG features without requiring additional labeled data. Second, we incorporate test-time training (TTT) at inference, we apply (i) self-supervised test-time training on individual unlabeled test samples and (ii) prediction entropy minimization (Tent), which updates only normalization statistics to continually calibrate the model to each new input on the fly. Our approach, which, to our knowledge, is the first to unify domain-tuned self-supervision with test-time training in large-scale EEG foundation models, yields substantially improved robustness and accuracy across diverse BCI tasks (imagined speech, stress detection, motor imagery). Using CBraMod and LaBraM as backbones, our method pushes their performance to a markedly higher level. Results on three diverse tasks demonstrate that the proposed alignment strategy achieves state-of-the-art performance, outperforming conventional fine-tuning and adaptation methods. Our code is available at~\url{https://github.com/wsl2000/NeuroTTT}.
+
+% Large-scale electroencephalography (EEG) foundation models often exhibit poor generalization performance, largely due to a misalignment between their pre-training objectives and downstream task requirements. This work introduces a multi-stage framework to address this critical challenge. First, we propose domain-specific self-supervised learning (SSL) as a probing mechanism to better align pre-trained features with downstream tasks, creating more robust representations. Building on this, we leverage these SSL tasks within a Test-Time Training (TTT) paradigm for dynamic, unsupervised personalization, significantly enhancing generalization in cross-session and cross-subject scenarios. Furthermore, we explore lightweight TTT approaches, such as entropy minimization (e.g., Tent), which offer a practical, privacy-preserving solution for real-world deployment by adapting only minimal parameters without source data access. Our framework presents a comprehensive approach to TTT, detailing a clear trade-off between performance, efficiency, and privacy across different adaptation strategies.
+
+% The advent of large-scale brain foundation models promises a new era of generalized brain signal decoding. However, a significant performance gap persists on downstream tasks due to a fundamental misalignment between misalignment between their pre-training objectives and downstream task requirements. This work introduces a multi-stage framework to bridge this gap. First, we propose domain-specific self-supervised learning (SSL) as a probing mechanism to better align pre-trained features with downstream tasks, creating more robust representations. Building on this, to enhance robustness against real-world distribution shifts, we leverage lightweight, source-free Test-Time Training (TTT) techniques that update the model online using only unlabeled test data. Our method, evaluated across different BCI tasks using multiple foundation models, demonstrates substantial improvements. For imagined speech classification, SSL-augmented probing improves accuracy by over 10 percentage points compared to standard fine-tuning. Subsequent test-time adaptation further boosts performance. This work presents a practical and effective paradigm for unlocking the full potential of EEG foundation models, enabling more robust, data-efficient, and privacy-preserving BCI systems that can better generalize across new trials and subjects.
+
+%By adapting only minimal parameters without source data access, TTA offers a practical solution for real-world deployment. Our framework presents a comprehensive approach, providing a clear trade-off between the high performance of TTT and the efficiency and privacy of TTA. 
+\end{abstract}
+
+\section{Introduction}
+
+Electroencephalography (EEG) is a non-invasive technique for measuring brain electrical activity and underpins a variety of brain-computer interface (BCI) applications including but not limited to imagined speech decoding~\citep{proix2022imagined}, mental stress detection~\citep{badr2024review}, emotion recognition~\citep{li2022dynamic} and motor imagery classification~\citep{altaheri2023deep}. Early EEG decoding approaches heavily relied on handcrafted features and traditional machine learning~\citep{ramoser2000optimal,ang2008filter}. In recent years, deep learning models have achieved superior performance by learning directly from raw EEG signals in an end-to-end fashion~\citep{craik2019deep,al2021deep}. However, most of deep learning models employ supervised learning methods tailored for specific tasks or datasets, and lack generalization ability. Inspired by the success of foundation models in natural language processing (NLP) and computer vision (CV)~\citep{devlin2019bert,liu2024deepseek}, researchers begin developing large-scale EEG foundation models – pretrained foundation models intended to serve as general feature extractors for diverse EEG tasks~\citep{lai2025simple}. Most of these works leverage massive EEG datasets in generative-based self-supervised pretraining and finetuned on specific downstream datasets~\citep{yang2023biot,duan2023dewave}. These models have shown promising performance in capturing generic EEG representations and addressing issues like limited data and heterogeneous channel configurations.
+
+\begin{figure}[!t]
+    \centering
+    \includegraphics[width=1.0\linewidth]{fig/PPL_1.pdf}
+    \caption{\textbf{NeuroTTT overview.} EEG foundation backbones are pre-trained on large, task-agnostic datasets, whereas fine-tuning targets a specific downstream task (e.g., motor imagery). Thus large EEG models often suffer from a mismatch between pretraining objectives and downstream requirements. We address this in two stages: Stage I—the backbone feeds a supervised task head together with lightweight self-supervised (SSL) heads to align representations toward task-relevant EEG features. Stage II—for each test sample, we apply test-time training with the SSL objective, or entropy minimization that updates only batch-normalization statistics, further mitigating residual mismatch.}
+    \label{fig:placeholder}
+\end{figure}
+
+
+However, fine-tuning strategies for EEG foundation models remain relatively underexplored. A fundamental yet often overlooked issue is the misalignment between pre-training objectives/data and downstream EEG task requirements: generic self-supervised objectives (e.g., masked signal reconstruction or neural code prediction~\citep{he2022masked,wang2024cbramod,jiang2024large}) may fail to emphasize the task-critical spectral, spatial, or temporal features needed for downstream domain specific applications, leaving downstream decoders under-served without targeted alignment during adapting. Compounding this, domain shift is pervasive in EEG: inter- and intra-subject variability~\citep{saha2020intra}, session effects, and device/protocol differences routinely degrade cross-subject generalization~\citep{melnik2017systems}. Aligning the distribution of a target subject with that of the source subjects has long been a thorny challenge, motivating transfer learning and domain adaptation techniques for BCIs~\citep{zhao2020deep,lan2018domain,duan2023domain}.  Addressing both issues—\textbf{pretrain–downstream misalignment and distribution shift}—is therefore essential for robust EEG decoding. Simple adaptation strategies like training a shallow classifier (e.g. a linear or MLP head) on top of the pretrained foundation model often yield suboptimal results.  In practice, we observe that the features from these foundation models are not sufficiently aligned to task-specific patterns, making downstream adaptation challenging.
+
+We hypothesize that introducing domain-specific self-supervised objectives during fine-tuning can help bridging the gap between pretraining and target tasks. By augmenting the foundation model with lightweight, task-relevant self-supervised learning (SSL) tasks, we can encourage the model to learn features that are more congruent with the downstream task’s discriminative information. Crucially, these SSL tasks are plug-and-play and do not require additional labeled data, we exploit unlabeled structure in EEG signals (such as frequency content or sensor topology) to shape the representation. This prepares a better feature space for final classification and yields improved performance with minimal overhead. Our SSL fine-tuning strategy is flexible: new self-supervised tasks can be designed as needed for different EEG contexts, leveraging known neuroscientific priors (e.g. known frequency bands or brain region asymmetries).
+
+Beyond enhancing the feature space alignment, we also address model adaptation at inference time. EEG signals are notoriously variable across recording sessions and subjects\citep{corsi2007within}; thus even a well-finetuned model may face distribution shifts when deployed on new subjects or conditions. To tackle this, we employ Test-Time Training (TTT) techniques that adjust the model on-the-fly for each test sample or batch~\citep{sun2019test,sun2020test}. 
+This test-time training with self-supervision effectively calibrates the model to the incoming data, improving robustness to shifts without requiring any labeled data or extensive retraining. Importantly, the adaptation is lightweight and privacy-friendly, all computations occur on the test sample itself with no need to share or store data from the source domain.
+We further incorporate a complementary test-time strategy: entropy minimization of the model’s predictions (exploiting the Tent method for fully test-time training)~\citep{wang2020tent}. By minimizing the prediction entropy on unlabeled test inputs, we encourage the model’s outputs to be more confident and cluster test features toward the learned decision boundaries. This approach updates only a minimal subset of parameters (e.g. batch normalization statistics) during inference, providing a stable yet effective adjustment. Notably, we find that entropy-based TTA can outperform full-parameter self-supervised TTT in challenging cross-subject scenarios, likely because it avoids overfitting by tuning only normalization layers while leaving the backbone intact.
+
+% In our framework, when a new unlabeled EEG sample is received, the model first performs a brief self-supervised training step on that sample (using a predefined SSL objective) before making its final prediction. 
+In summary, we propose a novel two-stage alignment approach for EEG foundation models, our main contributions can be summarized as follows:
+
+\begin{enumerate}
+    \item We propose NeuroTTT, a two-stage fine-tuning paradigm for EEG foundation models that first uses domain-specific self-supervised tasks to relieve distribution shift and pretrain–downstream misalignment. This approach is lightweight and general, adding no additional deployment cost while significantly aligning the representation to task-specific features.
+    \item We propose to apply test-time self-supervised training for brain signal models, enabling on-the-fly calibration to individual subjects and trials without any labeled data or source model modifications.
+    \item We explore test-time entropy minimization in EEG contexts and demonstrate its potential to improve generalization while offering a stable and privacy-preserving adaptation mechanism.
+    \item We evaluate the performance of NeuroTTT on 3 different downstream tasks and demonstrate state-of-the-art results on representative EEG foundation models, suggesting that our approach is a practical step toward more task-aligned, generalizable brain foundation models.
+\end{enumerate}
+
+
+
+% To our knowledge, this is the first work to unify these elements – domain-specific SSL fine-tuning and test-time training – for relieving distribution shift and aligning large EEG foundation models to downstream tasks. We demonstrate state-of-the-art results on representative EEG foundation models, suggesting that our approach is a practical step toward more task-aligned, generalizable brain foundation models.
+
+% We validate our approach on three representative EEG decoding applications: Imagined Speech Classification~\citep{jeong20222020}, Mental Stress Detection~\citep{goldberger2000physiobank,zyma2019electroencephalograms}, and Motor Imagery Recognition~\citep{brunner2008bci}. Using two recent large-scale EEG foundation models (CBraMod and LaBraM) as backbones~\citep{wang2024cbramod,jiang2024large}, we demonstrate that our alignment strategy yields significantly improved performance compared to current fine-tuning baselines. On all three tasks, our method achieves the highest accuracies, highlighting its ability to better exploit the foundation model’s knowledge. We also conduct extensive ablation studies to quantify the contribution of each proposed component (the specific SSL tasks, TTT, and Tent), confirming that each yields tangible benefits and that their combination provides the best results.
+
+
+
+\section{Related Work}
+\textbf{Large Brain Models:} The concept of foundation models in EEG is nascent, inspired by the breakthroughs of large language models and vision transformers. Early efforts like BENDR and EEG2Vec explored self-supervised pre-training on EEG~\citep{kostas2021bendr,bethge2022eeg2vec}, but were limited in scale and generality. Recent advances have produced truly large EEG models trained on extensive and diverse datasets. CBraMod (Criss-Cross Brain Model) is a transformer-based foundation model that separately models spatial and temporal dependencies of EEG through a criss-cross attention mechanism~\citep{wang2024cbramod}. Pre-trained via masked EEG patch reconstruction on a massive corpus, CBraMod achieved state-of-the-art results across numerous BCI tasks, demonstrating the potential of a single model to generalize widely. LaBraM (Large Brain Model) introduced a unified EEG representation learned from about 2,500 hours of data from public datasets~\citep{jiang2024large}. It uses a vector-quantized spectral tokenizer and masked token prediction to learn a compact but rich encoding of EEG signals. LaBraM likewise showed superior performance on varied tasks (abnormal EEG detection, event classification, emotion recognition, etc.), highlighting the benefits of cross-dataset pre-training. BIOT (Biosignal Transformer) further extended foundation modeling to multimodal biosignals~\citep{yang2023biot}, enabling cross-dataset learning by tokenizing each channel into a “sentence” of patch tokens; it demonstrated the feasibility of training one model on mixed EEG, ECG, and motion data. Despite these successes, a limitation of current EEG foundation models is their reliance on generic self-supervised objectives (e.g. masked autoencoding, sequence prediction) that are agnostic to any specific task. While these objectives ensure broad coverage of EEG variability, they might underemphasize fine-grained features crucial for particular tasks (for instance, the difference between EEG frequency bands is critical for motor imagery but a vanilla autoencoder may not prioritize that).
+
+\section{Method}
+\label{sec:Method}
+NeuroTTT comprises three interconnected components that together ensure a better alignment of the foundation model with each target EEG task: Stage I: Domain-Specific Self-Supervised fine-tuning, Stage II: Self-Supervised Test-Time Training, or Test-Time Entropy Minimization  at inference. An overview of the proposed alignment strategy is shown in Figure \ref{fig:PPL}. 
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{fig/framework.pdf}
+    \caption{Overview of our NeuroTTT structure, illustrated on the Motor Imagery task. During fine-tuning, we augment the supervised head with two domain-specific self-supervised objectives: a Stopped-Band Prediction task plus a Temporal Jigsaw task. At inference, we perform self-supervised test-time training on individual samples or Tent-based entropy minimization to continually calibrate the model to each new input.}
+    \label{fig:PPL}
+\end{figure}
+
+
+\subsection{Stage I — Domain-Specific Self-Supervised Fine-tuning}
+\begin{spacing}{0.95}
+In the preliminary stage, we adapt the pre-trained EEG foundation model to a specific downstream task by self-supervised fine-tuning. The pre-trained model (e.g. CBraMod or LaBraM) used as a shared feature extractor, feeding into different downstream branches: (a) the main task branch, which is a classifier for the labeled downstream task, and (b) two self-supervised task branches, each consisting of a small task-specific head dedicated to a particular unlabeled pretext task. All branches share the same foundation model backbone, but have separated objective functions. During fine-tuning, we jointly optimize the supervised loss on the main task and the losses of the self-supervised tasks. By doing so, we explicitly encourage the backbone’s representations to capture not only generic EEG features (from pre-training) but also task-relevant features that the self-supervised objectives focus on. This effectively aligns the feature space with the downstream task, preparing a better representation for the main-task.
+
+% Formally, let $\mathcal{L}_{\text{main}}$ be the cross-entropy loss for the main labeled task (computed on the output of the main task head), and $\mathcal{L}_{\text{ssl}}^{(j)}$ be the loss for the $j$-th self-supervised objective (computed on its head’s output). We minimize a combined loss for each training batch:
+Formally, we denote a pre-trained EEG foundation backbone $f_\theta$ with task head $g_\phi$. We jointly optimize a supervised loss and lightweight, EEG-aware SSL heads that share the backbone:
+
+\begin{equation}
+\mathcal{L}_{\text{finetune}} = \mathcal{L}_{\text{main}}\big(g_\phi(f_\theta(x)), y\big) 
++ \sum_j w_j \, \mathcal{L}_{\text{ssl}}^{(j)} \Big(h^{(j)}\big(f_\theta(\tilde{x}^{(j)})\big)\Big).
+\end{equation}
+
+% \begin{equation}
+% \mathcal{L}_{\text{finetune}} = \mathcal{L}_{\text{main}} + \sum_j w_j \mathcal{L}^{(j)}_{\text{ssl}}
+% \end{equation}
+
+
+
+where $w_j$ are weighting coefficients that balance the importance of each SSL task. $\tilde{x}^{(j)}$ is a self-supervised view that encodes EEG priors (e.g., \textbf{Stopped-Band Prediction}, \textbf{A--P Flip}, \textbf{Temporal Jigsaw}); heads $h^{(j)}$ are tiny classifiers.  In practice, we choose $w_j$ to ensure the self-supervised losses are on a comparable scale to the main loss; the additional tasks are intended to guide the representation without overwhelming the primary task objective.
+
+We design domain-specific SSL tasks for each downstream application, informed by neuroscientific knowledge of task specific EEG signatures. One common self-supervision task across the three domains, is the Stopped Band Prediction task, with the frequency band divisions vary by downstream tasks. The second task is also specifically tailored to each domain. With an Amplitude Scaling Prediction for Imagined Speech Classification, an Anterior-Posterior Flip Detection for Mental Stress Detection and a Temporal Jigsaw Task for Motor Imagery. 
+
+
+\textbf{Mental Stress Detection – Anterior-Posterior Flip Detection:} Mental stress is known to induce characteristic EEG changes, often with strong asymmetry between the frontal and parietal regions of the scalp. Under stress or cognitive load, frontal lobe activity tends to increase relative to rear regions, engaging the frontoparietal network. To leverage this domain knowledge, we design an Anterior-Posterior (A–P) Flip self-supervised task. We define pairs of EEG channels that are roughly symmetric across the anterior-posterior axis of the head. We then randomly choose whether to swap these pairs (i.e. exchange frontal channel signals with their posterior counterparts) in a given EEG sample. The model’s SSL head must predict whether the input has been “flipped” or is in its original orientation (a binary classification). This pretext forces the model to learn the normal topographic distribution of activity for the task – specifically, to recognize the difference between a normal vs. front-back inverted EEG. By doing so, the encoder learns to encode the asymmetric topographic signature of stress-related brain activity and the coherence of the frontoparietal network without any explicit labels. This should yield a more transferable “stress representation” that is sensitive to spatial patterns known to correlate with mental workload or stress.
+
+Details of the other SSL tasks can be found in Appendix \ref{sec:Appendix_ssl_tasks}. After adding these tasks, the fine-tuning process optimizes the combined loss $\mathcal{L}_{finetune}$ over the training set of the target task. The outcome is a model that still leverages the general knowledge from pre-training but is specialized with domain-specific feature awareness. Because the SSL tasks are designed to be lightweight (predicting simple transformations), they do not require many extra parameters (each SSL head is a small classification layer) and do not need ground-truth labels from the dataset. They can be seen as a form of feature guiding for the model during fine-tuning. Once training is complete, we can either keep these SSL heads for potential use at test time (as we describe next) or discard them if only the main task prediction is needed during inference.
+
+\end{spacing}
+
+
+\subsection{Stage II — Test-Time Training with Self-Supervision}
+\begin{spacing}{0.95}
+
+While the preliminary fine-tuning aligns the model to the general characteristics of the task domain, there can still be residual distribution shifts at test time. For example, differences in EEG noise level, electrode impedance, or individual brain anatomy can cause a drop in performance. To mitigate this, we incorporate Self-Supervised Test-Time Training (TTT) as an online adaptation mechanism~\citep{xiao2024beyond}.
+
+The key idea of TTT is to leverage a domain-specific self-supervised objective on each unlabeled test sample to briefly adapt the model before making the final prediction. Given a new test input $\mathbf{x}_{test}$ with no ground-truth label, our TTT procedure is:
+
+\begin{itemize}
+
+    \item \textbf{Maintain Self-Supervised Head:} We retain the self-supervised tasks heads (learned during fine-tuning) for use during inference. This head produces a prediction for the self-supervised pretext task (e.g. predicting a rejected band or a Anterior-Posterior flipped indicator) on the test sample.
+    
+    \item \textbf{TTT Warm-Up (Adaptation Step):} When a new unlabeled test sample (or a small batch of samples) is received, we first perform a forward pass on $\mathbf{x}_{test}$ to compute the self-supervised loss $L_{SSL}(\mathbf{x}_{test}; \theta)$, since the main task loss cannot be computed without a label. For example, $L_{SSL}$ could be a cross-entropy loss for correctly predicting an augmented transformation of $\mathbf{x}_{test}$. We then update the model parameters by taking a single gradient descent step to minimize this loss, yielding adapted parameters $\theta'$:
+    \begin{equation}
+        \theta' = \theta - \alpha \nabla_{\theta} L_{SSL}(\mathbf{x}_{test}; \theta).
+    \end{equation}
+    where $\alpha$ is a small learning rate. This adaptation step personalizes the model to the test sample by tuning it to current sample’s idiosyncrasies (such as its noise characteristics or signal scale).
+    
+    \item \textbf{Inference after Adaptation:} After this brief adaptation on the unlabeled sample, we perform a forward pass of the adapted model on the same input (this time through the main task head) to get the final prediction (e.g. predicted class of imagined speech, stress level, or motor imagery label). We then reset the model to its original state before the next sample, or in an online scenario, we carry the updated state forward.
+\end{itemize}
+
+This procedure effectively personalizes the model to each test input on the fly. Intuitively, by solving a self-supervised puzzle on the test EEG, the model “tunes” itself to that EEG’s idiosyncrasies (noise distribution, amplitude scaling, etc.) in a way that also aligns with the main task features. Our approach builds on the method proposed by \cite{sun2020test} for image classification, but here applied to time-series brain data. We emphasize that no human labels are used in this adaptation, the model is optimizing a purely self-generated objective.
+\end{spacing}
+
+\subsection{Stage II — Test-Time Entropy Minimization}
+\begin{spacing}{0.95}
+Alongside self-supervised TTT, we incorporate Test-Time Entropy Minimization, often referred to as Tent adaptation. This is a complementary approach that does not rely on a separate SSL head, but instead uses the model’s main output entropy as a guidance for adaptation. The principle, introduced by \cite{wang2020tent}, is that for an unlabeled test example, a confident prediction (low entropy of the output softmax) is generally more likely to be correct, assuming the model’s learned decision boundaries are relatively well-aligned. Therefore, one can adapt the model on test data by directly minimizing the entropy of its predictions. 
+
+Formally, for a given test sample $\mathbf{x}{test}$, we define the entropy of the model’s predictive distribution $p{\theta}(y \mid \mathbf{x}_{test})$ as:
+
+\begin{equation}
+    L_{ent}(\theta; \mathbf{x}_{test}) 
+= - \sum_{c=1}^{C} p_{\theta}(y=c \mid \mathbf{x}_{test}) 
+\log p_{\theta}(y=c \mid \mathbf{x}_{test}),
+\end{equation}
+
+where $C$ is the number of output classes. In our implementation, we apply Tent as follows: when a batch of test data is observed, we feed it through the model’s main task head to obtain predictions (probability distribution over classes). We compute the entropy of these predictions and take a gradient step to reduce $L_{ent}$ for adjusting the model parameters to minimize this entropy. Crucially, to preserve stability, we follow the established practice of updating only the Batch Normalization (BN) parameters during this process, while keeping the other weights fixed:
+
+\begin{equation}
+ \theta_{BN} \leftarrow \theta_{BN} - \alpha \nabla_{\theta_{BN}} L_{ent}(\theta; \mathbf{x}_{test}).
+\end{equation}
+
+Here $\theta_{BN}$ denotes the collection of affine scale and shift parameters (and, optionally, the running mean and variance) of all BatchNorm layers. By adjusting only these normalization parameters, the model recalibrates its internal feature statistics to better match the current test batch, thereby lowering its prediction uncertainty.
+
+The Tent adaptation is extremely lightweight – it adds negligible computational cost (just one forward-backward pass per batch) and only modifies a tiny fraction of the model’s parameters. This makes it well-suited for real-time adaptation scenarios and ensures that the risk of overfitting is low (since BN layers have limited capacity compared to the entire network). We found that using entropy minimization at test time yields even better results than self-supervised TTT in some cases, especially for cross-subject transfer. This somewhat counter-intuitive outcome is likely because the full-model TTT (as above) adapts many parameters on a single sample, which, if the sample is noisy or unrepresentative, could momentarily destabilize the model. In contrast, Tent’s BN-only, entropy-driven update provides a gentler nudging of the model towards the target domain’s feature distribution, maintaining overall stability of the learned representations. Additionally, Tent naturally works in an online continual adaptation setting (updating BN for each batch) without needing to reset the model state between samples.
+
+\end{spacing}
+
+% \begin{itemize}
+%     \item \textbf{Method 1: Test-Time Training with SSL (TTT-SSL):} Following the paradigm of Sun et al. (2020), we leverage our auxiliary SSL tasks for online adaptation. For each incoming test sample $x_t$, we perform one or more gradient descent steps on the model parameters (typically the trainable heads) by minimizing the auxiliary loss $\mathcal{L}_{ssl}$ computed on $x_t$:
+%     \[
+%     \theta_t \leftarrow \theta_{t-1} - \eta \nabla_{\theta} \mathcal{L}_{ssl}(x_t; h_{ssl}, f_{\theta_{t-1}})
+%     \]
+%     The final prediction for the main task is then made using the updated model. In the \textit{online} setting, the adapted parameters $\theta_t$ are carried over to the next test sample, allowing the model to continuously adapt to a stream of data.
+
+%     \item \textbf{Method 2: Test-Time Adaptation via Entropy Minimization (Tent):} As a complementary approach that does not require a predefined SSL task at test time, we implement Tent. Tent adapts the affine parameters ($\gamma, \beta$) within the model's normalization layers (e.g., Batch Normalization). For each batch of test data, Tent performs a forward pass to obtain class probabilities and then updates the affine parameters by backpropagating the gradient of the prediction entropy. The objective is to minimize this entropy, thereby increasing the model's prediction confidence. The underlying principle is that more confident (low-entropy) predictions are more likely to be correct, and adapting the model to be more confident on the target distribution can reduce generalization error. This makes Tent a versatile, plug-and-play adaptation strategy.
+% \end{itemize}
+
+\section{Experiments}
+We conduct experiments to evaluate the effectiveness of our proposed alignment strategies on multiple EEG datasets and foundation models. We first describe the experimental setup, including the pre-trained models used, the downstream tasks and datasets, and implementation details such as preprocessing. We then present quantitative results comparing various fine-tuning and adaptation methods, followed by ablation studies that dissect the contribution of each component of our approach.
+
+\subsection{Experimental Setup}
+\begin{spacing}{0.95}
+
+\textbf{Pre-trained Foundation Models:} We evaluate our methods using two representative state-of-the-art large-scale EEG foundation models, each with distinct architectures and pre-training strategies, which provides a robust test of our alignment methods. Detailed descriptions of both models are provided in Appendix~\ref{sec:Appendix_models}. For all experiments, we use these foundation models as feature extractors and apply various adaptation strategies, as outlined in the subsequent sections. Both models internally downsample input signals to 200~Hz, thereby capturing frequency components up to 100~Hz in accordance with the Nyquist theorem.
+
+\textbf{Downstream BCI Tasks and Datasets:} We evaluate on three diverse EEG decoding tasks to demonstrate generality: Imagined Speech Classification~\citep{jeong20222020}, Mental Stress Detection~\citep{goldberger2000physiobank,zyma2019electroencephalograms} and Motor Imagery Classification~\citep{brunner2008bci}. All the downstream EEG tasks with the corresponding datasets and preprocessing are presented in Appendix \ref{sec:Appendix_datasets}.
+
+\textbf{Performance Metrics:} For the binary Mental Stress Detection task, we use Balanced Accuracy, Area Under the Precision-Recall Curve (AUC-PR), and Area Under the Receiver Operating Characteristic Curve (AUROC) as evaluation metrics, with AUROC designated as the monitoring score. For the multi-class tasks—Imagined Speech Classification and Motor Imagery Classification—we evaluate performance using Balanced Accuracy, Cohen’s Kappa, and Weighted F1 Score, with Cohen’s Kappa selected as the monitoring metric.
+
+\textbf{Finetuning and Adaptation Strategies:} In all of our finetuning and adaptation settings, the foundation model remains fully trainable. This design choice is crucial for better aligning the pre-trained representations with the specific demands of each downstream EEG task. By allowing gradient updates throughout the model, we enable deeper integration of task-specific information, improving both accuracy and generalization. We compare the following strategies on each task:
+
+\begin{itemize}
+    \item \textbf{Full Supervised Finetuning:} Train the entire foundation model and a small task head (1--3 linear layers) end-to-end on labeled data. This is the de facto standard approach.
+    \item \textbf{Lora Finetuning:} A parameter-efficient fine-tuning method that only introduces low-rank updates to a pre-trained model’s weights~ \citep{hu2022lora}, popular in LLMs finetuning. 
+    \item \textbf{SHOT (Source Free Domain Adaptation):} A source-free domain adaptation setting for downstream tasks~\citep{liang2020we}. In essence, SHOT uses the source-trained classifier’s “hypothesis” and adjusts the feature extractor to better fit target data without source data. 
+    \item \textbf{NeuroTTT:} Our full method. We fine-tune the model on the training set using our multi-task loss (with the appropriate domain-specific SSL tasks for each dataset) as described in the Method \ref{sec:Method} section. At inference, we apply test-time training with two variants: 
+
+    (a) TTT with SSL, which performs a single gradient step on the SSL task for each test sample; (b) TTT with Tent, which applies entropy minimization to test batches by updating batch normalization statistics.
+\end{itemize}
+
+All models are optimized using the Adam optimizer~\citep{kingma2014adam}. For full-parameter finetuning—including any LoRA layers or SSL heads—we use a learning rate of 1e-4. We train each model until validation performance converges. For Mental Stress Detection and Motor Imagery Classification, convergence typically occurs within 20 epochs. In contrast, Imagined Speech Classification requires longer training due to slower convergence under domain-specific SSL supervision; we train for 100 epochs under supervised-only settings and extend to 150 epochs when incorporating domain-specific SSL. More hyperparameter setting can be found in Appendix \ref{sec:Appendix_Hyperparameters}.
+\end{spacing}
+
+
+% Domain-Specific SSL Finetuning: We jointly optimize the model on both the primary supervised objective and one or more domain-informed self-supervised tasks. All model parameters are updated during training. This strategy injects neuroscientific priors into the learning process, aligning the representation space more closely with downstream task semantics.
+
+% Domain-SSL + Test-Time Training (TTT): After domain-specific SSL finetuning, we apply online self-supervised training during inference. For each test sample, the model performs a brief gradient update using an auxiliary SSL objective before making a prediction. This adaptation helps calibrate the model to subject- or session-specific features.
+
+% Domain-SSL + Tent: As a complementary test-time strategy, we employ entropy minimization on test samples to encourage confident predictions. During this process, only the batch normalization statistics are updated, providing a stable and privacy-preserving mechanism for handling distribution shifts.
+
+\subsection{Results}
+
+Table \ref{tab:results_BCIC2020} summarizes the results for Imagined Speech Classification, tested on BCI Competition 2020-III dataset. Table \ref{tab:results_ma} reports performance in Mental Stress Detection task, tested on MentalArithmetic Stress dataset. Table \ref{tab:results_bciciv2a} shows the cross-subject results in Motor Imagery tasks, tested on BCI Competition IV-2a dataset.
+
+\input{tables/table-bcic2020}
+
+\input{tables/table_MentalArithmetic}
+
+\input{tables/table_MI}
+
+As shown in the tables, our method pushes Large Brain Models to a markedly higher performance level.
+Notably, LoRA shows the worse performance among all methods. This partial adaptation can struggle to align pre-trained EEG features to a new task because the frozen backbone’s representations remain largely unchanged. If the pre-trained features are not already well-suited for the target EEG task, a small low-rank tweak may be insufficient to bridge the gap. In EEG applications, tasks and datasets often differ substantially (e.g. different cognitive tasks, pathologies, or recording setups), so the foundation model’s features may not cleanly separate the new classes without significant reorientation. Since LoRA can only adjust the model via a limited subspace of parameters, it may fail to reshape the feature space enough for the downstream classification, leaving misalignments between what the backbone encodes and what the new task requires. Recent work on EEG foundation models has indeed observed that parameter-efficient “additive” tuning methods (like adapters or LoRA) yield inconsistent performance across tasks and pre-trained models. These methods often heavily depend on how closely the pre-training data matches the downstream domain. In other words, if the EEG foundation model wasn’t pre-trained on data very similar to the target task, a LoRA-based adaptation might not adequately realign the representation to the new task’s patterns. This is one reason LoRA underperforms: it cannot fully compensate when the pretrained feature space and the downstream data distribution are misaligned. Addressing this misalignment is one of the central problems our method tackles.
+
+Unlike the large pretrain–downstream gap, the distribution shift between subjects is typically less severe. In an already well-learned feature space, applying full-parameter SSL fine-tuning can actually mislead the representation, especially when the incoming EEG is noisy or unrepresentative. By contrast, Tent’s BN-only, entropy-driven updates provide a gentler, more controlled push toward the target domain’s distribution, preserving the overall stability of the learned features. This explains why Tent often outperforms test-time SSL in our evaluations.
+
+
+
+\subsection{Ablation Study:}
+\begin{spacing}{0.9}
+We perform ablation studies to validate the contribution of each component of our approach: each domain-specific self-supervised finetuning tasks and the test-time training mechanisms, as shown in Figure \ref{fig:Ablation}. The ablation experiment is designed as follows:
+
+% \begin{itemize}
+%     \item Isolated SSL Task Fine-tuning. To assess the contribution of each self-supervised objective, we fine-tuned the model with each SSL task in isolation. The results show that every domain-specific SSL task injects distinct, informative signals into the representation; combining them produces additive, cumulative gains.
+
+%     \item Effect of Test-Time Training (TTT). We compared models with vs. without TTT to evaluate its effectiveness. Notably, TTT delivers modest improvements on the BCIC dataset (within-subject, non–cross-subject), but yields substantial benefits on the two cross-subject tasks—exactly as expected given the stronger distribution shifts across subjects.
+% \end{itemize}
+
+\textbf{Isolated SSL Task Fine-tuning.} To assess the contribution of each self-supervised objective, we fine-tuned the model with each SSL task in isolation. The results show that every domain-specific SSL task injects distinct, informative signals into the representation; combining them produces additive, cumulative gains.
+
+\textbf{Effect of Test-Time Training (TTT).} We compared models with vs. without TTT to evaluate its effectiveness. Notably, TTT delivers modest improvements on the BCIC dataset (within-subject, non–cross-subject), but yields substantial benefits on the two cross-subject tasks—exactly as expected given the stronger distribution shifts across subjects.
+\end{spacing}
+
+% \begin{figure}[ht]
+%   \centering
+%   %----- 左侧子图 -----%
+%   \begin{subfigure}[t]{0.495\textwidth}
+%     \centering
+%     \includegraphics[width=\linewidth]{iclr2026/fig/ablation CBraMod.pdf} % 
+%     % \caption{Ablation study on CBraMod}
+%     \label{fig:Ablation:CBraMod}
+%   \end{subfigure}
+%   \hfill
+%   %----- 右侧子图 -----%
+%   \begin{subfigure}[t]{0.495\textwidth}
+%     \centering
+%     \includegraphics[width=\linewidth]{iclr2026/fig/ablation CBraMod.pdf}
+%     \label{fig:Ablation:LaBraM}
+%   \end{subfigure}
+
+%   \caption{Ablation study}
+%   \label{fig:Ablation}
+% \end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.9\linewidth]{fig/cbra_ablation.pdf}
+    \caption{Ablation Study of NeuroTTT on CBraMod.}
+    \label{fig:Ablation}
+\end{figure}
+
+
+\section{Conclusion}
+\begin{spacing}{0.9}
+We proposed NeuroTTT: a comprehensive approach to aligning large EEG foundation models with domain-specific downstream tasks through a combination of targeted self-supervised finetuning and test-time training techniques. By injecting task-relevant inductive biases (frequency bands, amplitude scaling, topographic orientation, temporal order), we substantially improved the suitability of pre-trained representations for specific BCI tasks. Further, by leveraging test-time training and entropy minimization, our models can seamlessly adapt to new inputs on the fly, addressing one of the biggest challenges in EEG applications: distribution shift.
+
+Our results on three diverse tasks and two state-of-the-art foundation models demonstrate that the proposed alignment strategy yields state-of-the-art performance, outperforming conventional fine-tuning and adaptation methods. The success of our approach suggests that bridging the gap between foundation model pre-training and target task requirements is both necessary and highly effective in the EEG domain. Rather than treating a foundation model as a monolithic feature extractor, we show that a small amount of task-specific “attention” in the form of self-supervision can unlock significant gains. Additionally, this work is a step toward more generalizable and personalized EEG AI systems: models that come with broad knowledge but can specialize themselves to each user or context safely and efficiently.
+
+\end{spacing}
+
+
+% \subsubsection*{Acknowledgments}
+% Use unnumbered third level headings for the acknowledgments. All
+% acknowledgments, including those to funding agencies, go at the end of the paper.
+
+
+\bibliography{iclr2026_conference}
+\bibliographystyle{iclr2026_conference}
+
+\appendix
+\input{sec/appendix}
+
+
+\end{document}

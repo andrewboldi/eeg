@@ -1,0 +1,103 @@
+\begin{thebibliography}{10}
+
+\bibitem{metzger2023high}
+Sean~L Metzger, Kaylo~T Littlejohn, Alexander~B Silva, David~A Moses, Margaret~P Seaton, Ran Wang, Maximilian~E Dougherty, Jessie~R Liu, Peter Wu, Michael~A Berger, et~al.,
+\newblock ``A high-performance neuroprosthesis for speech decoding and avatar control,''
+\newblock {\em Nature}, vol. 620, no. 7976, pp. 1037--1046, 2023.
+
+\bibitem{cho2023neural}
+Cheol~Jun Cho, Edward Chang, and Gopala Anumanchipalli,
+\newblock ``Neural latent aligner: cross-trial alignment for learning representations of complex, naturalistic neural data,''
+\newblock in {\em International Conference on Machine Learning}. PMLR, 2023, pp. 5661--5676.
+
+\bibitem{he2025vocalmind}
+Tianyu He, Mingyi Wei, Ruicong Wang, Renzhi Wang, Shiwei Du, Siqi Cai, Wei Tao, and Haizhou Li,
+\newblock ``Vocalmind: A stereotactic eeg dataset for vocalized, mimed, and imagined speech in tonal language,''
+\newblock {\em Scientific Data}, vol. 12, no. 1, pp. 657, 2025.
+
+\bibitem{miller2020current}
+Kai~J Miller, Dora Hermes, and Nathan~P Staff,
+\newblock ``The current state of electrocorticography-based brain--computer interfaces,''
+\newblock {\em Neurosurgical focus}, vol. 49, no. 1, pp. E2, 2020.
+
+\bibitem{snider1998classification}
+RK~Snider and AB~Bonds,
+\newblock ``Classification of non-stationary neural signals,''
+\newblock {\em Journal of Neuroscience Methods}, vol. 84, no. 1-2, pp. 155--166, 1998.
+
+\bibitem{fu2014adaptive}
+Zening Fu, Shing-Chow Chan, Xin Di, Bharat Biswal, and Zhiguo Zhang,
+\newblock ``Adaptive covariance estimation of non-stationary processes and its application to infer dynamic connectivity from fmri,''
+\newblock {\em IEEE transactions on biomedical circuits and systems}, vol. 8, no. 2, pp. 228--239, 2014.
+
+\bibitem{huang2024attentional}
+Huimin Huang, Rui Li, Xiaojun Qiao, Xiaoran Li, Ziyue Li, Siyi Chen, Yi~Yao, Fengpeng Wang, Xiaobin Zhang, Kaomin Lin, et~al.,
+\newblock ``Attentional control influence habituation through modulation of connectivity patterns within the prefrontal cortex: Insights from stereo-eeg,''
+\newblock {\em Neuroimage}, vol. 294, pp. 120640, 2024.
+
+\bibitem{ung2017intracranial}
+Hoameng Ung, Steven~N Baldassano, Hank Bink, Abba~M Krieger, Shawniqua Williams, Flavia Vitale, Chengyuan Wu, Dean Freestone, Ewan Nurse, Kent Leyde, et~al.,
+\newblock ``Intracranial eeg fluctuates over months after implanting electrodes in human brain,''
+\newblock {\em Journal of neural engineering}, vol. 14, no. 5, pp. 056011, 2017.
+
+\bibitem{saha2020intra}
+Simanto Saha and Mathias Baumert,
+\newblock ``Intra-and inter-subject variability in eeg-based sensorimotor brain computer interface: a review,''
+\newblock {\em Frontiers in computational neuroscience}, vol. 13, pp. 87, 2020.
+
+\bibitem{zheng2024discrete}
+Hui Zheng, Haiteng Wang, Weibang Jiang, Zhongtao Chen, Li~He, Peiyang Lin, Penghu Wei, Guoguang Zhao, and Yunzhe Liu,
+\newblock ``Du-in: Discrete units-guided mask modeling for decoding speech from intracranial neural signals,''
+\newblock {\em Advances in Neural Information Processing Systems}, vol. 37, pp. 79996--80033, 2024.
+
+\bibitem{levelt1999theory}
+Willem~JM Levelt, Ardi Roelofs, and Antje~S Meyer,
+\newblock ``A theory of lexical access in speech production,''
+\newblock {\em Behavioral and brain sciences}, vol. 22, no. 1, pp. 1--38, 1999.
+
+\bibitem{hagoort2004integration}
+Peter Hagoort, Lea Hald, Marcel Bastiaansen, and Karl~Magnus Petersson,
+\newblock ``Integration of word meaning and world knowledge in language comprehension,''
+\newblock {\em Science}, vol. 304, no. 5669, pp. 438--441, 2004.
+
+\bibitem{xiao2024beyond}
+Zehao Xiao and Cees~GM Snoek,
+\newblock ``Beyond model adaptation at test time: A survey,''
+\newblock {\em arXiv:2411.03687}, 2024.
+
+\bibitem{sun2020test}
+Yu~Sun, Xiaolong Wang, Zhuang Liu, John Miller, Alexei Efros, and Moritz Hardt,
+\newblock ``Test-time training with self-supervision for generalization under distribution shifts,''
+\newblock in {\em International conference on machine learning}. PMLR, 2020, pp. 9229--9248.
+
+\bibitem{horstemeyer2009multiscale}
+Mark~F Horstemeyer,
+\newblock ``Multiscale modeling: a review,''
+\newblock {\em Practical aspects of computational chemistry: methods, concepts and applications}, pp. 87--135, 2009.
+
+\bibitem{lawhern2018eegnet}
+Vernon~J Lawhern, Amelia~J Solon, Nicholas~R Waytowich, Stephen~M Gordon, Chou~P Hung, and Brent~J Lance,
+\newblock ``Eegnet: a compact convolutional neural network for eeg-based brain--computer interfaces,''
+\newblock {\em Journal of Neural Engineering}, vol. 15, no. 5, pp. 056013, 2018.
+
+\bibitem{moses2021neuroprosthesis}
+David~A Moses, Sean~L Metzger, Jessie~R Liu, Gopala~K Anumanchipalli, Joseph~G Makin, Pengfei~F Sun, Josh Chartier, Maximilian~E Dougherty, Patricia~M Liu, Gary~M Abrams, et~al.,
+\newblock ``Neuroprosthesis for decoding speech in a paralyzed person with anarthria,''
+\newblock {\em New England Journal of Medicine}, vol. 385, no. 3, pp. 217--227, 2021.
+
+\bibitem{song2022eeg}
+Yonghao Song, Qingqing Zheng, Bingchuan Liu, and Xiaorong Gao,
+\newblock ``Eeg conformer: Convolutional transformer for eeg decoding and visualization,''
+\newblock {\em IEEE Transactions on Neural Systems and Rehabilitation Engineering}, vol. 31, pp. 710--719, 2022.
+
+\bibitem{wang2020tent}
+Dequan Wang, Evan Shelhamer, Shaoteng Liu, Bruno Olshausen, and Trevor Darrell,
+\newblock ``Tent: Fully test-time adaptation by entropy minimization,''
+\newblock {\em arXiv preprint arXiv:2006.10726}, 2020.
+
+\bibitem{zhang2021self}
+Linfeng Zhang, Chenglong Bao, and Kaisheng Ma,
+\newblock ``Self-distillation: Towards efficient and compact neural networks,''
+\newblock {\em IEEE Transactions on Pattern Analysis and Machine Intelligence}, vol. 44, no. 8, pp. 4388--4403, 2021.
+
+\end{thebibliography}

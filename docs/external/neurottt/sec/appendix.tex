@@ -1,0 +1,132 @@
+% \section{Appendix}
+
+
+\vfill\pagebreak
+
+
+\section{Domain-Specific Self-Supervised Fine-tuning}
+
+
+
+
+\subsection{Domain-Specific Self-Supervised Tasks}
+\label{sec:Appendix_ssl_tasks}
+In addition to Anterior-Posterior Flip Detection, the other self-supervised tasks are as follows:
+
+\textbf{Stopped Band Prediction: }The band-prediction task is motivated by the fact that EEG signals are composed of multiple frequency bands (delta, theta, alpha, beta, gamma, etc.), which often correlate with cognitive states. \cite{jayalath2024brain} employ band rejection during MEG pretraining and demonstrate that band prediction enables the model to learn frequency-aware representations more effectively. To leverage this, we apply a band-stop filter to the input EEG in a random frequency band (removing or attenuating one band’s power) and train the model to identify which band was removed. This encourages the model to learn representations that are sensitive to frequency-specific information, effectively tuning it to the spectral features crucial for specific downstream tasks. The band-prediction task is framed as a classification problem, where each class corresponds to the index of a removed frequency band. During fine-tuning, we randomly reject one band and compute a cross-entropy loss between the band-prediction head’s output and the true index of the dropped band. This task is lightweight and does not require any additional data beyond the unlabeled EEG sample itself.
+
+\input{tables/table_band}
+
+Stopped Band Prediction task is a shared self-supervision task across the three downstream tasks, with the frequency band divisions vary by tasks. The task-specific band divisions are summarized in Tables \ref{tab:band_speech}, \ref{tab:band_mental_stress}, \ref{tab:band_mi}. Both foundation models used in our study (CBraMod and LaBraM) were pre-trained at a sampling rate of 200 Hz. According to the Nyquist theorem, this limits the representable frequency range to approximately 100 Hz. Although higher frequency bands may be relevant for certain tasks like imagined speech decoding, our design is constrained by this 100 Hz upper limit.
+
+\textbf{Imagined Speech Classification – Amplitude Scaling Prediction:} In imagined speech decoding (using the BCI Competition 2020-III dataset~\citep{jeong20222020}), an important feature is the amplitude modulation of EEG signals, as certain cognitive or speech imagery events can manifest as subtle amplitude changes in specific frequency ranges. We adopt an amplitude scaling pretext task, inspired by prior work on scaling transformations for speech detection~\cite{jayalath2024brain}. We artificially scale the raw EEG signal by a random factor $\alpha$ (drawn from a discrete set of scaling factors, e.g. 16 possible values from -2x to 2x) and task the model with predicting the scaling factor. This is implemented as a regression or classification problem (we treat it as classification over discrete scale indices). By learning to recognize how a scaled EEG differs from a normal one, the model becomes sensitive to the amplitude dynamics of the signal, which can improve its ability to detect the presence or absence of imagined speech patterns.  The amplitude of EEG signal is stretched or telescoped through 16 scale factors. where the scale-augmented signal can be expressed as $x_i^{st} = \alpha * x_i$. The objective is to predict the scaling factor $\alpha$.
+
+\textbf{Motor Imagery – Temporal Jigsaw Task:} Motor imagery (using the BCI Competition IV-2a dataset~\citep{brunner2008bci}) entails a subject imagining limb movements, which produces EEG patterns with temporal dynamics (like event-related desynchronization in specific frequency bands following a cue). To ensure the model captures temporal order and dependencies, we introduce a temporal jigsaw task. We segment each EEG trial into a small number of consecutive time segments (for example, split into two or three chunks of equal length). We then randomly shuffle the order of these segments along the time axis and feed the jumbled sequence into the model. The model’s task is to predict the correct temporal order of the segments (essentially solving a jigsaw puzzle in time). In the simplest case of two segments, this reduces to a binary classification: whether the input is in correct chronological order or reversed. For more segments, we can have the model output a permutation or rank for each segment’s position. This task compels the model to learn temporal correlations and the progression of neural patterns over time – e.g. distinguishing the initial cue response period from the later motor imagery period. Mastering this pretext should enhance the model’s understanding of EEG time structure, benefiting tasks like motor imagery classification where timing (such as the onset of motor-related rhythms) is crucial.
+
+
+\section{More Details for Experimental settings}
+
+\subsection{Downstream BCI Tasks and Datasets}
+\label{sec:Appendix_datasets}
+Downstream BCI Tasks and Datasets: We evaluate on three diverse EEG decoding tasks:
+
+\textbf{Imagined Speech Classification} – We use the BCI Competition 2020 Phase III (BCIC2020-3) dataset~\citep{jeong20222020}, which involves subjects imagining speaking specific phrases. The task is to classify which phrase is being imagined  (“hello”, “help me”, “stop”, “thank you” and “yes”). EEG signals were recorded at 64 channels and 256 Hz sampling rate. This is a within-subject classification problem: models are trained and tested on data from the same subject (with a standard train/test split per subject provided by the competition). We adhere to the original competition data splits for consistency with prior work. We attempted a cross-subject evaluation for this dataset (training on some subjects and testing on others) but found that both CBraMod and LaBraM performed at chance level in that scenario, likely due to the extreme variability and limited data per subject in imagined speech. Therefore, we report results in the within-subject setting, averaging performance across subjects.
+
+\textbf{Mental Stress Detection} – We use public MentalArithmetic Stress dataset~\citep{goldberger2000physiobank,zyma2019electroencephalograms}, in which subjects perform arithmetic tasks under time pressure (stress condition) or relaxed conditions. EEG signals were recorded at 20 channels and 500 Hz sampling rate. The goal is to detect whether a given EEG trial corresponds to a high-stress condition or a low-stress condition (binary classification). We use a strict cross-subject protocol follow CBraMod: Subject 1 to 28 are set as training set, subject 29 to 32 are validation set and subiect 33 to 36 are set to test set. Evaluating is demonstrated on completely held-out subjects, to test generalization to unseen individuals’ stress responses.
+
+\textbf{Motor Imagery Classification} – We use the well-known BCI Competition IV 2a dataset~\citep{brunner2008bci}, which contains EEG recordings from subjects performing motor imagery of four classes (left hand, right hand, both feet, tongue). EEG signals were recorded at 22 channels and 250 Hz sampling rate. We follow the standard cross-subject evaluation: Subject 1-5, 6-7, 8-9 are used for training, validation, and test, respectively, the predefined splits from the competition.
+
+These tasks cover a range of EEG signal characteristics (from cognitive/internal speech processes to emotional stress responses to sensorimotor rhythms) and vary in number of classes and difficulty. They provide a solid testbed for our alignment approach. 
+
+\subsection{Preprocessing}
+\label{sec:Appendix_preprocessing}
+We follow the preprocessing pipelines recommended by the foundation model authors to ensure compatibility with the models. For CBraMod and LaBraM, EEG signals are re-referenced and band-pass filtered (follow the setting in CBraMod) and then downsampled to 200hz follow the pre-trained sampling rate. Then the signals will be segmented into short windows (1-second segments). We do not apply any task-specific feature engineering – the raw (preprocessed) signals are fed into the models. The same preprocessing is applied consistently across all adaptation methods for fairness.
+
+\subsection{Foundation Models}
+\label{sec:Appendix_models}
+
+We test our methods with two recent large-scale EEG foundation models as backbones:
+
+\textbf{CBraMod~\citep{wang2024cbramod}:} a Criss-Cross Brain Transformer model (Wang et al., 2025) that was pre-trained on 12 public EEG datasets using a masked patch reconstruction objective. CBraMod features a dual-stream attention architecture separating spatial and temporal attention, and it produces a 768-dimensional feature vector per EEG trial (after temporal pooling). We use the official pre-trained weights released by the authors.
+
+\textbf{LaBraM~\citep{jiang2024large}:} the Large Brain Model which was pre-trained on over 2,500 hours of EEG from around 20 datasets. LaBraM employs a ViT-like backbone with an EEG-specific tokenizer (based on vector-quantized neural spectral codes) and was trained to predict masked neural code tokens. We use the official pre-trained weights released by the authors.
+
+
+These two models are representative of current state-of-the-art EEG foundation models; they have complementary architectures and pre-training approaches, which provides a robust test of our alignment methods. For all experiments, we treat the foundation model as a fixed feature extractor initially and then apply the different adaptation strategies on top (as described below). 
+
+\subsection{Implementation Details}
+\label{sec:Appendix_Hyperparameters}
+
+\textbf{Finetuning and Adaptation Strategies:} 
+
+\begin{itemize}
+    \item \textbf{Full Supervised Finetuning:} The entire foundation model, along with the task-specific classification head, is trained end-to-end using labeled downstream data with 1-3 linear layers. This serves as a strong baseline for comparison.
+    \item \textbf{Lora Finetuning:} A parameter-efficient fine-tuning method that only introduces low-rank updates to a pre-trained model’s weights. We insert trainable rank-$r$ matrices in each attention projection (queries, keys, values) and in the feed-forward layers of each transformer block, following \cite{hu2022lora}. We allow these LoRA layers to be trained on the labeled data while the original weights are frozen. This efficiently adapts the backbone without full fine-tuning. We tried to apply LoRA to as many layers as possible (all self-attention and intermediate dense layers in CBraMod/LaBraM) to maximize adaptability.
+    \item \textbf{SHOT (Source Free Domain Adaptation):} We simulate a source-free domain adaptation setting for downstream tasks. We first train a classifier on the source training set (treating the foundation model as fixed feature extractor, akin to linear probing on source). Then, at test time, we adapt this classifier using the SHOT method: we freeze the classifier’s weights and instead update the feature extractor (foundation model) on the target (unlabeled test) data by maximizing the mutual information of predictions and minimizing entropy, as described by \cite{liang2020we}. In essence, SHOT uses the source-trained classifier’s “hypothesis” and adjusts the feature extractor to better fit target data without source data. Notably, while source-free domain adaptation methods like SHOT have been actively explored in other biosignals (e.g., EMG), they remain underexplored for EEG. Only very recent efforts have applied SHOT-style techniques to shallow neural networks in EEG~\citep{wang2024lightweight,li2024spdim}, and, to our knowledge, there is virtually no work integrating SHOT within EEG finetuning.
+    \item \textbf{Domain-SSL + Test-Time Training (TTT):} This is our full method. We fine-tune the model on the training set using our multi-task loss (with the appropriate domain-specific SSL tasks for that dataset) as described in the Method \ref{sec:Method} section. At inference, we apply test-time adaptation. In practice, we evaluate two variants: 
+
+    (a) TTT with SSL, which performs a single gradient step on the SSL task for each test sample; 
+
+    (b) TTT with Tent, which applies entropy minimization to test batches by updating batch normalization statistics.
+\end{itemize}
+
+For test-time adaptation, NeuroTTT (SSL) uses one gradient update per test sample on the self-supervised task, without online training. For Tent, we apply several updates per test batch to the batch normalization layers using momentum-based exponential moving averages. More hyperparameters for NeuroTTT are shown in Table \ref{tab:neurottt-hparams}.
+
+\begin{table}[t]
+\centering
+\caption{Test Stage hyperparameters for NeuroTTT (SSL)}
+\label{tab:neurottt-hparams}
+\begin{tabular}{l l}
+\toprule
+\textbf{Hyperparameters} & \textbf{Settings} \\
+\midrule
+Steps & 1 \\
+Batch size & 1 \\
+Learning rate & $1\times10^{-5}$ \\
+Dropout & 0.1 \\
+Optimizer & Adam \\
+online & False \\
+\midrule
+$w_1$ (Imagined Speech) & 0.6 \\
+$w_2$ (Imagined Speech) & 0.6 \\
+$w_1$ (Mental Stress) & 0.2 \\
+$w_2$ (Mental Stress) & 0.1 \\
+$w_1$ (Motor Imagery) & 0.1 \\
+$w_2$ (Motor Imagery) & 0.8 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+
+% \subsection{}
+% \label{}
+
+% \section{Results Discussion}
+% \label{sec:Appendix_results}
+% \suli{Discuss Why Lora performs bad}
+
+% \section{Ablation Study}
+% \label{sec:Appendix_ablation}
+% \textbf{Ablation Study}
+% We perform ablation studies to validate the contribution of each component of our approach: the domain-specific self-supervised finetuning tasks and the test-time adaptation mechanisms. 
+
+
+% \begin{itemize}
+%     \item \textbf{Each Self-Supervised Task:} Removing the auxiliary tasks in the finetuning stage significantly degrades performance. For imagined speech, if we disable the band-prediction task during finetuning (but keep amplitude scaling), the final accuracy drops by ~2\%. Likewise, removing amplitude scaling (but keeping band prediction) causes a drop of ~2\%. The combination of both tasks gave the highest accuracy, indicating they provide complementary benefits (frequency awareness and amplitude calibration). For stress detection, removing the A–P flip task reduced accuracy by ~2.5\%, and removing band prediction reduced it by ~1.5\%. For motor imagery, removing the temporal jigsaw task had a larger impact (~3\% drop) while removing band prediction cost ~1-2\%. These results confirm that each domain-specific SSL task offers unique useful signals to the model, and stacking them yields cumulative gains.
+%     \item \textbf{Test-Time Training:} We test the model’s performance with and without test-time training. Using our finetuned model (with domain SSL) but doing no TTT/Tent at test yields lower performance: e.g., on stress, no test adaptation gave \~75\% vs 79.6\% with Tent; on motor imagery, no adaptation gave \~58\% vs 60.5\% with adaptation. Interestingly, even on imagined speech (within-subject), applying TTT online improved accuracy from 63\% to 65.2\%, showing that even within one subject, slight temporal shifts can be compensated by on-the-fly self-supervision. On the other hand, if we apply test-time adaptation to a model that was not finetuned with domain SSL (say, a plain linear-probe baseline), the improvement was much smaller (often $\leq$1\%), suggesting that test-time adaptation is most effective when the model’s feature space has been properly aligned during training. In our view, the finetuning and test-time steps work in synergy: finetuning establishes a good alignment, and test-time tweaks fine-tune that alignment to the local data distribution.
+%     \item 
+% \end{itemize}
+
+\section{Limitations and Future Works}
+\label{sec:future}
+
+\textbf{Limitations:} 
+While our results demonstrate consistent gains across tasks and backbones, several limitations merit discussion:
+\begin{enumerate}
+    \item Task-Engineered SSL Dependence. Our alignment relies on manually designed domain-specific SSL tasks (e.g., band prediction, A–P flip, temporal jigsaw). These choices encode neuroscientific priors but may not be universally optimal; subpar task design can bias representations or yield negligible gains. Automating SSL design or meta-selecting pretext tasks remains future work.
+    \item Scope of TTT Parameter Updates. Our current TTT with SSL uses full-parameter updates during inference. While effective, this may be unnecessary or induce instability on noisy trials. Future work will evaluate restricted adaptation—e.g., updating only late blocks, normalization layers, or lightweight adapters—to better trade off stability, compute overhead, and accuracy.
+    \item TTT Stability vs. Benefit Trade-off. Test-time self-supervised training can be sensitive to noise and atypical trials, occasionally perturbing well-formed features. Although Tent offers a more stable BN-only alternative, its adaptation capacity is limited to normalization statistics and may under-correct severe shifts.
+\end{enumerate}
+
+\textbf{Future Work:} We believe this framework can be extended to other neural recording modalities (MEG, sEEG, fNIRS) and other tasks not explored in this paper. Future work will explore automated ways of generating domain-specific SSL tasks (perhaps via meta-learning) and more advanced test-time adaptation schemes (e.g. continuous adaptation in lifelong settings). We also envision incorporating subject metadata or physiological priors into the adaptation to further enhance personalization. Ultimately, aligning brain foundation models to downstream tasks and users is crucial for making these models truly practical, and our work takes an important step in that direction.

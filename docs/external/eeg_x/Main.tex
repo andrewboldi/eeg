@@ -1,0 +1,797 @@
+\documentclass{article} % For LaTeX2e
+\usepackage{iclr2026_conference,times}
+\input{math_commands.tex}
+
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{comment}
+\usepackage[caption=false]{subfig}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{tabularx}
+% For Tables ---------------------------
+% Preamble
+\usepackage{colortbl}
+\usepackage{geometry}
+\usepackage{multirow}
+\usepackage{caption}
+\usepackage{booktabs}
+\usepackage{lipsum}
+\usepackage{colortbl} % Load the colortbl package
+\usepackage{enumitem}
+\usepackage{pifont}
+\usepackage{subcaption}
+\usepackage{setspace}
+%\setstretch{0.96}
+\title{EEG-X: Device-Agnostic and Noise-Robust Foundation Model for EEG}
+% \title{EEG-X: Device-Agnostic Foundation Model for EEG}
+
+% Authors must not appear in the submitted version. They should be hidden
+% as long as the \iclrfinalcopy macro remains commented out below.
+% Non-anonymous submissions will be rejected without review.
+
+% \author{Antiquus S.~Hippocampus, Natalia Cerebro \& Amelie P. Amygdale \thanks{ Use footnote for providing further information
+% about author (webpage, alternative address)---\emph{not} for acknowledging
+% funding agencies.  Funding acknowledgements go at the end of the paper.} \\
+% Department of Computer Science\\
+% Cranberry-Lemon University\\
+% Pittsburgh, PA 15213, USA \\
+% \texttt{\{hippo,brain,jen\}@cs.cranberry-lemon.edu} \\
+% \And
+% Ji Q. Ren \& Yevgeny LeNet \\
+% Department of Computational Neuroscience \\
+% University of the Witwatersrand \\
+% Joburg, South Africa \\
+% \texttt{\{robot,net\}@wits.ac.za} \\
+% \AND
+% Coauthor \\
+% Affiliation \\
+% Address \\
+% \texttt{email}
+% }
+
+\author{Navid Mohammadi Foumani \\
+Emotiv Research \\
+Melbourne, Australia \\
+\texttt{navid@emotiv.com} \\
+\And
+Soheila Ghane \\
+Emotiv Research \\
+Melbourne, Australia \\
+\texttt{soheila@emotiv.com} \\
+\And
+Nam Nguyen \\
+Emotiv Research \\
+Sydney, Australia \\
+\texttt{namnguyen@emotiv.com} \\
+\And
+Mahsa Salehi \\
+Monash University \\
+Melbourne, Australia \\
+\texttt{mahsa.salehi@monash.edu} \\
+\And
+Geoffrey I. Webb \\
+Monash University \\
+Melbourne, Australia \\
+\texttt{geoff.webb@monash.edu} \\
+\And
+Geoffrey Mackellar \\
+Emotiv Research \\
+Sydney, Australia \\
+\texttt{geoff@emotiv.com} \\
+}
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to \LaTeX{} to determine where to break
+% the lines. Using \AND forces a linebreak at that point. So, if \LaTeX{}
+% puts 3 of 4 authors names on the first line, and the last on the second
+% line, try using \AND instead of \And before the third author name.
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+
+\iclrfinalcopy % Uncomment for camera-ready version, but NOT for submission.
+\begin{document}
+
+
+\maketitle
+
+\begin{abstract}
+
+Foundation models for EEG analysis are still in their infancy, limited by two key challenges: (1) variability across datasets caused by differences in recording devices and configurations, and (2) the low signal-to-noise ratio (SNR) of EEG, where brain signals are often buried under artifacts and non-brain sources. To address these challenges, we present \textit{EEG-X}, a device-agnostic and noise-robust foundation model for EEG representation learning. EEG-X introduces a novel location-based channel embedding that encodes spatial information and improves generalization across domains and tasks by allowing the model to handle varying channel numbers, combinations, and recording lengths. To enhance robustness against noise, EEG-X employs a noise-aware masking–reconstruction strategy in both raw and latent spaces. Unlike previous models that mask and reconstruct raw noisy EEG signals, EEG-X is trained to reconstruct denoised signals obtained through an artifact removal process, ensuring that the learned representations focus on neural activity rather than noise. To further enhance reconstruction-based pretraining, EEG-X introduces a novel dictionary-inspired convolutional transformation (DiCT) layer that projects signals into a structured feature space before computing reconstruction (MSE) loss, reducing noise sensitivity and capturing frequency- and shape-aware similarities. Experiments on datasets collected from diverse devices show that EEG-X outperforms state-of-the-art methods across multiple downstream EEG tasks and excels in cross-domain settings where pre-trained and downstream datasets differ in electrode layouts. The models and code are available at \url{https://github.com/Emotiv/EEG-X}.
+
+
+
+% EEG-X introduces a novel location-based channel embedding method, which enables spatial awareness and improves generalization across domains and tasks by allowing the model to train on varying channel numbers, combinations, and recording lengths.
+
+%EEG-X introduces a novel dictionary-inspired transformation layer applied to both the artifact-removed input and the reconstructed signal before computing MSE. This layer maps the signals into a structured representation space, enabling more effective MSE computation, reducing noise sensitivity, and can serve as a lightweight plug-in for improving existing methods. 
+
+% To further enhance reconstruction, EEG-X introduces a dictionary-inspired transformation layer applied to both the artifact-removed input and the reconstructed signal before computing the MSE loss. This layer, built from random convolutional kernels with varying dilations, maps the signals into a structured representation space. This approach balances comparisons across frequencies and neural patterns, reduces sensitivity to noise, and can serve as a lightweight plug-in for improving existing methods. 
+
+% Foundation models for EEG analysis are still in their infancy, limited by two key challenges: (1) variability across datasets caused by differences in recording devices and configurations, and (2) the low signal-to-noise ratio (SNR) of EEG, where brain signals are often buried under artifacts and non-brain sources. To address these challenges, we present \textit{EEG-X}, a foundation model for EEG representation learning designed to handle dataset variability and low SNR. We introduce a novel location-based channel embedding method, which enables spatial awareness and improves generalization across different domains and tasks by allowing the model to train on varying channel numbers, combinations, and recording lengths. A novel Quantile-based signal embedding further empowers this, which captures information in both time and frequency domains. Additionally, EEG-X employs a noise-aware masking–reconstruction strategy in both raw and latent spaces. Unlike previous models that mask and reconstruct raw noisy EEG signals, EEG-X is trained to reconstruct denoised signals obtained through an artifact removal process, ensuring that the learned representations focus on neural activity rather than noise. Experiments on datasets collected from diverse devices show that EEG-X outperforms state-of-the-art methods across multiple downstream EEG tasks and excels in cross-domain settings where pre-trained and downstream datasets differ in electrode layouts. EEG-X establishes a new benchmark as a robust and scalable foundation model for EEG analytics. The models and code are available at:
+
+% Foundation models for EEG analysis are still in their infancy, limited by unique data challenges such as a low signal-to-noise ratio—where brain signals are often buried under noise—and variability in recording setups caused by differences in recording devices and configurations. To address these challenges, we propose \textit{EEG-X}, a foundation model for EEG representation learning that combines latent space reconstruction with a novel raw signal reconstruction. Unlike previous models that mask and reconstruct raw EEG signals, EEG-X is trained to reconstruct denoised signals obtained through an artifact removal process, enhancing robustness to noise. Additionally, we introduce a novel EEG tokenization through location-based channel embedding and quantile-based input embedding, which enables spatial awareness and captures features in both time and frequency domains, improving generalization across different domains and tasks by allowing the model to train on varying channel numbers, combinations, and recording lengths. Experiments on datasets collected from diverse devices show that EEG-X outperforms state-of-the-art methods across multiple downstream EEG tasks and excels in cross-domain settings where pre-trained and downstream datasets differ in electrode layouts. EEG-X establishes a new benchmark as a robust and scalable foundation model for EEG analytics. The models and code are available at: 
+
+
+
+% Universal self-supervised models for EEG analysis are still in their infancy, limited by unique data challenges such as a low signal-to-noise ratio—where brain signals are often buried under noise—and variability in recording setups caused by differences in recording devices and configurations. To address these challenges, we propose \textit{EEG-X}, a universal EEG representation learning framework that combines latent space reconstruction with a novel ICA-based raw signal reconstruction. Unlike previous models that mask and reconstruct raw EEG signals, EEG-X is trained to reconstruct denoised signals obtained through Independent Component Analysis (ICA), enhancing robustness to noise. Additionally, we introduce a novel location-based channel embedding method, which enables spatial awareness and improves generalization across different domains and tasks by allowing the model to train on varying channel numbers, combinations, and recording lengths. Experiments on datasets collected from diverse devices show that EEG-X outperforms state-of-the-art methods across multiple downstream EEG tasks and excels in cross-domain settings where pre-trained and downstream datasets differ in electrode layouts. EEG-X establishes a new benchmark as a robust and scalable universal model for EEG analytics. The models and code are available at:
+\end{abstract}
+
+% to do list: 1- Add an anonymous link to the code, 2- explanation about the use of GenAI
+\vspace{-0.4cm}
+\section{Introduction}
+%% EEG Definition, importance, and Application
+Electroencephalography (EEG) is a non-invasive method for recording brain activity by placing electrodes on the scalp, offering high temporal resolution and relatively low cost~\citep{EEG2002,EEG2020}. It is widely used in both neuroscience and clinical practice, where it supports the diagnosis of neurological disorders such as epilepsy and sleep disorders~\citep{EEG18App, EEG20seizure}, as well as in applications like sleep stage classification, affective state analysis, motor imagery decoding, stress detection, and seizure classification~\citep{EEG19App,EEG20App,rakovic2024measuring}. Despite these benefits, effectively modeling EEG data often requires large amounts of annotated data, expert knowledge, and techniques specially designed to the unique characteristics of each task~\citep{weng2024self}.
+
+% Foundation models in other domains and benefits
+Recently, self-supervised pretraining has achieved remarkable success in natural language processing (NLP), computer vision (CV), and speech/audio processing~\citep{bommasani2021opportunities,yu2022coca,chen2024vast}. Models pretrained on large unlabeled datasets can be efficiently adapted to a wide range of downstream tasks, often requiring little or no labeled data. A major advantage of these models is their ability to handle multiple tasks within a single framework, unlike traditional approaches that typically require large labeled datasets and task-specific algorithms. This representation learning approach simplifies development by reducing the need for task-specific models and extensive labeling, while also improving generalization by leveraging shared patterns from diverse data. This makes the model more adaptable and efficient across various tasks, forming the basis of what is known as a foundation model.
+
+
+%%%% Foundation model in EEG and Challenges
+While foundation models have shown great success in vision, language, and speech, their application to EEG data remains limited and has yet to achieve comparable breakthroughs~\citep{weng2024self,foumani2023deep}. Two key challenges hinder the broader adoption of EEG foundation models: (1) substantial variability across EEG datasets due to differences in recording equipment, which introduce variations in sampling frequencies, electrode placements, and the number of channels, and (2) the inherently low signal-to-noise ratio of EEG, where neural activity is often buried under artifacts and non-brain sources~\citep{artifacts_survey,IClabel,rASR}. To address these challenges, we propose EEG-X, a foundation model for EEG representation learning that learns device-agnostic and noise-robust representations through a location-based channel embedding to handle variability across devices, a noise-aware masking–reconstruction strategy for robust pretraining, and a dictionary-inspired transformation layer that enhances reconstruction loss by balancing comparisons across frequency bands.
+
+%% 1) location-based 
+%% 2) artificat removal
+
+The first component, location-based channel embedding, is designed to handle device variability. Earlier models typically rely on learnable channel embeddings~\citep{Biot,LaBraM,EEGPT,cbramod} to indicate signal source, which can work within a single dataset but transfer poorly across devices, as the same channels may not exist across different EEG devices. % making the learned embeddings less transferable across diverse recording setups. 
+%This limitation arises because EEG systems often use different electrode sets, so learned embeddings may not align across setups. 
+In addition, such embeddings do not account for electrode positions or preserve the similarity between neighboring regions on the scalp, both of which are important for modeling brain activity. To overcome these issues, EEG-X encodes each electrode’s spatial location together with its neighbors, ensuring that nearby electrodes receive similar embeddings. %This preserves spatial structure and allows the model to generalize more effectively across datasets with different channel configurations.
+
+The second component tackles the challenge of low SNR in EEG. EEG-X employs a noise-aware masking–reconstruction strategy in both raw and latent spaces. Unlike prior models that mask inputs and reconstruct the original noisy signals~\citep{Bendr,maeeg,EEGPT,cbramod}, EEG-X reconstructs artifact-removed signals obtained through an artifact removal process, ensuring that the learned representations capture neural activity rather than noise. In latent space reconstruction, the model predicts the representations of unmasked data from masked samples in an abstract space, where irrelevant raw-level details are suppressed. %This enhances robustness to noise. %and improves the semantic richness of the learned features.
+
+%% 3) tranformation --> a) MSE effective (not sensitive to high amplitude noise, consider all frequency bands in calculation), representaion effective/rich, b) noise/high amplitude... dialtion -> frecuency range , kernel -> random shapes in differnet sizes allowing local 
+
+Finally, to improve reconstruction loss, EEG-X introduces a \textbf{Di}ctionary \textbf{C}onvolution \textbf{T}ransformation (DiCT) layer. While Mean Squared Error (MSE) remains the default reconstruction loss in self-supervised prediction tasks and performs well in high-SNR domains such as vision, language, and speech~\citep{data2vec2-2023,data2vec2022}, it is less effective for EEG time series~\citep{MSE,foumani2024series2vec}. First, in noisy signals, MSE is dominated by high-amplitude components and heavily penalizes large errors. Second, MSE does not consider frequency similarities of two time series. Third, MSE for time series does not directly consider or evaluate the ``shape" of the series (Please refer to the Appendix~\ref{app:DiCT} for details and demonstrations).
+EEG-X mitigates these issues by projecting both artifact-removed inputs and reconstructed output into a structured space using random convolutional kernels with varying dilations, before computing MSE loss. Random convolutions have proven effective feature extractors for time series classification~\citep{Rocket,Hydra}. This transformation reduces noise sensitivity, balances comparisons across frequency bands, and incorporates shape similarity. This transformation can serve as a lightweight plug-in to improve existing reconstruction-based methods. Here is a summary of contributions:
+\begin{itemize}[left=0.6em]
+\item \textbf{Location-Based Channel Embedding}: Encodes electrode positions and their neighborhoods, preserving brain-region similarity and enabling robust transfer across devices with different channel layout.
+\item \textbf{Noise-Aware Reconstruction}: Learns from artifact-removed signals in both raw and latent spaces, ensuring representations focus on neural activity and remain robust to low-SNR EEG.
+\item \textbf{Dictionary Convolution Transformation (DiCT)}: A lightweight random convolutional projection layer that mitigates MSE limitations by reducing noise sensitivity, balancing comparisons across frequency bands, and incorporating shape similarity into reconstruction loss.
+\item \textbf{Extensive evaluation}: EEG-X establishes itself as a \emph{foundation model} for EEG, achieving state-of-the-art performance across diverse tasks and datasets, and demonstrating strong cross-domain generalization even when pretraining and downstream datasets differ in tasks and electrode configurations.
+\end{itemize}
+
+
+% The first key component of EEG-X addresses device variability and enables cross-domain generalization through novel input tokenization. Previous models typically rely on learnable channel embeddings~\citep{Biot,LaBraM,EEGPT} to inform the model about the source of the signal, but lack spatial awareness of individual electrodes and their neighbors, and often require identical channel sets during training and inference—or that the inference channels be a subset of those used in training. Consequently, they fail in cross-domain settings where pretraining and downstream datasets differ in channel layouts. To overcome this limitation, we introduce a location-based channel embedding that encodes electrode positions and their neighboring relationships, allowing pretraining on diverse datasets with varying electrode configurations. This design ensures that adjacent electrodes receive similar embeddings, preserving spatial structure and enabling generalization across devices.
+
+
+% To overcome this limitation, we introduce a location-based channel embedding that encodes electrode positions and their neighboring relationships, allowing pretraining on diverse datasets with varying electrode configurations. This design ensures adjacent electrodes receive similar embeddings, preserving spatial structure and enabling generalization across devices. In addition, we patchify each channel’s recording into fixed-length segments using a quantile-based signal embedding that captures distributional context in both time and frequency domains within each channel, enriching the representation with signal-level semantics and enabling handling of variable input lengths and numbers of channels. Together, these mechanisms establish EEG-X as a device-agnostic foundation model for EEG.
+
+% The second key component tackles the challenge of EEG’s inherently low signal-to-noise ratio. EEG-X employs a noise-aware masking–reconstruction strategy in both raw and latent spaces. Unlike prior models that mask inputs and reconstruct the original noisy signals~\citep{Bendr,maeeg,EEGPT,cbramod}, EEG-X reconstructs artifact-removed signals obtained through an artifact removal process, ensuring that the learned representations focus on neural activity rather than noise. In latent space reconstruction, the model predicts the representations of unmasked data from masked samples in an abstract representation space, where irrelevant raw-level details are suppressed. To further enhance this reconstruction objective, EEG-X incorporates a dictionary-inspired transformation layer that projects both artifact-removed inputs and reconstructions into a structured space using random convolutional kernels with varying dilations, before computing the reconstruction loss. This transformation balances comparisons across frequency bands, reduces noise sensitivity, and can also serve as a lightweight plug-in to improve existing methods.
+
+%%%% Foundation model in EEG and Challenges
+% While foundation models have shown great success in other domains, their application to EEG data remains limited and has yet to achieve comparable breakthroughs~\citep{weng2024self,foumani2023deep}. Two key challenges limit the broader adoption of EEG models: (1) EEG signals often have a low signal-to-noise ratio, with data buried under external artifacts and non-brain sources, and (2) significant variability exists across EEG datasets due to differences in recording equipment, which may lead to different settings such as varying sampling frequencies, electrode placements, and the number of channels.
+
+% To address these challenges, we propose EEG-X, a universal model for EEG representation learning. EEG-X employs a dual masking-reconstruction framework operating on both the latent representation space and the raw EEG space. Reconstruction in the latent space enhances the robustness of the representation to noise, while reconstruction in the raw EEG space aims to maximize the information content of the learned representation with respect to the raw EEG data. The first key component of EEG-X is a novel approach to learning robust EEG representations from noisy EEG data. %EEG-X reconstructs the masked input in both the latent space and the raw signal space. While previous approaches mask and reconstruct the original raw input~\citep{Bendr,maeeg,EEGPT}, EEG-X reconstructs an ICA-cleaned version of the signals—removing artifacts through Independent Component Analysis (ICA). This ensures the learned representations are noise-robust and semantically enriched, as the model learns to recover the denoised EEG signal (addressing challenge 1).
+
+% The second key component of EEG-X is a novel approach to enabling universal model training across different EEG devices while leveraging neighboring information for each channel. Previous models rely on learnable channel embeddings, but often lack spatial awareness of individual channels and their neighbors~\citep{Biot,LaBraM,EEGPT}. As a result they fail to be used in a cross-domain setting when the same channels are not present in both the pretraining and downstream datasets. To address this, we introduce a novel channel embedding method based on electrode locations, enabling pre-training on various datasets with different combinations of electrodes (different devices with different electrode layouts). 
+% Moreover, our approach ensures the model is aware of the neighbors of electrodes. Adjacent electrodes receive similar embeddings, preserving the spatial relationships and enabling cross-domain training even where the pretrained and downstream datasets do not share the same electrode layouts (addressing challenge 2).
+
+% Here is a summary of contributions:
+% \begin{itemize}%[left=0.5em]
+%     \item \textbf{Dual Masking-Reconstruction Framework:} EEG-X utilizes both latent space and raw space reconstruction loss, enabling the model to maximize the information content of the latent representation from raw EEG and improve robustness to noise.
+%      \item \textbf{ICA-Cleaned Signal Reconstruction:} Instead of reconstructing raw EEG signals, EEG-X reconstructs an ICA-cleaned version of the EEG. This ensures noise-robust representations by training the model to recover denoised signals, significantly reducing sensitivity to artifacts.
+%      \item \textbf{Location-Based Channel Embedding:} We propose a channel embedding method based on electrode locations and neighboring relationships, preserving spatial structure and enabling generalization across EEG data from devices with varying channel layouts in both pretraining and cross-domain settings.
+% \end{itemize}
+%This work builds on our previous collaboration between Emotiv and Monash University, where we introduced a model to mitigate the low signal-to-noise ratio in self-supervised EEG representation learning. We encountered two key challenges: first, 
+% Our previous method for mitigating the low signal-to-noise ratio in self-supervised EEG representation learning encountered two key challenges~\citep{eeg2rep}. First, the imbalance in training samples across different headsets, where we had limited data from one device and significantly more from another, highlighted the need for cross-domain training. Second, while self-supervised models often struggle with noise in EEG data, we found that incorporating our novel artifact removal loss function as an auxiliary objective helped the model learn more robust representations by reducing the influence of non-brain artifacts. This paper addresses these challenges.
+\vspace{-0.5cm}
+\section{Methodology of EEG-X}
+\vspace{-0.3cm}
+\begin{figure}[]
+    \centering
+    \includegraphics[trim=2.7cm 8.5cm 17.8cm 1.7cm, width=0.7\textwidth]{Figs/EEG-X.pdf}
+    \caption{Architecture of EEG-X with three components—tokenizer (with location-based channel embedding), latent space self-reconstruction, and raw space reconstruction with artifact removal and DiCT. Pretrained using latent- and raw-space reconstruction losses.}
+    \label{fig:EEG-X}
+    \vspace{-0.5cm}
+\end{figure}  
+
+Fig.\ref{fig:EEG-X} illustrates the architecture of EEG-X, which consists of three main components: (1) an input tokenizer with location-based channel embedding and signal embedding, (2) latent space self-reconstruction, and (3) noise-aware raw space reconstruction with artifact removal and a DiCT layer. First, the raw EEG signal %, $X \in \mathbb{R}^{C \times L}$ (where $C$ represents the number of channels and $L$ represents the number of time points), 
+is divided into equal-sized segments and fed into the signal embedding, producing input tokens. To enhance these tokens with spatial information, we incorporate our novel location-based channel embeddings, derived from electrode locations (Section~\ref{sec:tokenizer}). The enriched patches are then processed using a dual self-supervised learning approach: a student–teacher architecture in latent space and an encoder–decoder framework in raw space. Specifically, in latent space, we encode a masked version of the input EEG (student mode) and generate training targets by encoding the unmasked version using an EMA teacher (Section~\ref{sec:latent-space}). In parallel, the raw EEG signal undergoes artifact removal, and both the artifact-removed input and the reconstructed signal are passed through a DiCT layer before computing the reconstruction loss. This complementary objective ensures robust, artifact-free, and semantically rich EEG feature learning (Section~\ref{sec:ica_reconstruction}). For downstream tasks, the tokenizer and student encoder are frozen, and only an off-the-shelf classifier is trained on top of the student encoder’s representations.
+
+
+
+% We introduce a novel channel embedding scheme based on the 10-20 electrode system, which enables the model to incorporate spatial information about electrode positions, enhancing its ability to capture meaningful spatial dependencies within EEG data. In our approach, the representations of the original unmasked training data are predicted using an encoding derived from the masked sample in the abstract representation space, rather than directly in the raw data space. This design choice helps eliminate the need for domain- and task-specific configurations, making the model more generalizable across various EEG tasks. Additionally, it effectively reduces the presence of unnecessary raw-level details or noise, which are common challenges in EEG time series data. Another key feature of our model is the novel artifact-removed raw input reconstruction component. This module is designed to enhance data quality by mitigating noise and artifacts, thereby improving the overall robustness and reliability of the learned representations.
+\vspace{-0.2cm}
+\subsection{EEG Tokenizer} \label{sec:tokenizer}
+\vspace{-0.2cm}
+Our goal is to model heterogeneous EEG signals—recorded using various devices with different channel configurations, combinations, and recording lengths—within a unified framework.
+
+\textbf{Signal Embedding:} 
+Let $X = \{x_1, x_2, \dots, x_C\}$ represent EEG recordings from $C$ channels, each of length $L$, where $x_c \in \mathbb{R}^{L}$. To handle varying recording lengths, we tokenize each channel's recording into fixed-length segments of size $w \in \mathbb{R}^{+}$ with an overlap of $o$ ($o < w$, typically $o = w/4$). Each token $t_{c, i}$ is generated by sliding a window of size $w$ with overlap $o$ across the signal:
+\begin{equation}
+t_{c, i} = x_c[(i-1) \cdot (w - o) + 1 : i \cdot w], \quad \text{for} \quad i = 1, 2, \dots, \left\lceil \frac{L}{w - o} \right\rceil
+\end{equation}
+Each token $t_{c, i}$ represents a fixed-length segment of the original signal $x_c$. 
+To capture both temporal and spectral characteristics, we apply the Short-Time Fourier Transform (STFT) to each token, using the magnitude of the frequency representation~\citep{Biot}. The transformed tokens are then passed through a linear layer to obtain embeddings $e_{c, i}$:
+\begin{equation} e_{c, i} = W \left| \text{STFT}(t_{c, i}) \right| + b, \quad e_{c, i} \in \mathbb{R}^{d_e} \end{equation}
+Here, $ \mathbb{R}^{d_e} $ denotes the embedding dimension, and the transformation is parameterized by a learned weight matrix $W$ and bias $b$. This tokenization process is similar to natural language processing, where each EEG sample is treated as a sequence of tokens, similar to words in a sentence.
+
+While this signal embedding addresses variations in recording length, handling channel variability remains a challenge. Previous approaches train an embedding parameter for all channels in the data and add the corresponding channel embedding to the token~\citep{Biot,LaBraM,EEGPT,cbramod}; however, they present several limitations: (1) The same channels may not exist across different EEG devices, making the learned embeddings less transferable across diverse recording setups. (2) Channel embeddings may not account for the spatial locations of electrodes on the scalp, which are crucial for accurately modeling the brain's spatial activity patterns. (3) They do not preserve the similarity between neighboring regions on the scalp, which can lead to the loss of meaningful spatial relationships. These limitations highlight the need for a new embedding strategy that incorporates both the spatial location of the channels and their relationships across different devices, which our method aims to address.
+
+\textbf{Location-based Channel Embedding:} 
+Our goal is to incorporate electrode location information into the model to enhance its representations. The position of an electrode determines the area of the brain whose activity it monitors and hence is critical to interpreting its signal. To encode channel location, we map each electrode to Cartesian coordinates on the scalp using a universal location mapping (Fig.\ref{fig:LCE}). For simplicity, we illustrate the 64-channel system in the figure as the universal location mapping, which outputs coordinates for any input channel. In practice, our mapping is more comprehensive, covering nearly all standard electrode locations on the scalp (see Appendix~\ref{apx:Location_mapping}). To transform these coordinates into embeddings, we adapt sinusoidal absolute position encodings from transformers~\citep{attention2017,ConvTran2023}. Given an electrode's position $(u, v)$ in the coordinate system, the embedding is defined as: 
+% Our goal is to incorporate electrode location information into the model to enhance its representation.% Fig.~\ref{fig:EEG-X} (left) shows the standard 10-20 electrode placement system for a 64-channel EEG setup—a widely used standard for electrode placement based on 10\% or 20\% intervals between anatomical landmarks on the scalp. %The position of an electrode determines the area of the brain whose activity it monitors and hence is critical to interpreting its signal.  We employ a simple yet effective approach to encode spatial information as channel embeddings by leveraging the Cartesian coordinates of each electrode. Inspired by fixed position encoding techniques~\citep{attention2017,ConvTran2023}, we generate $d_{e}$-dimensional embeddings for each electrode location using sine and cosine functions. Given an electrode's position $(u, v)$ in the coordinate system, the embedding is defined as:
+\begin{equation}
+\begin{aligned}
+    p_{u,v}(4k) &= \mathrm{sin}\, u\omega_k, \quad 
+    p_{u,v}(4k+1) = \mathrm{cos}\, u\omega_k, \\
+    p_{u,v}(4k+2) &= \mathrm{sin}\, v\omega_k, \quad 
+    p_{u,v}(4k+3) = \mathrm{cos}\, v\omega_k, \quad \omega_k= 1000^{-4k/d_{e}}
+\end{aligned}
+\label{eq:apeV}
+\end{equation}
+where $k$ ranges from $0$ to $\frac{d_{e}}{4}$, $d_{e}$ is the embedding dimension, and $\omega_k$ is the frequency term that ensures unique embeddings for up to 1000 positions by assigning different sinusoidal frequencies. 
+
+\begin{figure*}
+  \centering
+  \subfloat[]{%
+    \includegraphics[trim= 1cm 9cm 12cm 3.5cm, width=0.65\linewidth]{Figs/CLE.pdf}
+    \label{fig:LCE}%
+  }\hfill%
+    \subfloat[]{%
+    \includegraphics[trim=1cm 0cm 1cm 5.5cm, width=0.28\linewidth]{Figs/F4_positions_similarity.eps}
+    \label{fig:F4_position}%
+  }
+  \vspace{-0.3cm}
+  \caption{(a) Location-based channel embedding using a universal scalp coordinate mapping to assign each channel Cartesian coordinates. (b) Embedding similarity of electrode F4 with all other channels, showing higher similarity to nearby electrodes (e.g., F2, F6) than distant ones (e.g., P7).}
+  \label{fig:LCE_F4}
+  \vspace{-0.5cm}
+\end{figure*}
+% \begin{figure}
+%   \centering
+%     \includegraphics[trim= 1cm 10cm 1cm 3cm, width=0.98\linewidth]{Figs/CLE.pdf}
+%     \caption{Embedding similarity (dot product) between the $F4$ electrode and all other electrodes, where a higher dot product indicates greater similarity.}
+%     \label{fig:F4_position}
+% \end{figure}
+This approach allows signals from nearby electrode positions to receive similar embeddings. Specifically:
+\begin{align}
+\text{Dist}((u_i, v_i), (u_j, v_j)) 
+&< \text{Dist}((u_i, v_i), (u_k, v_k)) \nonumber 
+&\implies p_{u_i, v_i} \cdot p_{u_j, v_j} 
+> p_{u_i, v_i} \cdot p_{u_k, v_k}
+\end{align}
+Where $\text{Dist()}$ is the distance function in Cartesian coordinates, and $p_{u_i, v_i}, p_{u_j, v_j} \in \mathbb{R}^{d_e}$ represent the channel embeddings of the electrodes at positions $(u_i, v_i)$ and $(u_j, v_j)$, respectively. The equation demonstrates that electrodes closer in physical space (i.e., neighboring electrodes) will have higher similarity in their embeddings, as indicated by the dot product.
+
+Fig. \ref{fig:F4_position} shows the embedding similarity between electors $F4$ with all other electrodes. For example, as shown in Fig. \ref{fig:F4_position}, signals from the $F4$ electrode will have embeddings more similar to those of $F2$ and $F6$ than to other electrodes (such as $P7$). As a result, when any of these electrodes are present in a dataset, the model can effectively utilize them. If an electrode is missing or too noisy to be useful, the model can reconstruct the signal primarily using data from adjacent electrodes. This approach mitigates the issue of missing channels across devices, as it maintains consistent channel relationships based on location, even if the channel labeling differs. Additionally, this encoding provides the model with spatial awareness, enabling it to recognize regional brain activity patterns, where neighboring areas exhibit similar behaviors while differing from other regions.
+
+% It is important to note that all datasets used in this study follow the 10-20 standard system. However, this encoding method is not limited to the 10-20 system or a 64-channel configuration; it can be easily adapted to other EEG setups with varying channel numbers and configurations by utilizing their spatial coordinates.
+
+% \subsubsection{Temporal Position Embedding:} In EEG data, the sequential order of tokens within each channel represents critical temporal information. To incorporate this temporal structure, we apply absolute positional embeddings to the token embeddings. Similar to the channel embeddings, we utilize fixed sinusoidal and cosine functions, which provide a parameter-free solution to encode positional information effectively.
+
+% \subsection{Latent Space Self-prediction} \label{sec:latent-space}
+% The EEG-X model is pre-trained using two objectives: latent space self-prediction and raw space reconstruction (see Section~\ref{sec:ica_reconstruction}). The goal of latent space self-prediction is to predict the representation of an EEG sample based on a masked view of the same input. This method has shown to be successful in different domains including image, text and EEG~\citep{data2vec2022,data2vec2-2023,i-jepa23,eeg2rep}. This method relies on four main components: (1) masking, (2) a teacher network to generate rich representations from unmasked inputs, (3) a student network to process masked inputs, and (4) a predictor network to predict target representations from the student encoder output.
+
+% \subsubsection*{\textbf{Masking:}} After embedding the input sample as a sequence of tokens, a subset of these tokens is masked, leaving the unmasked tokens to be processed by the student encoder. We use the Semantic Subsequence Preserving (SSP) method~\citep{eeg2rep} to ensure the student encoder generates semantically rich representations by providing sufficient contextual information.
+
+% \subsubsection*{\textbf{Teacher network:}} uses an 8-layer standard Transformer architecture~\citep{attention2017, bert2018} to process the complete (unmasked) input tokens and generate training targets. Training targets are derived from the teacher's output, rather than its input (target encoder output is shown in green and the training target is highlighted by the pink box in Fig.\ref{fig:EEG-X}). This ensures that each target representation captures high-level semantics by aggregating knowledge from all input patches via the self-attention mechanism~\citep{data2vec2022, data2vec2-2023, i-jepa23}.
+
+% \subsubsection*{\textbf{Student network:}} shares the same architecture as the teacher network (8-layer standard Transformer) but differs in its function, using the masked version of the input embedding to generate representations for visible patches. Following the Masked Autoencoders (MAE)~\citep{mae2022}, we encode only the non-masked segments of the input, which helps reduce compute cycles.
+
+% \subsubsection*{\textbf{Predictor network:}} leverages the output of the student network along with randomly chosen masked tokens to regress the training targets. The mask tokens are parameterized by a shared learnable vector with an added positional embedding. To enhance the integration of contextualized information, the predictor network uses a 2-layer cross-attention-based Transformer~\citep{bert2018}. In this setup, the masked tokens serve as queries, while the keys and values are derived from the student encoder. This cross-attention mechanism effectively blends two distinct embedding sequences of varying lengths and origins~\citep{attention2017}.
+
+% \subsubsection*{\textbf{$\mathbf{L_2}$ Loss:}} Given training targets $Y^B_i$ (shown in green in Fig.\ref{fig:EEG-X}) and the predicted representations $\hat{Y}^B_i$ (shown in pink in Fig.\ref{fig:EEG-X}), we use the $L2$ loss: 
+% \vspace{-0.2cm}
+% \begin{equation}\label{eq:L2}
+%     \text{$Loss (\hat{Y}^B_i, Y^B_i)$} = \frac{1}{|B|}\sum_{j \in B} \|\hat{y}_j - y_j \|_2^2
+% \end{equation}
+% where $B$ is the set of indices for the masked patches. 
+
+% \subsubsection*{\textbf{Exponential Moving Average Updates (EMA):}}
+% The input embedding parameters $\theta$, student network parameters $\phi$, and predictor parameters $\psi$ are optimized using gradient-based methods. However, the target network's parameters $\bar{\phi}$ undergoes updates using an exponentially moving average (EMA)~\citep{data2vec2022,eeg2rep} of the student network parameters:
+% \vspace{-0.2cm}
+% \begin{equation} \label{eq:EMA}
+%     \bar{\phi} = \tau\bar{\phi} + (1-\tau)\phi
+% \end{equation}
+% We implement a schedule for the hyperparameter $\tau$ that linearly increases from an initial value $\tau_0$ to the target value $\tau_e$ during the first $\tau_n$ updates. After this initial phase, the value remains constant for the rest of the training. This approach ensures that the teacher network is updated more frequently in the early stages of training when the student network is random, and less frequently in later stages when more robust parameters have been learned.
+
+\subsection{Latent Space Self-Prediction} \label{sec:latent-space}
+EEG-X is pretrained with two objectives: latent space self-reconstruction and raw space reconstruction (Section~\ref{sec:ica_reconstruction}). The goal of latent space self-reconstruction is to predict the representation of an EEG sample based on a masked view of the same input~\citep{data2vec2022,data2vec2-2023,i-jepa23,eeg2rep}. This method consists of masking, a teacher encoder, a student encoder, and a predictor. We adopt the Semantic Subsequence Preserving (SSP) method~\citep{eeg2rep} to select masked tokens. Both teacher and student are 4-layer Transformers~\citep{attention2017,bert2018}; the teacher encodes unmasked inputs, while the student processes masked inputs, similar to MAE~\citep{mae2022}. A 2-layer cross-attention Transformer predicts masked token representations from the student to match the teacher’s outputs. The training loss has two parts. First, the $L_2$ distance between predictions $\hat{Y}^B_i$ and targets $Y^B_i$:
+\begin{equation}\label{eq:L2}
+\text{$\mathcal{L}_{\text{Align}} (\hat{Y}^B, Y^B)$} = \frac{1}{|B|}\sum_{j \in B} \|\hat{y}_j - y_j \|_2^2
+\end{equation}
+where $B$ is the set of masked patches. Teacher parameters are updated as an EMA of student parameters.
+% Teacher parameters $\bar{\phi}$ are updated as an exponentially moving average of student parameters $\phi$:
+% \begin{equation} \label{eq:EMA}
+% \bar{\phi} = \tau\bar{\phi} + (1-\tau)\phi
+% \end{equation}
+% with $\tau$ scheduled to increase from $\tau_0$ to $\tau_e$, enabling faster teacher updates early in training and slower updates later. 
+Second, to ensure robust representations and prevent collapse, we add a regularization term ($\mathcal{L}_{\text{Reg}}$)~\citep{vicreg2022}. This penalizes variance collapse and enforces covariance regularization across dimensions, encouraging the student to produce informative and diverse embeddings.
+
+\subsection{Noise-aware raw space reconstruction} \label{sec:ica_reconstruction}
+
+While latent space reconstruction improves robustness to noise, we introduce a complementary raw space reconstruction loss to maximize the information content of representations from raw EEG. Previous models primarily reconstruct raw EEG signals, but this is challenging due to low signal-to-noise ratio, where artifacts often dominate the brain signal. EEG-X addresses this by reconstructing artifact-removed inputs, ensuring learned representations capture neural activity. Reconstruction loss choice is also critical: although MSE is the de facto objective in self-supervised reconstruction, it often overemphasizes high-amplitude components, heavily penalizes large errors, overlooks frequency similarities, and fails to capture the shape of time-series patterns. EEG-X mitigates these issues with the \textbf{Di}ctionary \textbf{C}onvolution \textbf{T}ransformation (DiCT), which projects both artifact-removed inputs and reconstructions into a structured feature space, making the loss less sensitive to noise, balanced comparisons across frequency bands, and aware of shape similarity.
+
+\textbf{Artifact Removal:}  
+Our framework is agnostic to the choice of denoising method, allowing integration of any artifact-removal technique and ensuring flexibility across datasets and recording setups. In this work, we adopt ICA with ICLabel~\citep{IClabel} as a strong starting point (see Appendix~\ref{app:artifact} for a broader discussion of alternatives). After decomposing EEG into independent components, ICLabel uses a neural network classifier trained on large-scale expert-labeled datasets to assign probability scores across seven categories: brain activity, eye movements, muscle activity, heart signals, line noise, channel noise, and others. Components with high artifact probabilities are removed, and the remaining components are projected back to reconstruct a cleaner EEG signal. This provides a controlled reconstruction target, though alternative methods can be readily substituted without altering the framework.
+
+\textbf{Dictionary Convolution Transformation (DiCT):} To improve reconstruction loss for EEG signals, we introduce \textit{DiCT}, inspired by Hydra~\citep{Hydra}. 
+DiCT projects both the artifact-removed input $\mathbf{X}_{\text{clean}} \in \mathbb{R}^{C \times L}$ 
+and the decoder output $\mathbf{X}_{\text{decoder}} \in \mathbb{R}^{C \times L}$ into a structured feature space before computing MSE. 
+We use $G$ groups of random convolutional kernels, each with $K$ competing kernels. 
+For each group $g$, convolutional responses are computed as
+\begin{equation}
+r_{g,k}(t) = (\mathbf{x} * \mathbf{w}_{g,k})(t),
+\end{equation}
+where $*$ denotes 1D convolution. At each time step, kernels within a group \textit{compete} 
+and only the strongest (max or min) responses contribute to the dictionary representation. 
+To capture information across multiple temporal scales, kernels are applied with dilations drawn from $d \in \{2^0, 2^1, 2^2, \dots\}$ subject to the constraint that the effective receptive field does not exceed the input length.
+The transformed representation of a signal $\mathbf{X}$ is denoted by $\mathcal{F}(\mathbf{X})$, 
+formed by aggregating winning responses across groups and dilations. 
+Reconstruction loss is then computed as 
+\begin{equation}
+\mathcal{L}_{\text{Rec}}(\mathbf{X}_{\text{clean}}, \mathbf{X}_{\text{decoder}}) 
+= \left\| \mathcal{F}(\mathbf{X}_{\text{clean}}) - \mathcal{F}(\mathbf{X}_{\text{decoder}}) \right\|_2^2 .
+\end{equation}
+
+Compared to direct time-domain MSE, DiCT offers: 
+(1) \textit{Noise robustness} – random convolutions distribute error across kernels, reducing sensitivity to outlier artifacts; 
+(2) \textit{Frequency balance} – dilated kernels capture multi-scale temporal patterns, considering low- and high-frequency dynamics; 
+(3) \textit{Shape-awareness} – dictionary competition emphasizes structural similarity rather than pointwise amplitude matching (For a detailed demonstration of these properties, see Appendix~\ref{app:DiCT}).
+
+\textbf{Decoder and Training Objective:}  
+We use a two-layer Transformer with a 1D transposed convolution (deconvolution) decoder, which takes as input the concatenated outputs of the predictor network and the student encoder to generate reconstructions.
+EEG-X is pre-trained with a combination of latent space prediction loss and the DiCT-enhanced raw space reconstruction loss:
+\begin{equation}
+   \mathcal{L}_{\text{total}} 
+   = \mathcal{L}_{\text{Rec}} + \mathcal{L}_{\text{Align}} + \mathcal{L}_{\text{Reg}} .
+\end{equation}
+
+
+
+% \subsection{Noise-aware raw space reconstruction} \label{sec:ica_reconstruction}
+% While latent space reconstruction can make the representations robust to noise, we introduce a complimentary raw space reconstruction loss to maximize the information content of the latent representation from raw EEG data. Previous models have primarily focused on reconstructing raw EEG signals; however, we argue that this approach presents significant challenges due to the nature of EEG data. Specifically, the low signal-to-noise ratio in EEG recordings makes direct reconstruction difficult, while the wide range of EEG amplitudes further complicates the optimization process. To overcome these challenges, we propose reconstructing a clean version of the EEG signal by leveraging ICA. Integrating ICA artifact removal within our model enables a more controlled and optimized reconstruction process.
+
+% \textbf{ICA Artifact Removal}
+
+% In our approach, we incorporate an ICLabel~\citep{IClabel} strategy that employs a neural network to classify the independent components extracted via ICA. Specifically, we leverage the ICLabel classifier, which assigns probability scores to independent components based on their likelihood of belonging to different categories namely \textit{brain activity, eye movements, muscle activity, heart signals, line noise, channel noise,} and \textit{others}. The ICLabel classifier, trained on a large dataset of EEG recordings, provides an automated and accurate method for identifying components. The ICA-based artifact removal process consists of the following steps:
+% \begin{enumerate}[left=0em]
+%     \item \textbf{ICA Decomposition:} EEG data is decomposed into independent components using ICA.
+%     \item \textbf{IC Classification:} The ICLabel classifier assigns probability scores to each independent component to determine whether they represent brain activity or artifacts.
+%     \item \textbf{Artifact Identification:} Components classified as artifacts based on threshold values are removed.
+%     \item \textbf{Reconstruction:} The remaining components are projected back to the raw space to reconstruct a clean EEG signal.
+% \end{enumerate}
+% %By using this artifact removal step, the reconstructed EEG signals maintain their integrity and usability for subsequent analyses, effectively balancing artifact removal and brain signal preservation.
+
+
+% \textbf{Dictionary Convolution Transformation (DiCT)}
+
+% To further enhance reconstruction loss for EEG signals, we introduce a \textbf{Dictionary Convolution Transformation (DiCT)}, inspired by Hydra~\citep{dempster2022hydra}. DiCT transforms both artifact-removed inputs and reconstructed outputs into a structured feature space before computing the loss. Unlike conventional reconstruction losses that operate directly on raw time-domain signals, DiCT leverages random convolutional kernels to capture frequency- and shape-aware representations of EEG.
+
+% DiCT employs $G=32$ groups of random convolutional kernels, each containing $K=8$ competing kernels. At each time step, the kernel producing the maximum (or minimum) response is selected, treating kernels as dictionary elements that “compete” to approximate the input. This design balances two paradigms: (1) dictionary-based methods that approximate signals with symbolic patterns, and (2) convolutional approaches such as ROCKET~\citep{dempster2020rocket}, which extract features via random kernels. Competition within groups encourages kernels to act as representative prototypes, enabling comparisons that are less dominated by noise and more aligned with frequency and shape characteristics of EEG.
+
+% The resulting transformed representations provide several advantages over direct Mean Squared Error (MSE) loss: 
+% \begin{itemize}
+%     \item \textbf{Noise robustness} – random convolutions distribute error across kernels, reducing sensitivity to high-amplitude artifacts.
+%     \item \textbf{Frequency balance} – dilated convolutions emphasize patterns at multiple temporal scales, ensuring the loss captures discrepancies across low- and high-frequency components.
+%     \item \textbf{Shape-awareness} – competitive kernel matching encodes structural similarity between signals, rather than relying solely on pointwise amplitude differences.
+% \end{itemize}
+
+% Reconstruction loss is then computed as MSE in this transformed space, effectively aligning predicted and target EEG by comparing their dictionary-induced representations. DiCT thus serves as a lightweight plug-in that can generalize beyond EEG-X and improve robustness of other reconstruction-based self-supervised methods.
+
+
+
+
+% \textbf{Decoder}
+
+% Our proposed decoder concatenates the outputs of the predictor network and student encoder to generate high-quality reconstructions, effectively leveraging pre-training to maximize the information content of the representations about the raw EEG. The reconstruction loss $Rec_{\text{Loss}}$ is computed using the mean squared error (MSE) between the clean EEG signal and the decoder's output, as follows:
+% \begin{equation} \label{eq:rec_loss}
+% Rec_{\text{Loss}} = \text{MSE}(\mathbf{X}_{\text{clean}}, \mathbf{X}_{\text{decoder}}) \end{equation}
+% Here, $\mathbf{X}_{\text{clean}}$ denotes the output of the ICA\_clean module, and $\mathbf{X}_{\text{decoder}}$ refers to the reconstructed output produced by the decoder.
+
+
+% \texbf{EEG-X Pre-training}  
+
+% Our model is pre-trained using a combination of $L_2$ loss (equation~\ref{eq:L2}) and $L_{\text{rec}}$ (equation~\ref{eq:rec_loss}), defined as:  
+% \begin{equation}
+%    \mathcal{L}_{\text{total}} = {L_2}_{Loss} + {Rec}_{Loss}
+% \end{equation}
+% The model is pre-trained using this loss function. For downstream tasks, we employ either fine-tuning or linear probing. During testing, we use the output of the student encoder and add a classification head on top of the learned representations. In fine-tuning, the tokenizer, student encoder, and classification head are trained together for an additional 10 epochs in a fully supervised manner. In linear probing, primarily used in cross-domain settings, the tokenizer and student encoder are frozen while the classification head is trained only with limited downstream data.
+
+% We evaluate EEG-X through extensive experiments covering datasets, baseline comparisons, in-domain and cross-domain evaluations, and ablation studies. Additional details on the experimental setup, preprocessing steps, and further representation visualizations are provided in Appendix~\ref{app:exp}.
+\begin{figure}
+\vspace{-1.3cm}
+  \centering
+  \subfloat[TUH Cap 19-channel]{%
+    \includegraphics[trim=1cm 0.7cm 1cm 0cm, width=0.235\linewidth]{Figs/Temple_position.eps}
+    \label{fig:Temple_position}%
+  }\hfill%
+  \subfloat[Emotiv Epoc 14-channel]{%
+    \includegraphics[trim=1cm 0.7cm 1cm 0cm, width=0.235\linewidth]{Figs/epoc_position.eps}
+    \label{fig:epoch_position}%
+  }\hfill%
+  \subfloat[BCICIV Cap 22-channel]{%
+    \includegraphics[trim=1cm 0.7cm 1cm 0cm, width=0.235\linewidth]{Figs/BCICIV_position.eps}
+    \label{fig:BCICIV_position}%
+    }\hfill%
+  \subfloat[SSVEP Cap 8-channel]{%
+    \includegraphics[trim=1cm 0.7cm 1cm 0cm, width=0.235\linewidth]{Figs/SSVEP_position.eps}
+    \label{fig:SSVEP_position}%
+  }
+  \caption{Comparison of four different EEG headset configurations used for data collection}
+  \label{fig:headset_configs}
+  \vspace{-0.5cm}
+\end{figure}
+
+
+\vspace{-0.3cm}
+\section{Experimental Results}
+\vspace{-0.3cm}
+We report the main experimental results of EEG-X, with additional setup details and supplementary analyses provided in Appendix~\ref{app:exp}.
+\vspace{-0.3cm}
+\subsection{Datasets and Pre-processing}
+We evaluate EEG-X across seven diverse datasets from four EEG headsets, ranging from portable consumer-grade devices to clinical-grade systems, in both real-world and clinical settings. We use larger datasets for in-domain evaluation and smaller ones, recorded with different headsets and channel configurations (Fig.~\ref{fig:headset_configs}), for cross-domain evaluation. A summary of the datasets is provided in Table~\ref{tbl:data}, with additional preprocessing details in Appendix~\ref{app:data}.
+\begin{table}[ht]
+    \centering
+    \caption{Datasets for pre-training and downstream evaluation (headset configurations in Fig.~\ref{fig:headset_configs}).}
+    \vspace{-0.4cm}
+    {\footnotesize  % <-- reduce font size
+    % \setlength{\tabcolsep}{3pt}  % Adjust column padding
+    \setlength\extrarowheight{1pt}
+    \begin{tabular}{lcccccc}
+        \hline
+        \textbf{Category} & {\footnotesize \textbf{Datasets}} & \textbf{Channel} & \textbf{Length} & \textbf{\#Samples} & {\footnotesize \textbf{Task}} \\
+        \hline \hline
+        \multirow{4}{*}{\shortstack{\footnotesize \textbf{In-Domain}\\ \scriptsize \textbf{(Pre-training)}}} & {\footnotesize DREAMER} & 14 & 2s & 77,910 & {\footnotesize Emotion Detection} \\
+        & {\footnotesize STEW} & 14 & 2s & 56,928 & {\footnotesize Mental Workload Classification} \\
+        & {\footnotesize TUAB} & 19 & 10s & 409,455 & {\footnotesize Abnormal EEG Classification} \\
+        & {\footnotesize TUEV\_binary} & 19 & 2s & 98,684 & {\footnotesize Epileptiform Classification}  \\
+        \hline 
+        \multirow{2}{*}{\shortstack{\scriptsize \textbf{Cross-Domain}\\ \scriptsize \textbf{(Downstream)}}} & {\footnotesize Crowdsourced} & 14 & 2s & 12,296 & {\footnotesize Eyes Open/Close Detection} \\
+        & {\footnotesize BCICIV\_2A} & 22 & 4s & 5,184 & {\footnotesize Motor Imagery} \\
+        & {\footnotesize SSVEP} & 8 & 2s & 960 & {\footnotesize Steady-State Visual Potentials} \\
+        
+        \hline
+    \end{tabular}
+    } % <-- end font size scope
+    \vspace{-0.5cm}
+    \label{tbl:data}
+\end{table}
+
+
+% \subsubsection*{\textbf{Emotiv 14-Channel Datasets}:}
+% Three datasets were collected using Emotiv's 14-channel wireless headsets(Fig.\ref{fig:epoch_position})~\footnote{\url{https://www.emotiv.com/epoc/}}, which are optimized for portable EEG recordings. The data, initially recorded at various frequencies, were subsequently downsampled to 128 Hz (for details, refer to Appendix~\ref{app:data}).
+% \begin{itemize}[left=0em]
+% \item \textbf{DREAMER}~\citep{dreamer}: A multimodal dataset containing EEG and ECG data from 23 participants exposed to audio-visual stimuli for affect elicitation. We use arousal labels for classification. 
+% \item \textbf{STEW}~\citep{stew}: (Simultaneous Task EEG Workload) data from 48 participants engaged in multitasking workload experiments. We classify mental workload as high or low based on subjective ratings. 
+% \item \textbf{Crowdsourced}~\citep{crowdsourced}: Resting-state EEG from 13 participants under eyes-open and eyes-closed conditions, recorded using various 14-channel Emotiv devices (e.g., EPOC, EPOC+, EPOC X).
+% \end{itemize}
+
+% \subsubsection*{\textbf{Temple University Hospital (TUH) Corpus}:} 
+% To evaluate performance on clinical-grade data, we included the TUAB and TUEV datasets from the Temple University Hospital (TUH) EEG Corpus~\citep{TUH}, which were recorded using 24-36 channel brain caps (Fig.\ref{fig:Temple_position}). The data were downsampled from 200 Hz to 128 Hz, and we focused on the 19 electrodes that align with standard EEG configurations.
+% \begin{itemize}[left=0em]
+%     \item \textbf{TUAB}~\citep{TUAB}: The TUH Abnormal EEG Corpus (TUAB) comprises both normal and abnormal EEG recordings. We follow TUH's default train-test split for abnormal EEG classification. 
+%     \item \textbf{TUEV\_binary}~\citep{TUEV}: The TUH EEG Seizure Corpus (TUEV) includes six classes: (1) spike and sharp wave, (2) generalized periodic epileptiform discharges, (3) periodic lateralized epileptiform discharges, (4) eye movement, (5) artifact, and (6) background. While artifact labels are typically used for artifact detection models, we focus on epileptiform activity detection, simplifying the task to binary classification: epileptiform activity vs. background.
+% \end{itemize}
+
+% \subsubsection*{\textbf{BCIC-IV-2a: Motor Imagery Task}:} 
+% The BCIC-IV-2a~\citep{BCICIV2A} dataset was recorded using a 22-channel EEG headset (Fig.\ref{fig:BCICIV_position}). The data were downsampled from 200 Hz to 128 Hz and consist of EEG recordings from 9 subjects performing four motor imagery tasks: left hand, right hand, feet, and tongue. Each subject completed two sessions on separate days, with 288 trials per session. This dataset was selected for its minimal electrode overlap with Emotiv and TUH devices (as shown in Fig.~\ref{fig:headset_configs}), providing a challenging cross-domain evaluation. 
+\subsection{Comparison with Baseline}
+We conducted comprehensive evaluations against six state-of-the-art EEG foundation models and representation learning: MAEEG~\citep{maeeg}, BioT~\citep{Biot}, LabraM~\citep{LaBraM}, EEGPT~\citep{EEGPT}, EEG2Rep~\citep{eeg2rep}, and CBraMod~\citep{cbramod}, using publicly available code to ensure fair comparisons. We report \textbf{Accuracy} (balanced), defined as the average recall across classes (\textit{Acc} for binary and \textit{B-Acc} for multi-class tasks). For binary classification, we also report \textbf{AUROC} (Area Under the ROC Curve) to summarize performance across thresholds. For multi-class tasks, we use the \textbf{Weighted F1} score, the class-weighted average of F1 scores proportional to sample counts (see Appendix~\ref{app:setup} for experimental details).
+
+
+\begin{table}[ht]
+    \centering
+    \caption{Average classification accuracy over five runs in the in-domain setting across four EEG tasks}
+    {\footnotesize  % <-- reduce font size
+    \setlength{\tabcolsep}{3pt} % Adjusts column spacing
+    \begin{tabular}{l|cc|cc|cc|cc}
+        \toprule
+        \multirow{2}{*}{\textbf{Model}} & \multicolumn{2}{c|}{\textbf{STEW}} & \multicolumn{2}{c|}{\textbf{DREAMER}} & \multicolumn{2}{c|}{\textbf{TUAB}} & \multicolumn{2}{c}{\textbf{TUEV\_binary}} \\
+        \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7} \cmidrule(lr){8-9}
+        & \textbf{Acc} & \textbf{AUROC} & \textbf{Acc} & \textbf{AUROC} & \textbf{Acc} & \textbf{AUROC} & \textbf{Acc} & \textbf{AUROC} \\
+        \midrule
+        MAEEG   & 75.98 $\pm$\tiny{2.87} & 81.73 $\pm$\tiny{2.95} & 52.36 $\pm$\tiny{3.12} & 54.45 $\pm$\tiny{2.98} & 77.56 $\pm$\tiny{1.45} & 86.56 $\pm$\tiny{1.67} & 85.75 $\pm$\tiny{2.03} & 91.36 $\pm$\tiny{1.89} \\
+        BioT    & 75.79 $\pm$\tiny{1.12} & \underline{86.48 $\pm$\tiny{1.45}} & 52.85 $\pm$\tiny{1.34} & 54.19 $\pm$\tiny{1.23} & 79.21 $\pm$\tiny{1.56} & 87.42 $\pm$\tiny{1.78} & 86.28 $\pm$\tiny{1.43} & 93.06 $\pm$\tiny{1.67} \\
+        LaBraM  & 75.26 $\pm$\tiny{1.35} & 84.37 $\pm$\tiny{1.67} & 55.85 $\pm$\tiny{1.45} & 55.34 $\pm$\tiny{1.23} & \underline{80.61 $\pm$\tiny{1.54}} & \underline{88.77 $\pm$\tiny{1.76}} & 85.43 $\pm$\tiny{1.48} & 90.10 $\pm$\tiny{1.59} \\
+        EEGPT   & \underline{77.65 $\pm$\tiny{2.95}} & 85.98 $\pm$\tiny{3.01} & 54.11 $\pm$\tiny{3.12} & 54.91 $\pm$\tiny{2.87} & 78.91 $\pm$\tiny{1.49} & 87.16 $\pm$\tiny{1.85} & 84.05 $\pm$\tiny{2.03} & 90.26 $\pm$\tiny{1.78} \\
+        EEG2Rep & 76.71 $\pm$\tiny{1.23} & 85.89 $\pm$\tiny{1.45} & \underline{57.09 $\pm$\tiny{1.32}} & \underline{56.35 $\pm$\tiny{1.21}} & 80.21 $\pm$\tiny{1.54} & 88.43 $\pm$\tiny{1.67} & \underline{89.83 $\pm$\tiny{1.38}} & \underline{95.57 $\pm$\tiny{1.47}} \\ 
+        CBraMod & 75.89 $\pm$\tiny{1.43} & 84.89 $\pm$\tiny{1.37} & 56.09 $\pm$\tiny{1.09} & 55.56 $\pm$\tiny{1.21} & 80.05 $\pm$\tiny{1.4} & 88.63 $\pm$\tiny{1.7} & 87.35 $\pm$\tiny{1.42} & 94.71 $\pm$\tiny{1.25} \\
+        \midrule
+        \rowcolor{blue!10} \textbf{EEG-X}   & \textbf{80.32} $\pm$\tiny{1.21} & \textbf{88.37} $\pm$\tiny{1.43} & \textbf{58.14} $\pm$\tiny{1.35} & \textbf{57.64} $\pm$\tiny{1.29} & \textbf{81.02} $\pm$\tiny{1.48} & \textbf{88.97} $\pm$\tiny{1.62} & \textbf{91.15} $\pm$\tiny{1.41} & \textbf{96.18} $\pm$\tiny{1.39}  \\
+        \bottomrule
+    \end{tabular}
+    }
+    \label{tab:indomain}
+\end{table}
+
+\textbf{In-domain evaluation:}
+Table~\ref{tab:indomain} reports average classification accuracy over five runs, compared with other state-of-the-art methods. \textbf{Bold} indicates the highest accuracy for each dataset, while \underline{underlined} values denote the second-best, consistent across all tables in this paper. In the in-domain evaluation, the model is pre-trained and fine-tuned on the same dataset, ensuring that EEG-X is evaluated within a consistent recording setup for each task. The results show that EEG-X achieves the highest average performance across all EEG tasks. Latent space reconstruction models like EEG2Rep outperform raw space reconstruction models such as MAEEG and EEGPT on noisy datasets like TUAB and TUEV\_binary. EEG-X surpasses both by using artifact removal and the DiCT-enhanced reconstruction loss instead of raw signals, enabling it to learn noise-robust representations while retaining maximal information from the input, leading to strong performance on these challenging datasets.
+
+\textbf{Cross-domain evaluation as a foundation model:}
+Table~\ref{tab:cross-domain} presents the average classification accuracy of EEG-X, highlighting its role as a \emph{foundation model} for EEG. It is compared to models using a channel-wise tokenizer, which allows them to handle cross-domain scenarios where the number of channels differs between pre-training and downstream tasks (note that MAEEG and EEG2Rep are excluded as they use convolutional tokenizers). In this setup, all models were pre-trained solely on the TUAB dataset, with the pre-trained tokenizer and student encoder frozen, and linear regression applied to the learned representations (outputs from the student encoder).
+
+\begin{table}
+    \centering
+    \caption{Cross-domain performance comparison of models pre-trained on TUAB dataset.}
+    {\footnotesize  % <-- reduce font size
+    \setlength{\tabcolsep}{5pt} % Adjusts column spacing
+        \begin{tabular}{l|cc|cc|cc}
+            \toprule
+            \multirow{2}{*}{\textbf{Model}} & \multicolumn{2}{c|}{\textbf{Crowdsourced}} & \multicolumn{2}{c|}{\textbf{BCICIV\_2A}} & \multicolumn{2}{c}{\textbf{SSVEP}} \\
+            \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+            & \textbf{Acc} & \textbf{AUROC} & \textbf{B-Acc} & \textbf{Weighted F1} & \textbf{B-Acc} & \textbf{Weighted F1} \\
+            \midrule
+            BioT    & 77.76 $\pm$\tiny{1.12} & 83.62 $\pm$\tiny{1.34} & 27.26 $\pm$\tiny{1.05} & 25.26 $\pm$\tiny{1.23} & \underline{42.12 $\pm$\tiny{1.41}} & \underline{40.17 $\pm$\tiny{1.36}} \\
+            LaBraM  & 77.28 $\pm$\tiny{1.25} & \underline{89.83 $\pm$\tiny{1.47}} & \underline{32.44 $\pm$\tiny{1.13}} &  \underline{27.37 $\pm$\tiny{1.21}} & 38.89 $\pm$\tiny{1.28} & 37.31 $\pm$\tiny{1.19} \\
+            EEGPT   & \underline{79.55 $\pm$\tiny{1.36}} & 87.79 $\pm$\tiny{1.52} & 30.07 $\pm$\tiny{1.17} & 24.68 $\pm$\tiny{1.08} & 24.14 $\pm$\tiny{1.11} & 23.50 $\pm$\tiny{1.07} \\
+            CBraMod & 78.41 $\pm$\tiny{1.31} & 88.73 $\pm$\tiny{1.45} & 30.07 $\pm$\tiny{1.12} & 24.68 $\pm$\tiny{1.09} & 41.44 $\pm$\tiny{1.34} & 39.69 $\pm$\tiny{1.25} \\
+            \midrule
+            \rowcolor{blue!10} \textbf{EEG-X} & \textbf{86.89 $\pm$\tiny{1.28}} & \textbf{93.51 $\pm$\tiny{1.41}} & \textbf{37.58 $\pm$\tiny{1.19}} & \textbf{35.32 $\pm$\tiny{1.15}} & \textbf{57.17 $\pm$\tiny{1.42}} & \textbf{55.05 $\pm$\tiny{1.33}}  \\ % Last row with blue background
+            \bottomrule
+        \end{tabular}
+        }
+    \label{tab:cross-domain}
+    \vspace{-0.5cm}
+\end{table}
+As shown in this table, EEG-X, acting as a foundation model, significantly outperforms other models across all tasks. The pre-training dataset (19 TUH configurations) and downstream tasks (14-, 22-, and 8-channel setups) share few channels but exhibit higher channel similarity. By using location-based channel embeddings, EEG-X effectively preserves spatial relationships among neighboring channels, even across different devices. This enables strong generalization when the pre-trained foundation model is applied to downstream tasks with varying devices, channel counts, and configurations.
+\vspace{-0.3cm}
+\subsection{Ablation study}
+\textbf{Channel Embedding}:
+We evaluate the impact of channel embeddings on model performance in both in-domain and cross-domain scenarios, comparing three approaches: No Channel Embedding (\ding{55} CE), learnable Channel Embedding (CE), and our novel Location-based Channel Embedding (EEG-X). As shown in Table~\ref{tab:ablation}, models with learnable and location-based embeddings consistently outperform those without. Notably, our approach (EEG-X), which incorporates spatial information to make the model location-aware, achieves the largest gains. This is particularly evident in cross-domain settings, where location based channel embedding preserves spatial relationships among neighboring channels, allowing the model to capture regional brain activity patterns and maintain consistent channel relationships across datasets with different channel counts and configurations.
+
+\textbf{DiCT}: We further assess the effect of introducing the Dictionary Convolution Transformation (DiCT) on the reconstruction loss. As shown in Table~\ref{tab:ablation}, this leads to more stable and discriminative representations by emphasizing higher-level temporal and spectral patterns. While the improvements are moderate in in-domain datasets, DiCT demonstrates clearer benefits in cross-domain transfer, where structured feature alignment helps the model generalize across diverse recording setups and subject variability.
+
+\textbf{Artifact Removal Raw Space}:
+We examined the impact of artifact-removed raw space reconstruction by comparing the reconstruction of raw EEG signals with our method, which reconstructs the ICA-cleaned version. As shown in Table~\ref{tab:ablation}, reconstructing ICA-cleaned signals outperforms the same model using raw reconstruction loss, indicating that denoising EEG data enhances the semantic quality of learned representations by reducing noise from the raw input. Additionally, incorporating raw space reconstruction alongside latent space reconstruction leads to performance gains in less noisy datasets like STEW.
+
+\begin{table}[h]
+    \centering
+    \caption{Ablation study of EEG-X components}
+    {\footnotesize  % <-- reduce font size
+    \begin{tabular}{l|l|cc|c|ccc}
+        \toprule
+        \textbf{Category} & \textbf{Dataset} & \ding{55}\textbf{CE} & \textbf{\checkmark CE} 
+        & \textbf{\ding{55} DiCT} &\textbf{\ding{55}$\mathcal{L}_{\text{rec}}$} & \textbf{$\mathcal{L}_{\text{rec (Raw)}}$} & \textbf{EEG-X} \\
+        \midrule
+        \multirow{4}{*}{\footnotesize \textbf{In-Domain}} 
+            & STEW     & 79.44 & \underline{80.07} &  76.91  & 75.92 & 77.90 & \textbf{80.32} \\
+            & DREAMER  & 56.17 & \underline{57.12} &   54.36 & 53.12 & 55.41 & \textbf{58.14} \\
+            & TUAB     & 79.94 & \underline{80.94} &   78.88 & 78.15 & 79.41 & \textbf{81.02} \\
+            & TUEV     & \underline{90.46} & 90.14 &    88.01 & 87.91 & 88.22 & \textbf{91.15} \\
+            \cmidrule{2-8}
+            & \textbf{Average} 
+                & \textbf{\textcolor{red}{($\downarrow$ 1.16)}} 
+                & \textbf{\textcolor{red}{($\downarrow$ 0.43)}} 
+                & \textbf{\textcolor{red}{($\downarrow$ 3.10)}}
+                & \textbf{\textcolor{red}{($\downarrow$ 3.88)} }
+                & \textbf{\textcolor{red}{($\downarrow$ 2.42)} }
+                & \textbf{77.66} \\
+        \midrule
+        \multirow{2}{*}{\footnotesize \textbf{Cross-Domain}} 
+            & Crowdsourced  & 81.64 & 81.65 &  84.12  & 82.22 & \underline{85.34} & \textbf{86.89} \\
+            & BCICIV\_2a    &33.55 & 33.25 &   34.57 & 33.21 & \underline{35.31} &  \textbf{37.58}\\
+            & SSVEP         & 40.02 & 41.2   & 51.55 &  45.68&  \underline{52.22} &  \textbf{57.17}\\
+            \cmidrule{2-8}
+            & \textbf{Average} 
+                & \textbf{\textcolor{red}{($\downarrow$ 8.81)}} 
+                & \textbf{\textcolor{red}{($\downarrow$ 8.52)}} 
+                & \textbf{\textcolor{red}{($\downarrow$ 3.80)}} 
+                & \textbf{\textcolor{red}{($\downarrow$ 6.85)}} 
+                & \textbf{\textcolor{red}{($\downarrow$ 2.93)}}    
+                & \textbf{60.55} \\
+        \bottomrule
+    \end{tabular}
+    }
+    \label{tab:ablation}
+\end{table}
+\textbf{ICA pre-processing vs ICA\_Loss:}
+A key question is: \textit{Why not use artifact removal (ICA) directly as a preprocessing step rather than as a loss?} Our experiments show that while ICA effectively removes artifacts, it can also result in the loss of essential brain signal components, which can negatively affect downstream tasks. As shown in Table~\ref{tab:ICA_preprocess}, we evaluate EEG-X (trained supervisedly for 100 epochs) on both raw data and ICA-preprocessed data to assess the discriminative power after preprocessing. The results demonstrate that ICA preprocessing is not always beneficial, as it can remove important brain signal components, leading to greater signal loss compared to using raw data. Therefore, integrating artifact removal within our model allows for a more controlled and optimized reconstruction process.
+\begin{table}[ht]
+\centering
+\setlength\extrarowheight{3pt}
+\setlength{\tabcolsep}{4pt} % Adjusts column spacing
+\caption{Performance comparison of EEG-X on raw vs. ICA-preprocessed data across various datasets, highlighting the impact of using ICA either as a preprocessing step or as a loss function.}
+{\footnotesize  % <-- reduce font size
+    \begin{tabular}{l|cccc}
+    \hline
+     \textbf{Dataset} & \textbf{STEW} & \textbf{DREAMER} & \textbf{TUAB} & \textbf{TUEV} \\ \hline
+    Raw  & \textbf{75.12} & 55.69 & 78.12 & \textbf{88.24} \\ \hline
+    ICA Pre-processed & 70.68 & \textbf{56.24} & \textbf{78.25} & 83.36 \\ \hline
+    \end{tabular}
+}
+\vspace{-0.5cm}
+\label{tab:ICA_preprocess}
+\end{table}
+\vspace{-0.5cm}
+\section{conclusion}
+In this paper, we introduced \textit{EEG-X}, a device-agnostic and noise-robust foundation model for EEG representation learning. EEG-X tackles two fundamental challenges in EEG analysis: variability across datasets and the low signal-to-noise ratio of EEG signals. By integrating a noise-aware dual reconstruction strategy—reconstructing denoised signals in both raw and latent spaces—our framework ensures that the learned representations emphasize neural activity rather than noise. Furthermore, the proposed location-based channel embedding captures spatial relationships among electrodes, enabling effective generalization across datasets with different electrode layouts and recording configurations. The introduction of the Dictionary Convolution Transformation (DiCT) further enhances reconstruction by projecting signals into a structured feature space, improving robustness and capturing frequency- and shape-aware similarities. Extensive experiments across diverse datasets demonstrate that EEG-X not only outperforms state-of-the-art methods in in-domain and cross-domain settings but also establishes a strong foundation model for EEG analytics. 
+
+
+% Authors are strongly encouraged to include a paragraph-long Reproducibility Statement at the end of the main text (before references) For example, for novel models or algorithms, a link to an anonymous downloadable source code can be submitted as supplementary materials; for theoretical results, clear explanations of any assumptions and a complete proof of the claims can be included in the appendix; for any datasets used in the experiments, a complete description of the data processing steps can be provided in the supplementary materials. Each of the above are examples of things that can be referenced in the reproducibility statement. This optional reproducibility statement is not part of the main text and therefore will not count toward the page limi 
+
+\bibliographystyle{plainnat}
+\bibliography{Reference}
+\newpage
+\appendix
+\section{Related Work}
+A line of work tackles the variability in EEG data caused by differences in recording devices and configurations, particularly the difference in the number of channels and input lengths. BIOT~\citep{Biot} tackles this challenge by tokenizing biosignals into a "sentence-like" structure, segmenting EEG time series in each channel into fixed-length tokens, and adding temporal and channel embedding. Similarly, EEGformer~\citep{EEGFormer}, LaBraM~\citep{LaBraM}, and EEGPT~\citep{EEGPT} tokenize EEG signals on a channel-wise basis and process them using transformer-based architectures. LaBraM uses learnable embeddings for both channel and temporal positions, while EEGPT incorporates rotary position encodings for temporal representation, alongside learnable channel embeddings. However, these learnable channel embeddings often lack spatial awareness, as they do not reflect the placement of electrodes on the scalp —critical for capturing meaningful EEG patterns. Moreover, the same electrode might not exist in different devices, making these embeddings impractical for handling channel mismatches.
+
+A parallel line of work has explored self-prediction approaches, such as Masked Autoencoders~\citep{mae2022}, to adapt pre-trained models for EEG~\citep{maeeg,Bendr,EEGPT,eeg2rep,cbramod}. BENDER~\citep{Bendr}, MAEEG~\citep{maeeg}, and CBraMod~\citep{cbramod} use masking and reconstruction as pretext tasks for self-supervised learning, directly reconstructing masked segments in the raw signal space. However, raw space reconstruction is highly sensitive to noise, often leading to poor representation quality. Alternatively, LaBraM~\citep{LaBraM} uses a neural tokenizer that transforms raw EEG signals into vocabulary-based tokens, predicting tokens instead of reconstructing raw signals. However, since these models focus on raw space for representation learning, they suffer from a low signal-to-noise ratio, with data often buried under external artifacts and non-brain sources. EEG2Rep~\citep{eeg2rep} improves robustness against noise by introducing latent space reconstruction instead of raw space, reducing sensitivity to noise and encouraging the model toward semantically rich representations by capturing high-level features. However, it remains limited in handling datasets with varying number of channels and recording lengths.
+
+\section{Extended Methodology}
+\subsection{Demonstrating Frequency- and Shape-Aware Reconstruction with DiCT} \label{app:DiCT}
+To illustrate the limitations of direct time-domain MSE and the benefits of the proposed Dictionary Convolution Transformation (DiCT), we conducted a controlled synthetic experiment.
+\begin{figure}[h]
+    \centering
+    \includegraphics[trim=1cm 1cm 1cm 1cm, width=0.7\textwidth]{Figs/source_components.eps}
+    \caption{Composite source signal used in the synthetic experiment, formed by summing three sine waves: low frequency (2 Hz, amplitude 5.0), mid frequency (20 Hz, amplitude 1.0), and high frequency (100 Hz, amplitude 0.5).}
+    \label{fig:DiCT_Source}
+\end{figure}  
+
+\textbf{Setup.} We constructed a composite source signal by summing three sine waves (Fig.~\ref{fig:DiCT_Source}, bottom):
+\begin{itemize}
+    \item Low frequency (2 Hz) with high amplitude (5.0)
+    \item Mid frequency (20 Hz) with moderate amplitude (1.0)
+    \item High frequency (100 Hz) with low amplitude (0.5)
+\end{itemize}
+
+This design reflects real EEG signals, where most energy is concentrated in low frequencies but informative mid- and high-frequency components are present with smaller amplitudes. The individual components are shown in Fig.~\ref{fig:DiCT_Source} (top three panels).
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[trim=1cm 1cm 1cm 1cm, width=0.7\textwidth]{Figs/synthetic_recons.eps}
+    \caption{Three reconstructed signals generated from a combined input signal, illustrating different distortions: (1) low-frequency dominant, (2) high-frequency dominant, and (3) high-frequency dominant with phase shifts. These examples highlight the bias of direct MSE toward amplitude and the mitigating effect of the DiCT transformation (see Table~\ref{tab:synthetic_dict} for quantitative results).}
+    \label{fig:DiCT_recons}
+\end{figure}
+
+\textbf{Targets.} We generated three reconstructed signals with varying distortions from a combined input signal (Fig.~\ref{fig:DiCT_recons}):
+\begin{enumerate}
+    \item \textit{Low-frequency dominant reconstruction}, preserving mainly the strong low-frequency component.
+    \item \textit{High-frequency dominant reconstruction}, emphasizing mid/high components while attenuating low-frequency energy.
+    \item \textit{High-frequency dominant + phase-shift reconstruction}, introducing both spectral imbalance and temporal misalignment through phase shifts.
+\end{enumerate}
+
+As shown in Table~\ref{tab:synthetic_dict}, direct time-domain MSE is strongly biased toward amplitude. The low-frequency reconstruction—though missing most mid/high content—yields a very small error (MSE = 0.58), whereas reconstructions with more balanced frequency content but less amplitude alignment are heavily penalized (MSE = 6.14 and 13.88). This demonstrates MSE’s tendency to reward amplitude matching while largely ignoring spectral and temporal structure. Applying DiCT before error computation mitigates this bias: random convolutional projections redistribute the influence across frequencies, penalizing the low-frequency-only reconstruction more heavily (MSE = 9.26) and giving high-frequency-rich reconstructions more comparable errors (MSE = 6.74 and 7.25).
+
+These results highlight several key points. First, random convolutions improve noise robustness by distributing errors across kernels, reducing over-penalization by local artifacts. Second, the use of dilated kernels captures both low- and high-frequency dynamics, ensuring that informative fast components are no longer ignored. Finally, the phase-shifted reconstruction demonstrates a critical limitation of direct MSE: signals with identical frequency spectra but temporal misalignment are scored as drastically different (MSE = 13.88). DiCT, however, compares representations in a convolutional dictionary space where temporal shape similarity is preserved, reducing the error to 7.25. This shows DiCT’s ability to recognize structural alignment even under shifts—a property especially important for EEG signals, where phase variability across trials and subjects is common.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lcc}
+\toprule
+\textbf{Reconstruction Type} & \textbf{MSE (Direct Time)} & \textbf{MSE with DiCT} \\
+\midrule
+Low-frequency only (2 Hz + 0.2 High) & 0.58 & 9.26 \\
+High-frequency + mid + partial low & 6.14 & 6.74 \\
+High-frequency + mid + low + phase shift & 13.88 & 7.25 \\
+\bottomrule
+\end{tabular}
+\caption{Comparison of reconstruction error measured with direct MSE versus DiCT-enhanced MSE on synthetic signals.}
+\label{tab:synthetic_dict}
+\end{table}
+
+
+
+\subsection{Universal Location Mapping} \label{apx:Location_mapping}
+\begin{figure}[h]
+    \centering
+    \includegraphics[trim=1cm 1cm 1cm 1cm, width=0.8\textwidth]{Figs/All_EEG_Electrodes.png}
+    \caption{Dense scalp electrode mesh combining positions from the 10-05, 10-10, and 10-20 systems, used as a universal location mapping.}
+    \label{fig:Location_mapping}
+\end{figure}  
+
+Figure~\ref{fig:Location_mapping} shows a dense scalp mesh including 348 channels, covering virtually all electrode positions from the 10-05, 10-10, and 10-20 standard EEG systems. This mesh enables universal location-based channel embeddings: even if electrode names differ across devices, each sensor can be mapped to the nearest mesh point. Since typical EEG sensors are larger than 5 mm in diameter, any sensor smaller than 10 mm placed anywhere on the scalp will intersect with at least one mesh point, ensuring consistent spatial representation across devices and subjects.
+
+\subsection{Artifact removal Details} \label{app:artifact}
+
+We chose ICA-based denoising because it effectively isolates spatially and temporally independent artifacts. By separating these sources, ICA provides a cleaner supervisory target for EEG reconstruction without manual labeling or handcrafted filters. It is widely regarded as a gold standard for isolating artifacts such as muscle activity, eye blinks, cardiac signals, respiration, motion artifacts, and power line noise, which can be 5–50 times larger than typical brain signals.
+
+We incorporate ICLabel~\cite{IClabel}, a neural network classifier trained on a large-scale EEG dataset, to automatically label the independent components extracted via ICA. ICLabel assigns probability scores to each component across seven categories: \textit{brain activity, eye movements, muscle activity, heart signals, line noise, channel noise,} and \textit{others}. Components with high artifact probabilities are removed, and the remaining components are projected back to the raw space to reconstruct a clean EEG signal.
+
+The ICA-based artifact removal workflow is as follows:
+\begin{enumerate}[left=0em]
+    \item \textbf{ICA Decomposition:} EEG data is decomposed into independent components using ICA.
+    \item \textbf{IC Classification:} ICLabel assigns probability scores to each component.
+    \item \textbf{Artifact Identification:} Components classified as artifacts based on threshold values are removed.
+    \item \textbf{Reconstruction:} Remaining components are projected back to reconstruct a cleaner EEG signal.
+\end{enumerate}
+
+Alternative artifact removal methods include:
+\begin{itemize}[left=0em]
+    \item \textbf{rASR (Riemannian Artifact Subspace Reconstruction):} Requires clean baseline data to train a joint covariance matrix; effective for real-time denoising~\citep{rASR}.
+    \item \textbf{Wavelet Denoising:} Particularly useful for high-frequency noise due to its time-frequency localization, but lacks ICA’s spatial decomposition capabilities~\citep{wavelet_denoising}.
+    \item \textbf{Regression-based Methods:} Use auxiliary channels (e.g., EOG, EMG) to remove artifacts, but such channels are not always available~\citep{artifacts_survey}.
+    \item \textbf{Spatial Filters (e.g., CSP):} Effective for task-specific artifact removal but may not generalize across different EEG paradigms~\citep{CSP}.
+\end{itemize}
+
+Despite ICA’s assumptions (e.g., statistical independence of sources), it offers a strong trade-off between generality and effectiveness for large-scale, domain-agnostic EEG analysis. Our framework is compatible with alternative denoising methods, but ICA with ICLabel provides a reliable starting point.
+
+
+
+%%----------------------------------------------------------------------
+\section{Additional Experimental Details and Results} \label{app:exp}
+
+\subsection{Experimental setup} \label{app:setup}
+In our experiments, EEG-X was trained with a batch size of 256 using the Adam optimization algorithm~\citep{kingma2014adam}. To prevent overfitting, we implemented early stopping based on the validation loss. The model was pre-trained for 300 epochs. For fine-tuning, the tokenizer, context encoder, and classification head were trained for 10 epochs in a fully supervised manner using cross-entropy loss. In the cross-domain setting, the tokenizer and context encoder were frozen, and logistic regression was applied to the learned representations.
+
+Similar to the default transformer block\citep{attention2017}, we used eight attention heads in both the context and target encoders to capture diverse features from the EEG data. The transformer encoding dimension was set to $d_e = 16$, and the feed-forward network (FFN) in the transformer block expanded the input size by a factor of 4 before projecting it back to its original size. The learning rate was initialized at $1 \times 10^{-3}$ and adjusted over time using a cosine learning rate scheduler~\citep{data2vec2022}. EEG signals were segmented using a patch size of 128 (1 second) with an overlap of 32 time steps, ensuring a balance between capturing temporal dynamics and maintaining computational efficiency.
+
+For the Dictionary Convolution Transformation (DiCT), we followed the Hydra setup~\citep{Hydra,dempster_etal_2024} and employed $G = 32$ groups of random convolutional kernels, each containing $K = 8$ competing kernels. This configuration balances efficiency and representational diversity, while ensuring robustness across frequency scales.
+
+\subsection{Dataset Overview and Processing} \label{app:data}
+For the Temple University Hospital (TUH) datasets, we use the default train and test splits. For the remaining datasets, we randomly select 20\% of the data subject-wise, ensuring that the same subject is not present in both the training and test sets.
+
+\subsubsection{\textbf{Emotiv}}
+We applied a bandpass filter to all Emotiv datasets and used 13 components for ICA-based artifact removal. We then discarded all components except those representing brain activity and other relevant signals. The data was then segmented into windows of 256 time steps, with each window corresponding to 2 seconds of recording.
+
+\noindent\textbf{DREAMER}
+DREAMER is a multimodal dataset containing electroencephalogram (EEG) and electrocardiogram (ECG) signals recorded during affect elicitation using audio-visual stimuli~\citep{dreamer}, captured with a 14-channel Emotiv EPOC headset. The dataset includes data from 23 participants, along with their self-assessments of affective states (valence, arousal, and dominance) after each stimulus. For our classification task, we focus specifically on the arousal labels. The DREAMER dataset can be accessed here\footnote{\url{https://zenodo.org/records/546113}}. We use the raw EEG data, applying low-pass and high-pass filters, and then performing ICA with 13 components for artifact removal\footnote{\url{https://torcheeg.readthedocs.io/en/v1.1.0/torcheeg.datasets.html}}. It’s important to note that for our analysis, we exclude the ECG signals and only focus on the EEG data.
+
+
+\noindent\textbf{Crowdsourced}
+Crowdsourced EEG data was collected while participants were engaged in a resting state task, involving periods with eyes open and eyes closed, each lasting 2 minutes. Out of 60 participants, only 13 successfully completed both conditions using 14-channel EPOC+, EPOC X, and EPOC devices. The data was initially recorded at 2048 Hz and later downsampled to 128 Hz. Raw EEG data for these 13 participants, along with preprocessing, analysis, and visualization scripts, are openly available on the Open Science Framework (OSF)\footnote{\url{https://osf.io/9bvgh/?view_only=70744f62157c46d5bd731480db1873df}}.
+
+\noindent\textbf{Simultaneous Task EEG Workload (STEW)}
+STEW dataset comprises raw EEG recordings from 48 participants using a 14-channel Emotiv EPOC headset involved in a multitasking workload experiment utilizing the SIMKAP multitasking test~\citep{stew}. Additionally, the subjects' baseline brain activity at rest was recorded before the test. The data was captured using the Emotiv Epoc device with a sampling frequency of 128Hz and 14 channels, resulting in 2.5 minutes of EEG recording for each case. Participants were instructed to assess their perceived mental workload after each stage using a rating scale ranging from 1 to 9, and these ratings are available in a separate file. Moreover, this dataset includes binary class labels, considering a workload rating of more than 4 as high and otherwise as low. We utilize these labels for our specific problem. STEW can be accessed upon request through the IEEE DataPort\footnote{\url{https://ieee-dataport.org/open-access/stew-simultaneous-task-eeg-workload-dataset}}. 
+
+Alternatively, all the above Emotiv EEG datasets are also available on the Hugging Face platform under the \texttt{monster-monash}~\citep{monster} repository\footnote{\url{https://huggingface.co/monster-monash}}.
+
+
+\subsubsection{Temple University Hospital (TUH) EEG Corpus}
+\noindent\textbf{TUH Abnormal EEG Corpus (TUAB)} \\
+The TUH Abnormal EEG Corpus (TUAB) is a subset of the Temple University Hospital (TUH) EEG Corpus, which is one of the largest publicly available collections of clinical EEG data. The TUAB specifically focuses on EEG recordings labeled as abnormal, making it a valuable resource for studies on neurological disorders, brain function anomalies, and the development of diagnostic tools~\citep{TUAB}.
+
+
+\noindent\textbf{TUH EEG Events (TUEV)} \\
+The TUH EEG Events Corpus (TUEV) contains annotations of EEG segments classified into six different categories: spike and sharp wave, generalized periodic epileptiform discharges, periodic lateralized epileptiform discharges, eye movement, artifact, and background~\citep{TUEV}.
+
+
+
+\noindent\textbf{Acquisition and Preprocessing}\\
+The TUH Abnormal EEG Corpus (TUAB)~\citep{TUAB} and TUH EEG Events (TUEV)~\citep{TUEV} can be accessed upon request through the Temple University Electroencephalography (EEG) Resources\footnote{\url{https://isip.piconepress.com/projects/tuh_eeg/html/downloads.shtml}}. We processed both datasets to adhere to the 19-channel EEG montage following the 10-20 international system. The specific electrode configuration is as follows:
+
+\texttt{TUH\_19\_electrodes = ['fp1', 'fp2', 'f3', 'f4', 'c3', 'c4', 'p3', 'p4', 'o1', 'o2', 'f7', 'f8', 't7', 't8', 'p6', 'p5', 'fz', 'cz', 'pz']}
+
+For artifact removal, we applied ICA using 18 components for cleaning the data.
+
+
+\subsubsection{\textbf{BCICIV-2a: Motor Imagery Task}:} 
+The BCIC-IV-2a~\cite{BCICIV2A} dataset was recorded using a 22-channel EEG headset (Fig.\ref{fig:BCICIV_position}). The data were downsampled from 200 Hz to 128 Hz and consist of EEG recordings from 9 subjects performing four motor imagery tasks: left hand, right hand, feet, and tongue. Each subject completed two sessions on separate days, with 288 trials per session. This dataset was selected for its minimal electrode overlap with Emotiv and TUH devices (as shown in Fig.~\ref{fig:headset_configs}), providing a challenging cross-domain evaluation. 
+
+\subsubsection{\textbf{Online SSVEP-based BCI using Riemannian Geometry}:}
+The dataset comprises 8-channel EEG recordings from 12 subjects (ages 20–28) performing SSVEP-based tasks~\citep{SSVEP}. Each trial lasts 5 seconds, initiated by an auditory cue indicating which LED to focus on, or a fixation point for the reject class. The data were resampled to 128 Hz and segmented into 2-second windows. The primary task involves classifying the subject's focus on one of three LED groups or the reject class, utilizing Riemannian geometry for classification. The dataset is publicly available for research purposes.
+
+
+
+\subsection{Visualization}
+\begin{figure}[t]
+  \centering
+  % First row: 3 figures
+  \subfloat[epoch=5 (ACC: 65.73)]{%
+    \includegraphics[width=0.30\linewidth]{Figs/STEW/epoch_0.pdf}
+    \label{fig:STEW_epoch_0}%
+  }\hfill%
+  \subfloat[epoch=10 (ACC: 67.91)]{%
+    \includegraphics[width=0.30\linewidth]{Figs/STEW/epoch_10.pdf}
+    \label{fig:STEW_epoch_10}%
+  }\hfill%
+  \subfloat[epoch=100 (ACC: 71.45)]{%
+    \includegraphics[width=0.30\linewidth]{Figs/STEW/epoch_100.pdf}
+    \label{fig:STEW_epoch_100}%
+  }%
+
+  % Line break
+  \par\medskip
+
+  % Second row: 2 figures centered
+  \hspace*{\fill}%
+  \subfloat[epoch=200 (ACC: 77.02)]{%
+    \includegraphics[width=0.33\linewidth]{Figs/STEW/epoch_200.pdf}
+    \label{fig:STEW_epoch_200}%
+  }\hfill%
+  \subfloat[epoch=300 (ACC: 78.81)]{%
+    \includegraphics[width=0.33\linewidth]{Figs/STEW/epoch_300.pdf}
+    \label{fig:STEW_epoch_300}%
+  }%
+  \hspace*{\fill}%
+
+  \caption{2D t-SNE visualization of the learned representation on the STEW dataset at different epochs during pre-training. At epoch 5, the classes are highly entangled, with separation increasing over time, becoming distinct by epoch 300. The accuracy improves from 65.73\% at epoch 5 to 78.81\% at epoch 300.}
+  \label{fig:TSNE}
+\end{figure}
+
+This section visualizes the evolution of learned representations during pre-training using t-SNE plots at various epoch. As shown in Fig.~\ref{fig:TSNE} In the early stages of training (e.g., epoch 5 and 10 Fig.\ref{fig:STEW_epoch_0} and \ref{fig:STEW_epoch_10}, respectively), the embeddings from the two classes are highly entangled, with little distinction between them, showing that the model is just beginning to understand the data's structure. As training progresses, class separation improves, with noticeable distinction by epoch 100 (Fig.\ref{fig:STEW_epoch_100}) and clear separation by epoch 300 (Fig.\ref{fig:STEW_epoch_300}). Despite being unsupervised, the model leverages the STEW dataset’s inherent structure to enhance class separation. The model's accuracy also increases from 65.73\% at epoch 5 to 78.81\% at epoch 300, highlighting the benefits of self-supervised training in learning meaningful representations.
+
+\end{document}

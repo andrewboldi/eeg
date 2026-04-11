@@ -1,0 +1,74 @@
+\documentclass{article}
+\PassOptionsToPackage{numbers, compress}{natbib}
+
+\usepackage[final]{neurips_2025}
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{xcolor}         % colors
+\usepackage{graphicx} 
+\usepackage{multirow}
+\usepackage{amsmath}
+\usepackage{subcaption}
+\usepackage{enumitem}
+\newcommand{\bigO}{\mathcal{O}}
+
+\title{
+\begin{minipage}[c]{0.1\textwidth} 
+    \includegraphics[width=\linewidth]{figs/Element_1.png}
+\end{minipage}
+\begin{minipage}[c]{0.82\textwidth}
+    \raggedright
+    \Large
+    LUNA: Efficient and Topology-Agnostic Foundation Model for EEG Signal Analysis 
+\end{minipage}
+}
+
+
+
+\author{%
+  Berkay Döner\textsuperscript{1}
+  \quad
+  Thorir Mar Ingolfsson\textsuperscript{1}\thanks{Correspondence to \texttt{\{thoriri,yawli\}@iis.ee.ethz.ch}.}
+  \quad
+  Luca Benini\textsuperscript{1} \quad
+  Yawei Li\textsuperscript{1}\\
+  \textsuperscript{1}Integrated Systems Laboratory, ETH Z{\"u}rich, Switzerland}
+
+
+\begin{document}
+
+
+\maketitle
+
+
+\begin{abstract}
+  \input{sec/abstract}
+\end{abstract}
+
+\input{sec/introduction}
+\input{sec/related_work}
+\input{sec/method}
+\input{sec/results}
+\input{sec/conclusion}
+\begin{ack}
+This project is supported by the Swiss National Science Foundation under the grant number 193813 (PEDESITE project). This work was supported by the ETH Future Computing Laboratory (EFCL), financed by a donation from Huawei Technologies. This work was supported by a grant from the Swiss National Supercomputing Centre (CSCS) under project ID lp12 on Alps.
+\end{ack}
+\bibliographystyle{unsrt}
+\bibliography{updated_ref}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+\input{sec/guidelines}
+\input{sec/appendix}
+
+\clearpage
+
+\end{document}

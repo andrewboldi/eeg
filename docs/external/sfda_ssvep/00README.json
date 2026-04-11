@@ -1,0 +1,37 @@
+{
+   "sources" : [
+      {
+         "usage" : "toplevel",
+         "filename" : "main.tex"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "iopams.sty"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "iopart10.clo"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "iopart12.clo"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "latexmkrc"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "references.bib"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "setstack.sty"
+      }
+   ],
+   "spec_version" : 1,
+   "texlive_version" : "2025",
+   "process" : {
+      "compiler" : "pdflatex"
+   }
+}

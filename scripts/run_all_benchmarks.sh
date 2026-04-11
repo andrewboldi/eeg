@@ -20,7 +20,8 @@ for model in \
     "iter049_adversarial" \
     "iter050_l1_loss" \
     "iter051_perchannel_heads" \
-    "iter052_cross_attn_decoder"; do
+    "iter052_cross_attn_decoder" \
+    "iter053_spectral_loss"; do
     echo ""
     echo "=== Running $model at $(date) ==="
     $BENCH --model-fn "models/${model}.py" --name "${model}_46ch" || echo "FAILED: $model"
@@ -30,8 +31,7 @@ done
 # 4s model needs special data path
 echo ""
 echo "=== Running iter045_long_context (4s data) at $(date) ==="
-uv run python scripts/benchmark_broadband_46ch.py --model-fn models/iter045_long_context.py --name iter045_long_context_4s --data data/processed/broadband_46ch_4s.h5 2>/dev/null || \
-    echo "NOTE: iter045 needs --data flag support in benchmark script, skipping"
+$BENCH --model-fn models/iter045_long_context.py --name iter045_long_context_4s --data data/processed/broadband_46ch_4s.h5 || echo "FAILED: iter045_long_context"
 
 echo ""
 echo "=== All benchmarks complete at $(date) ==="

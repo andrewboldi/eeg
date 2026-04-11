@@ -1,0 +1,30 @@
+\begin{table}[!ht]
+\captionsetup{skip=2pt}
+\caption{Results on BCIC-IV-2a.}
+\centering
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.1}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l|ccc|ccc}
+\toprule
+\multirow{2}{*}{\makecell[l]{\textbf{Aligning}\\\textbf{Strategies}}} &
+\multicolumn{3}{c}{\textbf{CBraMod}~\citep{wang2024cbramod}} &
+\multicolumn{3}{c}{\textbf{LaBraM-Base}~\citep{jiang2024large}} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}
+&\textbf{Balanced-Accuracy} & \textbf{Cohen’s Kappa} & \textbf{Weighted F1}
+&\textbf{Balanced-Accuracy} & \textbf{Cohen’s Kappa} & \textbf{Weighted F1} \\
+\midrule
+Linear & 0.5028 $\pm$ 0.0230 & 0.3370 $\pm$ 0.0307 & 0.4809 $\pm$ 0.0293 & 0.41111 $\pm$ 0.00285 & 0.21482 $\pm$ 0.00382 & 0.34972 $\pm$ 0.03412 \\
+Shallow MLP    & 0.4578 $\pm$ 0.0317 & 0.2771 $\pm$ 0.0423 & 0.4535 $\pm$ 0.0315 & 0.34479 $\pm$ 0.02853 & 0.12639 $\pm$ 0.03721 & 0.22937 $\pm$ 0.01984 \\
+Lora   & 0.4164 $\pm$ 0.0090 & 0.2218 $\pm$ 0.0122 & 0.3952 $\pm$ 0.0227 & 0.34375 $\pm$ 0.03313 & 0.12500 $\pm$ 0.04472 & 0.27821 $\pm$ 0.04114 \\
+SHOT & 0.5354 $\pm$ 0.0267 & 0.3766 $\pm$ 0.0365 & 0.5228 $\pm$ 0.0346 & 0.36310 $\pm$ 0.02880 & 0.36310 $\pm$ 0.02880 & 0.15080 $\pm$ 0.03840 \\
+\midrule
+TTT with SSL  & 0.5435 $\pm$ 0.0112 & 0.3914 $\pm$ 0.0149 & 0.5249 $\pm$ 0.0161 & 0.43835 $\pm$ 0.01856 & 0.25120 $\pm$ 0.01146 & 0.37380 $\pm$ 0.05552 \\
+TTT with Tent & \textbf{0.5674 $\pm$ 0.0062} & \textbf{0.4232 $\pm$ 0.0082} & \textbf{0.5537 $\pm$ 0.0068} & \textbf{0.45110 $\pm$ 0.01950} & \textbf{0.26819 $\pm$ 0.01257} & \textbf{0.41559 $\pm$ 0.05358} \\
+\bottomrule
+\end{tabular}
+}% end resizebox
+
+\label{tab:results_bciciv2a}
+\end{table}

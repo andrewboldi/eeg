@@ -1,0 +1,243 @@
+\begin{thebibliography}{47}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Al-Saegh et~al.(2021)Al-Saegh, Dawwd, and Abdul-Jabbar]{al2021deep}
+Ali Al-Saegh, Shefa~A Dawwd, and Jassim~M Abdul-Jabbar.
+\newblock Deep learning for motor imagery eeg-based classification: A review.
+\newblock \emph{Biomedical Signal Processing and Control}, 63:\penalty0 102172, 2021.
+
+\bibitem[Altaheri et~al.(2023)Altaheri, Muhammad, Alsulaiman, Amin, Altuwaijri, Abdul, Bencherif, and Faisal]{altaheri2023deep}
+Hamdi Altaheri, Ghulam Muhammad, Mansour Alsulaiman, Syed~Umar Amin, Ghadir~Ali Altuwaijri, Wadood Abdul, Mohamed~A Bencherif, and Mohammed Faisal.
+\newblock Deep learning techniques for classification of electroencephalogram (eeg) motor imagery (mi) signals: A review.
+\newblock \emph{Neural Computing and Applications}, 35\penalty0 (20):\penalty0 14681--14722, 2023.
+
+\bibitem[Ang et~al.(2008)Ang, Chin, Zhang, and Guan]{ang2008filter}
+Kai~Keng Ang, Zheng~Yang Chin, Haihong Zhang, and Cuntai Guan.
+\newblock Filter bank common spatial pattern (fbcsp) in brain-computer interface.
+\newblock In \emph{2008 IEEE international joint conference on neural networks (IEEE world congress on computational intelligence)}, pp.\  2390--2397. IEEE, 2008.
+
+\bibitem[Badr et~al.(2024)Badr, Tariq, Al-Shargie, Babiloni, Al~Mughairbi, and Al-Nashash]{badr2024review}
+Yara Badr, Usman Tariq, Fares Al-Shargie, Fabio Babiloni, Fadwa Al~Mughairbi, and Hasan Al-Nashash.
+\newblock A review on evaluating mental stress by deep learning using eeg signals.
+\newblock \emph{Neural Computing and Applications}, 36\penalty0 (21):\penalty0 12629--12654, 2024.
+
+\bibitem[Bethge et~al.(2022)Bethge, Hallgarten, Grosse-Puppendahl, Kari, Chuang, {\"O}zdenizci, and Schmidt]{bethge2022eeg2vec}
+David Bethge, Philipp Hallgarten, Tobias Grosse-Puppendahl, Mohamed Kari, Lewis~L Chuang, Ozan {\"O}zdenizci, and Albrecht Schmidt.
+\newblock Eeg2vec: Learning affective eeg representations via variational autoencoders.
+\newblock In \emph{2022 IEEE international conference on systems, man, and cybernetics (SMC)}, pp.\  3150--3157. IEEE, 2022.
+
+\bibitem[Brunner et~al.(2008)Brunner, Leeb, M{\"u}ller-Putz, Schl{\"o}gl, and Pfurtscheller]{brunner2008bci}
+Clemens Brunner, Robert Leeb, Gernot M{\"u}ller-Putz, Alois Schl{\"o}gl, and Gert Pfurtscheller.
+\newblock Bci competition 2008--graz data set a.
+\newblock \emph{Institute for knowledge discovery (laboratory of brain-computer interfaces), Graz University of Technology}, 16\penalty0 (1-6):\penalty0 34, 2008.
+
+\bibitem[Cavanagh \& Frank(2014)Cavanagh and Frank]{cavanagh2014frontal}
+James~F Cavanagh and Michael~J Frank.
+\newblock Frontal theta as a mechanism for cognitive control.
+\newblock \emph{Trends in cognitive sciences}, 18\penalty0 (8):\penalty0 414--421, 2014.
+
+\bibitem[Cheyne et~al.(2008)Cheyne, Bells, Ferrari, Gaetz, and Bostan]{cheyne2008self}
+Douglas Cheyne, Sonya Bells, Paul Ferrari, William Gaetz, and Andreea~C Bostan.
+\newblock Self-paced movements induce high-frequency gamma oscillations in primary motor cortex.
+\newblock \emph{Neuroimage}, 42\penalty0 (1):\penalty0 332--342, 2008.
+
+\bibitem[Corsi-Cabrera et~al.(2007)Corsi-Cabrera, Galindo-Vilchis, Del-R{\'\i}o-Portilla, Arce, and Ramos-Loyo]{corsi2007within}
+Mar{\'\i}a Corsi-Cabrera, L~Galindo-Vilchis, Yolanda Del-R{\'\i}o-Portilla, Consuelo Arce, and J~Ramos-Loyo.
+\newblock Within-subject reliability and inter-session stability of eeg power and coherent activity in women evaluated monthly over nine months.
+\newblock \emph{Clinical Neurophysiology}, 118\penalty0 (1):\penalty0 9--21, 2007.
+
+\bibitem[Craik et~al.(2019)Craik, He, and Contreras-Vidal]{craik2019deep}
+Alexander Craik, Yongtian He, and Jose~L Contreras-Vidal.
+\newblock Deep learning for electroencephalogram (eeg) classification tasks: a review.
+\newblock \emph{Journal of neural engineering}, 16\penalty0 (3):\penalty0 031001, 2019.
+
+\bibitem[Devlin et~al.(2019)Devlin, Chang, Lee, and Toutanova]{devlin2019bert}
+Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova.
+\newblock Bert: Pre-training of deep bidirectional transformers for language understanding.
+\newblock In \emph{Proceedings of the 2019 conference of the North American chapter of the association for computational linguistics: human language technologies, volume 1 (long and short papers)}, pp.\  4171--4186, 2019.
+
+\bibitem[Duan et~al.(2023{\natexlab{a}})Duan, Zhou, Wang, Chang, Wang, and Lin]{duan2023domain}
+Yiqun Duan, Jinzhao Zhou, Zhen Wang, Yu-Cheng Chang, Yu-Kai Wang, and Chin-Teng Lin.
+\newblock Domain-specific denoising diffusion probabilistic models for brain dynamics.
+\newblock \emph{arXiv preprint arXiv:2305.04200}, 2023{\natexlab{a}}.
+
+\bibitem[Duan et~al.(2023{\natexlab{b}})Duan, Zhou, Wang, Wang, and Lin]{duan2023dewave}
+Yiqun Duan, Jinzhao Zhou, Zhen Wang, Yu-Kai Wang, and Chin-teng Lin.
+\newblock Dewave: Discrete encoding of eeg waves for eeg to text translation.
+\newblock \emph{Advances in Neural Information Processing Systems}, 36:\penalty0 9907--9918, 2023{\natexlab{b}}.
+
+\bibitem[Engel \& Fries(2010)Engel and Fries]{engel2010beta}
+Andreas~K Engel and Pascal Fries.
+\newblock Beta-band oscillations—signalling the status quo?
+\newblock \emph{Current opinion in neurobiology}, 20\penalty0 (2):\penalty0 156--165, 2010.
+
+\bibitem[Giraud \& Poeppel(2012)Giraud and Poeppel]{giraud2012cortical}
+Anne-Lise Giraud and David Poeppel.
+\newblock Cortical oscillations and speech processing: emerging computational principles and operations.
+\newblock \emph{Nature neuroscience}, 15\penalty0 (4):\penalty0 511--517, 2012.
+
+\bibitem[Goldberger et~al.(2000)Goldberger, Amaral, Glass, Hausdorff, Ivanov, Mark, Mietus, Moody, Peng, and Stanley]{goldberger2000physiobank}
+Ary~L Goldberger, Luis~AN Amaral, Leon Glass, Jeffrey~M Hausdorff, Plamen~Ch Ivanov, Roger~G Mark, Joseph~E Mietus, George~B Moody, Chung-Kang Peng, and H~Eugene Stanley.
+\newblock Physiobank, physiotoolkit, and physionet: components of a new research resource for complex physiologic signals.
+\newblock \emph{circulation}, 101\penalty0 (23):\penalty0 e215--e220, 2000.
+
+\bibitem[He et~al.(2022)He, Chen, Xie, Li, Doll{\'a}r, and Girshick]{he2022masked}
+Kaiming He, Xinlei Chen, Saining Xie, Yanghao Li, Piotr Doll{\'a}r, and Ross Girshick.
+\newblock Masked autoencoders are scalable vision learners.
+\newblock In \emph{Proceedings of the IEEE/CVF conference on computer vision and pattern recognition}, pp.\  16000--16009, 2022.
+
+\bibitem[Hu et~al.(2022)Hu, Shen, Wallis, Allen-Zhu, Li, Wang, Wang, Chen, et~al.]{hu2022lora}
+Edward~J Hu, Yelong Shen, Phillip Wallis, Zeyuan Allen-Zhu, Yuanzhi Li, Shean Wang, Lu~Wang, Weizhu Chen, et~al.
+\newblock Lora: Low-rank adaptation of large language models.
+\newblock \emph{ICLR}, 1\penalty0 (2):\penalty0 3, 2022.
+
+\bibitem[Jayalath et~al.(2024)Jayalath, Landau, Shillingford, Woolrich, and Jones]{jayalath2024brain}
+Dulhan Jayalath, Gilad Landau, Brendan Shillingford, Mark Woolrich, and Oiwi~Parker Jones.
+\newblock The brain's bitter lesson: Scaling speech decoding with self-supervised learning.
+\newblock \emph{arXiv preprint arXiv:2406.04328}, 2024.
+
+\bibitem[Jensen \& Mazaheri(2010)Jensen and Mazaheri]{jensen2010shaping}
+Ole Jensen and Ali Mazaheri.
+\newblock Shaping functional architecture by oscillatory alpha activity: gating by inhibition.
+\newblock \emph{Frontiers in human neuroscience}, 4:\penalty0 186, 2010.
+
+\bibitem[Jensen \& Tesche(2002)Jensen and Tesche]{jensen2002frontal}
+Ole Jensen and Claudia~D Tesche.
+\newblock Frontal theta activity in humans increases with memory load in a working memory task.
+\newblock \emph{European journal of Neuroscience}, 15\penalty0 (8):\penalty0 1395--1399, 2002.
+
+\bibitem[Jeong et~al.(2022)Jeong, Cho, Lee, Lee, Shin, Kweon, Mill{\'a}n, M{\"u}ller, and Lee]{jeong20222020}
+Ji-Hoon Jeong, Jeong-Hyun Cho, Young-Eun Lee, Seo-Hyun Lee, Gi-Hwan Shin, Young-Seok Kweon, Jos{\'e} del~R Mill{\'a}n, Klaus-Robert M{\"u}ller, and Seong-Whan Lee.
+\newblock 2020 international brain--computer interface competition: A review.
+\newblock \emph{Frontiers in human neuroscience}, 16:\penalty0 898300, 2022.
+
+\bibitem[Jiang et~al.(2024)Jiang, Zhao, and Lu]{jiang2024large}
+Wei-Bang Jiang, Li-Ming Zhao, and Bao-Liang Lu.
+\newblock Large brain model for learning generic representations with tremendous eeg data in bci.
+\newblock \emph{arXiv preprint arXiv:2405.18765}, 2024.
+
+\bibitem[Kingma \& Ba(2014)Kingma and Ba]{kingma2014adam}
+Diederik~P Kingma and Jimmy Ba.
+\newblock Adam: A method for stochastic optimization.
+\newblock \emph{arXiv preprint arXiv:1412.6980}, 2014.
+
+\bibitem[Kostas et~al.(2021)Kostas, Aroca-Ouellette, and Rudzicz]{kostas2021bendr}
+Demetres Kostas, Stephane Aroca-Ouellette, and Frank Rudzicz.
+\newblock Bendr: Using transformers and a contrastive self-supervised learning task to learn from massive amounts of eeg data.
+\newblock \emph{Frontiers in Human Neuroscience}, 15:\penalty0 653659, 2021.
+
+\bibitem[Lai et~al.(2025)Lai, Wei, Yao, and Wang]{lai2025simple}
+Junhong Lai, Jiyu Wei, Lin Yao, and Yueming Wang.
+\newblock A simple review of eeg foundation models: Datasets, advancements and future perspectives.
+\newblock \emph{arXiv preprint arXiv:2504.20069}, 2025.
+
+\bibitem[Lan et~al.(2018)Lan, Sourina, Wang, Scherer, and M{\"u}ller-Putz]{lan2018domain}
+Zirui Lan, Olga Sourina, Lipo Wang, Reinhold Scherer, and Gernot~R M{\"u}ller-Putz.
+\newblock Domain adaptation techniques for eeg-based emotion recognition: a comparative study on two public datasets.
+\newblock \emph{IEEE Transactions on Cognitive and Developmental Systems}, 11\penalty0 (1):\penalty0 85--94, 2018.
+
+\bibitem[Li et~al.(2024)Li, Kawanabe, and Kobler]{li2024spdim}
+Shanglin Li, Motoaki Kawanabe, and Reinmar~J Kobler.
+\newblock Spdim: Source-free unsupervised conditional and label shift adaptation in eeg.
+\newblock \emph{arXiv preprint arXiv:2411.07249}, 2024.
+
+\bibitem[Li et~al.(2022)Li, Zhu, Jin, Fan, He, Cai, and Li]{li2022dynamic}
+Zhunan Li, Enwei Zhu, Ming Jin, Cunhang Fan, Huiguang He, Ting Cai, and Jinpeng Li.
+\newblock Dynamic domain adaptation for class-aware cross-subject and cross-session eeg emotion recognition.
+\newblock \emph{IEEE Journal of Biomedical and Health Informatics}, 26\penalty0 (12):\penalty0 5964--5973, 2022.
+
+\bibitem[Liang et~al.(2020)Liang, Hu, and Feng]{liang2020we}
+Jian Liang, Dapeng Hu, and Jiashi Feng.
+\newblock Do we really need to access the source data? source hypothesis transfer for unsupervised domain adaptation.
+\newblock In \emph{International conference on machine learning}, pp.\  6028--6039. PMLR, 2020.
+
+\bibitem[Liu et~al.(2024)Liu, Feng, Xue, Wang, Wu, Lu, Zhao, Deng, Zhang, Ruan, et~al.]{liu2024deepseek}
+Aixin Liu, Bei Feng, Bing Xue, Bingxuan Wang, Bochao Wu, Chengda Lu, Chenggang Zhao, Chengqi Deng, Chenyu Zhang, Chong Ruan, et~al.
+\newblock Deepseek-v3 technical report.
+\newblock \emph{arXiv preprint arXiv:2412.19437}, 2024.
+
+\bibitem[Melnik et~al.(2017)Melnik, Legkov, Izdebski, K{\"a}rcher, Hairston, Ferris, and K{\"o}nig]{melnik2017systems}
+Andrew Melnik, Petr Legkov, Krzysztof Izdebski, Silke~M K{\"a}rcher, W~David Hairston, Daniel~P Ferris, and Peter K{\"o}nig.
+\newblock Systems, subjects, sessions: to what extent do these factors influence eeg data?
+\newblock \emph{Frontiers in human neuroscience}, 11:\penalty0 150, 2017.
+
+\bibitem[Oken et~al.(2006)Oken, Salinsky, and Elsas]{oken2006vigilance}
+Barry~S Oken, Martin~C Salinsky, and Siegward-M Elsas.
+\newblock Vigilance, alertness, or sustained attention: physiological basis and measurement.
+\newblock \emph{Clinical neurophysiology}, 117\penalty0 (9):\penalty0 1885--1901, 2006.
+
+\bibitem[Pasley et~al.(2012)Pasley, David, Mesgarani, Flinker, Shamma, Crone, Knight, and Chang]{pasley2012reconstructing}
+Brian~N Pasley, Stephen~V David, Nima Mesgarani, Adeen Flinker, Shihab~A Shamma, Nathan~E Crone, Robert~T Knight, and Edward~F Chang.
+\newblock Reconstructing speech from human auditory cortex.
+\newblock \emph{PLoS biology}, 10\penalty0 (1):\penalty0 e1001251, 2012.
+
+\bibitem[Pfurtscheller \& Da~Silva(1999)Pfurtscheller and Da~Silva]{pfurtscheller1999event}
+Gert Pfurtscheller and FH~Lopes Da~Silva.
+\newblock Event-related eeg/meg synchronization and desynchronization: basic principles.
+\newblock \emph{Clinical neurophysiology}, 110\penalty0 (11):\penalty0 1842--1857, 1999.
+
+\bibitem[Proix et~al.(2022)Proix, Delgado~Saa, Christen, Martin, Pasley, Knight, Tian, Poeppel, Doyle, Devinsky, et~al.]{proix2022imagined}
+Timoth{\'e}e Proix, Jaime Delgado~Saa, Andy Christen, Stephanie Martin, Brian~N Pasley, Robert~T Knight, Xing Tian, David Poeppel, Werner~K Doyle, Orrin Devinsky, et~al.
+\newblock Imagined speech can be decoded from low-and cross-frequency intracranial eeg features.
+\newblock \emph{Nature communications}, 13\penalty0 (1):\penalty0 48, 2022.
+
+\bibitem[Ramoser et~al.(2000)Ramoser, Muller-Gerking, and Pfurtscheller]{ramoser2000optimal}
+Herbert Ramoser, Johannes Muller-Gerking, and Gert Pfurtscheller.
+\newblock Optimal spatial filtering of single trial eeg during imagined hand movement.
+\newblock \emph{IEEE transactions on rehabilitation engineering}, 8\penalty0 (4):\penalty0 441--446, 2000.
+
+\bibitem[Saha \& Baumert(2020)Saha and Baumert]{saha2020intra}
+Simanto Saha and Mathias Baumert.
+\newblock Intra-and inter-subject variability in eeg-based sensorimotor brain computer interface: a review.
+\newblock \emph{Frontiers in computational neuroscience}, 13:\penalty0 87, 2020.
+
+\bibitem[Sun et~al.(2019)Sun, Wang, Liu, Miller, Efros, and Hardt]{sun2019test}
+Yu~Sun, Xiaolong Wang, Zhuang Liu, John Miller, Alexei~A Efros, and Moritz Hardt.
+\newblock Test-time training for out-of-distribution generalization.
+\newblock \emph{arXiv preprint arXiv:2406.04328}, 2019.
+
+\bibitem[Sun et~al.(2020)Sun, Wang, Liu, Miller, Efros, and Hardt]{sun2020test}
+Yu~Sun, Xiaolong Wang, Zhuang Liu, John Miller, Alexei Efros, and Moritz Hardt.
+\newblock Test-time training with self-supervision for generalization under distribution shifts.
+\newblock In \emph{International conference on machine learning}, pp.\  9229--9248. PMLR, 2020.
+
+\bibitem[Wang et~al.(2020)Wang, Shelhamer, Liu, Olshausen, and Darrell]{wang2020tent}
+Dequan Wang, Evan Shelhamer, Shaoteng Liu, Bruno Olshausen, and Trevor Darrell.
+\newblock Tent: Fully test-time adaptation by entropy minimization.
+\newblock \emph{arXiv preprint arXiv:2006.10726}, 2020.
+
+\bibitem[Wang et~al.(2024{\natexlab{a}})Wang, Han, Gan, and Wang]{wang2024lightweight}
+Huiyang Wang, Hongfang Han, John~Q Gan, and Haixian Wang.
+\newblock Lightweight source-free domain adaptation based on adaptive euclidean alignment for brain-computer interfaces.
+\newblock \emph{IEEE Journal of Biomedical and Health Informatics}, 2024{\natexlab{a}}.
+
+\bibitem[Wang et~al.(2024{\natexlab{b}})Wang, Zhao, Luo, Zhou, Jiang, Li, Li, and Pan]{wang2024cbramod}
+Jiquan Wang, Sha Zhao, Zhiling Luo, Yangxuan Zhou, Haiteng Jiang, Shijian Li, Tao Li, and Gang Pan.
+\newblock Cbramod: A criss-cross brain foundation model for eeg decoding.
+\newblock \emph{arXiv preprint arXiv:2412.07236}, 2024{\natexlab{b}}.
+
+\bibitem[Xiao \& Snoek(2024)Xiao and Snoek]{xiao2024beyond}
+Zehao Xiao and Cees~GM Snoek.
+\newblock Beyond model adaptation at test time: A survey.
+\newblock \emph{arXiv preprint arXiv:2411.03687}, 2024.
+
+\bibitem[Yang et~al.(2023)Yang, Westover, and Sun]{yang2023biot}
+Chaoqi Yang, M~Brandon Westover, and Jimeng Sun.
+\newblock Biot: Cross-data biosignal learning in the wild.
+\newblock \emph{arXiv preprint arXiv:2305.10351}, 2023.
+
+\bibitem[Zhao et~al.(2020)Zhao, Zheng, Ma, Li, and Zheng]{zhao2020deep}
+He~Zhao, Qingqing Zheng, Kai Ma, Huiqi Li, and Yefeng Zheng.
+\newblock Deep representation-based domain adaptation for nonstationary eeg classification.
+\newblock \emph{IEEE Transactions on Neural Networks and Learning Systems}, 32\penalty0 (2):\penalty0 535--545, 2020.
+
+\bibitem[Zyma et~al.(2019)Zyma, Tukaev, Seleznov, Kiyono, Popov, Chernykh, and Shpenkov]{zyma2019electroencephalograms}
+Igor Zyma, Sergii Tukaev, Ivan Seleznov, Ken Kiyono, Anton Popov, Mariia Chernykh, and Oleksii Shpenkov.
+\newblock Electroencephalograms during mental arithmetic task performance.
+\newblock \emph{Data}, 4\penalty0 (1):\penalty0 14, 2019.
+
+\end{thebibliography}

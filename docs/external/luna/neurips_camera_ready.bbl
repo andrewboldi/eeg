@@ -1,0 +1,183 @@
+\begin{thebibliography}{10}
+
+\bibitem{craik2019deep}
+Alexander Craik, Yongtian He, and Jose~L Contreras-Vidal.
+\newblock Deep learning for electroencephalogram ({EEG}) classification tasks: a review.
+\newblock {\em Journal of Neural Engineering}, 16(3):031001, April 2019.
+
+\bibitem{song2022eeg}
+Yonghao Song, Qingqing Zheng, Bingchuan Liu, and Xiaorong Gao.
+\newblock {EEG} conformer: Convolutional transformer for {EEG} decoding and visualization.
+\newblock {\em IEEE Transactions on Neural Systems and Rehabilitation Engineering}, 31:710--719, December 2023.
+
+\bibitem{wen2022transformers}
+Qingsong Wen, Tian Zhou, Chaoli Zhang, Weiqi Chen, Ziqing Ma, Junchi Yan, and Liang Sun.
+\newblock Transformers in time series: A survey.
+\newblock In {\em Proceedings of the Thirty-Second International Joint Conference on Artificial Intelligence}, IJCAI-2023, pages 6778--6786. International Joint Conferences on Artificial Intelligence Organization, August 2023.
+
+\bibitem{xu2020cross}
+Lichao Xu, Minpeng Xu, Yufeng Ke, Xingwei An, Shuang Liu, and Dong Ming.
+\newblock Cross-dataset variability problem in {EEG} decoding with deep learning.
+\newblock {\em Frontiers in Human Neuroscience}, 14:103, April 2020.
+
+\bibitem{yang2023biot}
+Chaoqi Yang, M~Westover, and Jimeng Sun.
+\newblock {BIOT}: Biosignal transformer for cross-data learning in the wild.
+\newblock In A.~Oh, T.~Naumann, A.~Globerson, K.~Saenko, M.~Hardt, and S.~Levine, editors, {\em Advances in Neural Information Processing Systems}, volume~36, pages 78240--78260. Curran Associates, Inc., September 2023.
+
+\bibitem{yi2023learning}
+Ke~Yi, Yansen Wang, Kan Ren, and Dongsheng Li.
+\newblock Learning topology-agnostic {EEG} representations with geometry-aware modeling.
+\newblock In {\em Thirty-seventh Conference on Neural Information Processing Systems}, September 2023.
+
+\bibitem{mentzelopoulos2024neural}
+Georgios Mentzelopoulos, Evangelos Chatzipantazis, Ashwin~G Ramayya, Michelle Hedlund, Vivek Buch, Kostas Daniilidis, Konrad Kording, and Flavia Vitale.
+\newblock Neural decoding from stereotactic {EEG}: accounting for electrode variability across subjects.
+\newblock In {\em The Thirty-eighth Annual Conference on Neural Information Processing Systems}, September 2024.
+
+\bibitem{lin2023eeg}
+Xuefen Lin, Jielin Chen, Weifeng Ma, Wei Tang, and Yuchen Wang.
+\newblock {EEG} emotion recognition using improved graph neural network with channel selection.
+\newblock {\em Computer Methods and Programs in Biomedicine}, 231:107380, April 2023.
+
+\bibitem{obeid2016temple}
+Iyad Obeid and Joseph Picone.
+\newblock The temple university hospital {EEG} data corpus.
+\newblock {\em Frontiers in Neuroscience}, 10:196, May 2016.
+
+\bibitem{detti2020siena}
+Paolo Detti, Giampaolo Vatti, and Garazi Zabalo Manrique~de Lara.
+\newblock Siena scalp {EEG} database, 2020.
+\newblock This work is licensed under the Creative Commons Attribution 4.0 International License. To view a copy of this license, visit \url{http://creativecommons.org/licenses/by/4.0/}.
+
+\bibitem{liu2021comparing}
+Wei Liu, Jie-Lin Qiu, Wei-Long Zheng, and Bao-Liang Lu.
+\newblock Comparing recognition performance and robustness of multimodal deep learning models for multimodal emotion recognition.
+\newblock {\em IEEE Transactions on Cognitive and Developmental Systems}, 14(2):715--729, June 2022.
+
+\bibitem{kostas2021bendr}
+Demetres Kostas, Stephane Aroca-Ouellette, and Frank Rudzicz.
+\newblock {BENDR}: Using transformers and a contrastive self-supervised learning task to learn from massive amounts of {EEG} data.
+\newblock {\em Frontiers in Human Neuroscience}, 15:653659, June 2021.
+
+\bibitem{wang2023brainbert}
+Christopher Wang, Vighnesh Subramaniam, Adam~Uri Yaari, Gabriel Kreiman, Boris Katz, Ignacio Cases, and Andrei Barbu.
+\newblock Brain{BERT}: Self-supervised representation learning for intracranial recordings.
+\newblock In {\em The Eleventh International Conference on Learning Representations}, February 2023.
+
+\bibitem{chen2024eegformer}
+Yuqi Chen, Kan Ren, Kaitao Song, Yansen Wang, Yifan Wang, Dongsheng Li, and Lili Qiu.
+\newblock {EEGF}ormer: Towards transferable and interpretable large-scale {EEG} foundation model.
+\newblock In {\em AAAI 2024 Spring Symposium on Clinical Foundation Models}, February 2024.
+
+\bibitem{jiang2024large}
+Weibang Jiang, Liming Zhao, and Bao liang Lu.
+\newblock Large brain model for learning generic representations with tremendous {EEG} data in {BCI}.
+\newblock In {\em The Twelfth International Conference on Learning Representations}, January 2024.
+
+\bibitem{wang2024cbramod}
+Jiquan Wang, Sha Zhao, Zhiling Luo, Yangxuan Zhou, Haiteng Jiang, Shijian Li, Tao Li, and Gang Pan.
+\newblock {CB}ra{M}od: A criss-cross brain foundation model for {EEG} decoding.
+\newblock In {\em The Thirteenth International Conference on Learning Representations}, January 2025.
+
+\bibitem{zhang2023brant}
+Daoze Zhang, Zhizhang Yuan, Yang Yang, Junru Chen, Jingjing Wang, and Yafeng Li.
+\newblock Brant: Foundation model for intracranial neural signal.
+\newblock In {\em Thirty-seventh Conference on Neural Information Processing Systems}, September 2023.
+
+\bibitem{tang2021self}
+Siyi Tang, Jared Dunnmon, Khaled~Kamal Saab, Xuan Zhang, Qianying Huang, Florian Dubost, Daniel Rubin, and Christopher Lee-Messer.
+\newblock Self-supervised graph neural networks for improved electroencephalographic seizure analysis.
+\newblock In {\em International Conference on Learning Representations}, January 2022.
+
+\bibitem{dimofte2025cerebro}
+Alexandru Dimofte, Glenn~Anta Bucagu, Thorir~Mar Ingolfsson, Xiaying Wang, Andrea Cossettini, Luca Benini, and Yawei Li.
+\newblock {CER}e{B}r{O}: Compact encoder for representations of brain oscillations using efficient alternating attention, January 2025.
+
+\bibitem{chau2024population}
+Geeling Chau, Christopher Wang, Sabera~J Talukder, Vighnesh Subramaniam, Saraswati Soedarmadji, Yisong Yue, Boris Katz, and Andrei Barbu.
+\newblock Population transformer: Learning population-level representations of neural activity.
+\newblock In {\em The Thirteenth International Conference on Learning Representations}, January 2025.
+
+\bibitem{saeed2021learning}
+Aaqib Saeed, David Grangier, Olivier Pietquin, and Neil Zeghidour.
+\newblock Learning from heterogeneous eeg signals with differentiable channel reordering.
+\newblock In {\em ICASSP 2021-2021 IEEE international conference on acoustics, speech and signal processing (ICASSP)}, pages 1255--1259. IEEE, 2021.
+
+\bibitem{lee2019set}
+Juho Lee, Yoonho Lee, Jungtaek Kim, Adam Kosiorek, Seungjin Choi, and Yee~Whye Teh.
+\newblock Set transformer: A framework for attention-based permutation-invariant neural networks.
+\newblock In {\em International conference on machine learning}, pages 3744--3753. PMLR, June 2019.
+
+\bibitem{jaegle2021perceiver}
+Andrew Jaegle, Sebastian Borgeaud, Jean-Baptiste Alayrac, Carl Doersch, Catalin Ionescu, David Ding, Skanda Koppula, Daniel Zoran, Andrew Brock, Evan Shelhamer, Olivier~J Henaff, Matthew Botvinick, Andrew Zisserman, Oriol Vinyals, and Joao Carreira.
+\newblock Perceiver {IO}: A general architecture for structured inputs \& outputs.
+\newblock In {\em International Conference on Learning Representations}, January 2022.
+
+\bibitem{wu2018group}
+Yuxin Wu and Kaiming He.
+\newblock Group normalization.
+\newblock {\em International Journal of Computer Vision}, 128(3):742--755, July 2019.
+
+\bibitem{hendrycks2016gaussian}
+Dan Hendrycks and Kevin Gimpel.
+\newblock Gaussian error linear units (gelus), June 2016.
+
+\bibitem{mildenhallNerf}
+Ben Mildenhall, Pratul~P. Srinivasan, Matthew Tancik, Jonathan~T. Barron, Ravi Ramamoorthi, and Ren Ng.
+\newblock {NeRF}: representing scenes as neural radiance fields for view synthesis.
+\newblock {\em Commun. ACM}, 65(1):99–106, December 2021.
+
+\bibitem{su2024roformer}
+Jianlin Su, Murtadha Ahmed, Yu~Lu, Shengfeng Pan, Wen Bo, and Yunfeng Liu.
+\newblock Ro{F}ormer: Enhanced transformer with rotary position embedding.
+\newblock {\em Neurocomputing}, 568:127063, February 2024.
+
+\bibitem{ingolfsson2022}
+Thorir~Mar Ingolfsson, Andrea Cossettini, Simone Benatti, and Luca Benini.
+\newblock Energy-efficient tree-based eeg artifact detection.
+\newblock In {\em 2022 44th Annual International Conference of the IEEE Engineering in Medicine \& Biology Society (EMBC)}, pages 3723--3728. IEEE, 2022.
+
+\bibitem{jing2023development}
+Jin Jing, Wendong Ge, Shenda Hong, Marta~Bento Fernandes, Zhen Lin, Chaoqi Yang, Sungtae An, Aaron~F. Struck, Aline Herlopian, Ioannis Karakis, Jonathan~J. Halford, Marcus~C. Ng, Emily~L. Johnson, Brian~L. Appavu, Rani~A. Sarkis, Gamaleldin Osman, Peter~W. Kaplan, Monica~B. Dhakar, Lakshman~Arcot Jayagopal, Zubeda Sheikh, Olga Taraschenko, Sarah Schmitt, Hiba~A. Haider, Jennifer~A. Kim, Christa~B. Swisher, Nicolas Gaspard, Mackenzie~C. Cervenka, Andres A.~Rodriguez Ruiz, Jong~Woo Lee, Mohammad Tabaeizadeh, Emily~J. Gilmore, Kristy Nordstrom, Ji~Yeoun Yoo, Manisha~G. Holmes, Susan~T. Herman, Jennifer~A. Williams, Jay Pathmanathan, Fábio~A. Nascimento, Ziwei Fan, Samaneh Nasiri, Mouhsin~M. Shafi, Sydney~S. Cash, Daniel~B. Hoch, Andrew~J. Cole, Eric~S. Rosenthal, Sahar~F. Zafar, Jimeng Sun, and M.~Brandon Westover.
+\newblock Development of expert-level classification of seizures and rhythmic and periodic patterns during {EEG} interpretation.
+\newblock {\em Neurology}, 100(17):e1750--e1762, April 2023.
+
+\bibitem{yang2021self}
+Chaoqi Yang, Cao Xiao, M.~Brandon Westover, and Jimeng Sun.
+\newblock Self-supervised electroencephalogram representation learning for automatic sleep staging: Model development and evaluation study.
+\newblock {\em JMIR AI}, 2:e46769, July 2021.
+
+\bibitem{peh2022transformer}
+Wei~Yan Peh, Yuanyuan Yao, and Justin Dauwels.
+\newblock Transformer convolutional neural networks for automated artifact detection in scalp {EEG}, July 2022.
+
+\bibitem{li2022motor}
+Hongli Li, Man Ding, Ronghua Zhang, and Chunbo Xiu.
+\newblock Motor imagery {EEG} classification algorithm based on cnn-lstm feature fusion network.
+\newblock {\em Biomedical Signal Processing and Control}, 72:103342, February 2022.
+
+\bibitem{song2021transformer}
+Yonghao Song, Xueyu Jia, Lie Yang, and Longhan Xie.
+\newblock Transformer-based spatial-temporal feature learning for {EEG} decoding, June 2021.
+
+\bibitem{mohammadi2024eeg2rep}
+Navid~Mohammadi Foumani, Geoffrey Mackellar, Soheila Ghane, Saad Irtza, Nam Nguyen, and Mahsa Salehi.
+\newblock Eeg2rep: Enhancing self-supervised {EEG} representation through informative masked inputs.
+\newblock In {\em Proceedings of the 30th ACM SIGKDD Conference on Knowledge Discovery and Data Mining}, KDD ’24, pages 5544--5555. ACM, August 2024.
+
+\bibitem{tegon2025femba}
+Anna Tegon, Thorir~Mar Ingolfsson, Xiaying Wang, Luca Benini, and Yawei Li.
+\newblock {FEMBA}: Efficient and scalable {EEG} analysis with a bidirectional mamba foundation model, February 2025.
+
+\bibitem{lawhern2018eegnet}
+Vernon~J Lawhern, Amelia~J Solon, Nicholas~R Waytowich, Stephen~M Gordon, Chou~P Hung, and Brent~J Lance.
+\newblock Eegnet: a compact convolutional neural network for eeg-based brain–computer interfaces.
+\newblock {\em Journal of Neural Engineering}, 15(5):056013, July 2018.
+
+\bibitem{tang2023modeling}
+Siyi Tang, Jared~A Dunnmon, Qu~Liangqiong, Khaled~K Saab, Tina Baykaner, Christopher Lee-Messer, and Daniel~L Rubin.
+\newblock Modeling multivariate biosignals with graph neural networks and structured state space models.
+\newblock In Bobak~J. Mortazavi, Tasmie Sarker, Andrew Beam, and Joyce~C. Ho, editors, {\em Proceedings of the Conference on Health, Inference, and Learning}, volume 209 of {\em Proceedings of Machine Learning Research}, pages 50--71. PMLR, June 2023.
+
+\end{thebibliography}

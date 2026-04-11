@@ -1,0 +1,153 @@
+\begin{thebibliography}{10}
+
+\bibitem{journal_bci}
+H.~Nezamfar, S.~S. Mohseni~Salehi, M.~Moghadamfalahi, and D.~Erdogmus, ``Flashtype$^{\text{tm}}$: A context-aware c-vep-based bci typing interface using eeg signals,'' {\em IEEE Journal of Selected Topics in Signal Processing}, vol.~10, no.~5, pp.~932--941, 2016.
+
+\bibitem{journal_eeg}
+B.~Kadioglu, I.~Yildiz, P.~Closas, and D.~Erdogmuş, ``M-estimation-based subspace learning for brain computer interfaces,'' {\em IEEE Journal of Selected Topics in Signal Processing}, vol.~12, no.~6, pp.~1276--1285, 2018.
+
+\bibitem{ournetwork}
+O.~B. Guney, M.~Oblokulov, and H.~Ozkan, ``A deep neural network for ssvep-based brain-computer interfaces,'' {\em IEEE Transactions on Biomedical Engineering}, vol.~69, no.~2, pp.~932--944, 2022.
+
+\bibitem{ssvep_bci_review}
+M.~Li, D.~He, C.~Li, and S.~Qi, ``Brain–computer interface speller based on steady-state visual evoked potential: A review focusing on the stimulus paradigm and performance,'' {\em Brain Sciences}, vol.~11, no.~4, 2021.
+
+\bibitem{ssvep_common}
+E.~{Yin}, Z.~{Zhou}, J.~{Jiang}, Y.~{Yu}, and D.~{Hu}, ``A dynamically optimized ssvep brain–computer interface (bci) speller,'' {\em IEEE Transactions on Biomedical Engineering}, vol.~62, no.~6, pp.~1447--1456, 2015.
+
+\bibitem{convca}
+Y.~Li {\em et~al.}, ``Convolutional correlation analysis for enhancing the performance of ssvep-based brain-computer interface,'' {\em IEEE Transactions on Neural Systems and Rehabilitation Engineering}, vol.~28, no.~12, pp.~2681--2690, 2020.
+
+\bibitem{our_ensemble}
+O.~B. Guney and H.~Ozkan, ``Transfer learning of an ensemble of dnns for ssvep bci spellers without user-specific training,'' {\em Journal of Neural Engineering}, vol.~20, p.~016013, jan 2023.
+
+\bibitem{tt-CCA}
+P.~Yuan, X.~Chen, Y.~Wang, X.~Gao, and S.~Gao, ``Enhancing performances of {SSVEP}-based brain{\textendash}computer interfaces via exploiting inter-subject information,'' {\em Journal of Neural Engineering}, vol.~12, p.~046006, jun 2015.
+
+\bibitem{SFDA_EEG_privacy}
+K.~Xia, L.~Deng, W.~Duch, and D.~Wu, ``Privacy-preserving domain adaptation for motor imagery-based brain-computer interfaces,'' {\em IEEE Transactions on Biomedical Engineering}, vol.~69, no.~11, pp.~3365--3376, 2022.
+
+\bibitem{SFDA_EEG2}
+P.~Lee, S.~Jeon, S.~Hwang, M.~Shin, and H.~Byun, ``Source-free subject adaptation for eeg-based visual recognition,'' in {\em 11th International Winter Conference on Brain-Computer Interface}, pp.~1--6, Feb 2023.
+
+\bibitem{benchmark_Dataset}
+Y.~{Wang}, X.~{Chen}, X.~{Gao}, and S.~{Gao}, ``A benchmark dataset for ssvep-based brain–computer interfaces,'' {\em IEEE Transactions on Neural Systems and Rehabilitation Engineering}, vol.~25, no.~10, pp.~1746--1752, 2017.
+
+\bibitem{beta}
+B.~Liu, X.~Huang, Y.~Wang, X.~Chen, and X.~Gao, ``Beta: A large benchmark database toward ssvep-bci application,'' {\em Frontiers in Neuroscience}, vol.~14, p.~627, 2020.
+
+\bibitem{oacca}
+C.~M. Wong, Z.~Wang, M.~Nakanishi, B.~Wang, A.~Rosa, P.~Chen, T.-P. Jung, and F.~Wan, ``Online adaptation boosts ssvep-based bci performance,'' {\em IEEE Transactions on Biomedical Engineering}, pp.~1--1, 2021.
+
+\bibitem{comb-tCCA}
+N.~R. Waytowich, J.~Faller, J.~O. Garcia, J.~M. Vettel, and P.~Sajda, ``Unsupervised adaptive transfer learning for steady-state visual evoked potential brain-computer interfaces,'' in {\em IEEE International Conference on Systems, Man, and Cybernetics (SMC)}, pp.~004135--004140, 2016.
+
+\bibitem{trca}
+M.~{Nakanishi}, Y.~{Wang}, X.~{Chen}, Y.~{Wang}, X.~{Gao}, and T.~{Jung}, ``Enhancing detection of ssveps for a high-speed brain speller using task-related component analysis,'' {\em IEEE Transactions on Biomedical Engineering}, vol.~65, no.~1, pp.~104--112, 2018.
+
+\bibitem{r3_p3}
+J.~Jin, Z.~Wang, R.~Xu, C.~Liu, X.~Wang, and A.~Cichocki, ``Robust similarity measurement based on a novel time filter for ssveps detection,'' {\em IEEE Transactions on Neural Networks and Learning Systems}, vol.~34, no.~8, pp.~4096--4105, 2023.
+
+\bibitem{CCA_method}
+Z.~Lin, C.~Zhang, W.~Wu, and X.~Gao, ``Frequency recognition based on canonical correlation analysis for ssvep-based bcis,'' {\em IEEE Transactions on Biomedical Engineering}, vol.~53, no.~12, pp.~2610--2614, 2006.
+
+\bibitem{fbcca}
+X.~Chen, Y.~Wang, S.~Gao, T.-P. Jung, and X.~Gao, ``Filter bank canonical correlation analysis for implementing a high-speed {SSVEP}-based brain{\textendash}computer interface,'' {\em Journal of Neural Engineering}, vol.~12, p.~046008, jun 2015.
+
+\bibitem{to_train}
+R.~Zerafa, T.~Camilleri, O.~Falzon, and K.~Camilleri, ``To train or not to train? a survey on training of feature extraction methods for ssvep-based bcis,'' {\em Journal of Neural Engineering}, vol.~15, 06 2018.
+
+\bibitem{cca_statistic}
+H.~Hotelling, ``Relations between two sets of variates,'' {\em Biometrika}, vol.~28, no.~3/4, pp.~321--377, 1936.
+
+\bibitem{cca_net}
+Y.~Deng, Z.~Ji, Y.~Wang, and S.~Kevin~Zhou, ``Cca-net: Zero-shot ssvep classification via an integration of canonical correlation analysis and deep neural network,'' {\em IEEE Transactions on Instrumentation and Measurement}, vol.~74, pp.~1--11, 2025.
+
+\bibitem{osssvep}
+Y.~Deng, Z.~Ji, Y.~Wang, and S.~K. Zhou, ``Os-ssvep: One-shot ssvep classification,'' {\em Neural Networks}, vol.~180, p.~106734, 2024.
+
+\bibitem{PSF}
+K.~F. Lao, C.~M. Wong, Z.~Wang, and F.~Wan, ``Learning prototype spatial filters for subject-independent ssvep-based brain-computer interface,'' in {\em IEEE International Conference on Systems, Man, and Cybernetics (SMC)}, pp.~485--490, 2018.
+
+\bibitem{msCCA}
+C.~M. Wong, F.~Wan, B.~Wang, Z.~Wang, W.~Nan, K.~F. Lao, P.~U. Mak, M.~I. Vai, and A.~Rosa, ``Learning across multi-stimulus enhances target recognition methods in {SSVEP}-based {BCIs},'' {\em Journal of Neural Engineering}, vol.~17, no.~1, p.~016026, 2020.
+
+\bibitem{siu_adaptation}
+O.~Berke~Güney, D.~Küçükahmetler, P.~Çiftçioğlu, G.~Coşkun, and H.~Özkan, ``Unsupervised adaptation of dnn for brain-computer interface spellers,'' in {\em 2022 30th Signal Processing and Communications Applications Conference (SIU)}, pp.~1--4, 2022.
+
+\bibitem{shot_sfda}
+J.~Liang, D.~Hu, and J.~Feng, ``Do we really need to access the source data? source hypothesis transfer for unsupervised domain adaptation,'' ICML'20, 2020.
+
+\bibitem{affinity_sfda}
+S.~Yang, Y.~Wang, J.~van~de weijer, L.~Herranz, and S.~JUI, ``Exploiting the intrinsic neighborhood structure for source-free domain adaptation,'' in {\em Advances in Neural Information Processing Systems}, 2021.
+
+\bibitem{lln_sfda}
+L.~Yi, G.~Xu, P.~Xu, J.~Li, R.~Pu, C.~Ling, I.~McLeod, and B.~Wang, ``When source-free domain adaptation meets learning with noisy labels,'' in {\em The Eleventh International Conference on Learning Representations (ICLR)}, 2023.
+
+\bibitem{gaming1}
+I.~Marti{\v{s}}ius and R.~Dama{\v{s}}evi{\v{c}}ius, ``A prototype ssvep based real time bci gaming system,'' {\em Computational intelligence and neuroscience}, 2016.
+
+\bibitem{itr_cite}
+J.~R. Wolpaw, N.~Birbaumer, D.~J. McFarland, G.~Pfurtscheller, and T.~M. Vaughan, ``Brain–computer interfaces for communication and control,'' {\em Clinical Neurophysiology}, vol.~113, no.~6, pp.~767--791, 2002.
+
+\bibitem{EM_algorithm}
+A.~P. Dempster, N.~M. Laird, and D.~B. Rubin, ``Maximum likelihood from incomplete data via the em algorithm,'' {\em Journal of the Royal Statistical Society. Series B (Methodological)}, vol.~39, no.~1, pp.~1--38, 1977.
+
+\bibitem{cvpr_uda_pseudo}
+J.~Liang, D.~Hu, and J.~Feng, ``Domain adaptation with auxiliary target domain-oriented classifier,'' in {\em 2021 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)}, pp.~16627--16637, 2021.
+
+\bibitem{pseudo_ssl}
+D.-H. Lee, ``Pseudo-label: The simple and efficient semi-supervised learning method for deep neural networks,'' in {\em Workshop on challenges in representation learning, ICML}, vol.~3, 2013.
+
+\bibitem{entropy_regularization}
+Y.~Grandvalet and Y.~Bengio, ``Semi-supervised learning by entropy minimization,'' in {\em Advances in Neural Information Processing Systems}, vol.~17, MIT Press, 2004.
+
+\bibitem{text_ssl_pseudo}
+K.~Nigam, A.~K. McCallum, S.~Thrun, and T.~Mitchell, ``Text classification from labeled and unlabeled documents using em,'' {\em Machine learning}, vol.~39, no.~2, pp.~103--134, 2000.
+
+\bibitem{dropout_paper}
+N.~Srivastava, G.~Hinton, A.~Krizhevsky, I.~Sutskever, and R.~Salakhutdinov, ``Dropout: A simple way to prevent neural networks from overfitting,'' {\em Journal of Machine Learning Research}, vol.~15, no.~56, pp.~1929--1958, 2014.
+
+\bibitem{ssvepformer}
+J.~Chen, Y.~Zhang, Y.~Pan, P.~Xu, and C.~Guan, ``A transformer-based deep neural network model for ssvep classification,'' {\em Neural Networks}, vol.~164, pp.~521--534, 2023.
+
+\bibitem{kulis2012metric}
+B.~Kulis, ``Metric learning: A survey,'' {\em Foundations and trends in machine learning}, vol.~5, no.~4, pp.~287--364, 2012.
+
+\bibitem{massimino2018like}
+A.~K. Massimino and M.~A. Davenport, ``As you like it: Localization via paired comparisons,'' {\em arXiv}, 2018.
+
+\bibitem{gonen2011multiple}
+M.~G{\"o}nen and E.~Alpayd{\i}n, ``Multiple kernel learning algorithms,'' {\em The Journal of Machine Learning Research}, vol.~12, pp.~2211--2268, 2011.
+
+\bibitem{silhouette}
+P.~J. Rousseeuw, ``Silhouettes: A graphical aid to the interpretation and validation of cluster analysis,'' {\em Journal of Computational and Applied Mathematics}, vol.~20, pp.~53--65, 1987.
+
+\bibitem{confidence2}
+Y.~Zou, Z.~Yu, X.~Liu, B.~Kumar, and J.~Wang, ``Confidence regularized self-training,'' in {\em IEEE/CVF International Conference on Computer Vision (ICCV)}, pp.~5981--5990, 2019.
+
+\bibitem{another_network}
+M.~Kołodziej, A.~Majkowski, R.~J. Rak, and P.~Wiszniewski, ``Convolutional neural network-based classification of steady-state visually evoked potentials with limited training data,'' {\em Applied Sciences}, vol.~13, no.~24, 2023.
+
+\bibitem{dynamic_window_reason}
+J.~Millan and J.~Mourino, ``Asynchronous bci and local neural classifiers: an overview of the adaptive brain interface project,'' {\em IEEE Transactions on Neural Systems and Rehabilitation Engineering}, vol.~11, no.~2, pp.~159--161, 2003.
+
+\bibitem{dynamic_window1}
+C.~Yang, X.~Han, Y.~Wang, R.~Saab, S.~Gao, and X.~Gao, ``A dynamic window recognition algorithm for ssvep-based brain–computer interfaces using a spatio-temporal equalizer,'' {\em International Journal of Neural Systems}, vol.~28, no.~10, p.~1850028, 2018.
+
+\bibitem{dynamic_window2}
+Y.~Chen, C.~Yang, X.~Chen, Y.~Wang, and X.~Gao, ``A novel training-free recognition method for ssvep-based bcis using dynamic window strategy,'' {\em Journal of Neural Engineering}, vol.~18, p.~036007, mar 2021.
+
+\bibitem{dynamic_window3}
+W.~Zhou, L.~Wu, Y.~Gao, and X.~Chen, ``A dynamic window method based on reinforcement learning for ssvep recognition,'' {\em IEEE Transactions on Neural Systems and Rehabilitation Engineering}, vol.~32, pp.~2114--2123, 2024.
+
+\bibitem{robust_cohen}
+M.~R. Hess and J.~D. Kromrey, ``Robust confidence intervals for effect sizes: A comparative study of cohen’sd and cliff’s delta under non-normality and heterogeneous variances,'' in {\em Annual Meeting of the American Educational Research Association}, vol.~1, Citeseer, 2004.
+
+\bibitem{transformer_attention}
+A.~Vaswani, N.~Shazeer, N.~Parmar, J.~Uszkoreit, L.~Jones, A.~N. Gomez, L.~u. Kaiser, and I.~Polosukhin, ``Attention is all you need,'' in {\em Advances in Neural Information Processing Systems} (I.~Guyon, U.~V. Luxburg, S.~Bengio, H.~Wallach, R.~Fergus, S.~Vishwanathan, and R.~Garnett, eds.), vol.~30, Curran Associates, Inc., 2017.
+
+\bibitem{ba2016layernormalization}
+J.~L. Ba, J.~R. Kiros, and G.~E. Hinton, ``Layer normalization,'' {\em arXiv}, 2016.
+
+\end{thebibliography}

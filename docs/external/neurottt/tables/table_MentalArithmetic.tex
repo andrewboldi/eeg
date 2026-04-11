@@ -1,0 +1,30 @@
+\begin{table}[ht]
+\captionsetup{skip=2pt}
+\caption{Results on MentalArithmetic.}
+\centering
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.1}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l|ccc|ccc}
+\toprule
+\multirow{2}{*}{\makecell[l]{\textbf{Aligning}\\\textbf{Strategies}}} &
+\multicolumn{3}{c}{\textbf{CBraMod}~\citep{wang2024cbramod}} &
+\multicolumn{3}{c}{\textbf{LaBraM-Base}~\citep{jiang2024large}} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}
+& \textbf{Balanced-Accuracy} & \textbf{AUC-PR} & \textbf{AUROC}
+& \textbf{Accuracy} & \textbf{AUC-PR} & \textbf{AUROC} \\
+\midrule
+Linear & 0.6389 $\pm$ 0.0092 & 0.4880 $\pm$ 0.0262 & 0.7788 $\pm$ 0.0408 & 0.6123 $\pm$ 0.0254 & 0.4826 $\pm$ 0.1124 & 0.6865 $\pm$ 0.0523 \\
+Shallow MLP    & 0.6486 $\pm$ 0.0310  & 0.4459 $\pm$ 0.0527  & 0.7301 $\pm$ 0.0379  & 0.6125 $\pm$ 0.0249 & 0.2537 $\pm$ 0.0575 & 0.7329 $\pm$ 0.0191 \\
+Lora   & 0.6001 $\pm$ 0.0144 & 0.5080 $\pm$ 0.0297 & 0.7327 $\pm$ 0.0239 & 0.5944 $\pm$ 0.0136 & 0.2475 $\pm$ 0.0245 & 0.7362 $\pm$ 0.0085 \\
+SHOT & 0.6308 $\pm$ 0.0297 & 0.6063 $\pm$ 0.0613 & 0.7696 $\pm$ 0.0067 & 0.5827 $\pm$ 0.0274 & 0.4783 $\pm$ 0.0343 & 0.5826 $\pm$ 0.0267 \\
+\midrule
+TTT with SSL  & 0.7196 $\pm$ 0.0553 & 0.5720 $\pm$ 0.0798 & 0.8081 $\pm$ 0.0652 & 0.7161 $\pm$ 0.0231 & 0.6494 $\pm$ 0.0337 & 0.8180 $\pm$ 0.0081 \\
+TTT with Tent & \textbf{0.7280 $\pm$ 0.0509}  & \textbf{0.5925 $\pm$ 0.0615}  & \textbf{0.8256 $\pm$ 0.0409}  & \textbf{0.7269 $\pm$ 0.0106} & \textbf{0.6401 $\pm$ 0.0402} & \textbf{0.7916 $\pm$ 0.0475} \\
+\bottomrule
+\end{tabular}
+}% end resizebox
+
+\label{tab:results_ma}
+\end{table}
