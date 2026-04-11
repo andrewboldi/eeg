@@ -59,16 +59,39 @@ Downloaded **20 subjects** (RestingState preprocessed .mat only).
 - Both raw and preprocessed versions available in CSV and MAT formats
 - Behavioral data and eyetracking also available per subject
 
-## Scaling Up
-To download more subjects (need to free disk space first):
-```bash
-# Find subjects with RestingState data
-aws s3 ls --no-sign-request s3://fcp-indi/data/Projects/HBN/EEG/{SUBJECT_ID}/EEG/preprocessed/mat_format/RestingState.mat
+## Batch Download (2026-04-11)
 
-# Download one subject
-aws s3 cp --no-sign-request \
-  s3://fcp-indi/data/Projects/HBN/EEG/{SUBJECT_ID}/EEG/preprocessed/mat_format/RestingState.mat \
-  data/raw/hbn_eeg/{SUBJECT_ID}/RestingState.mat
+Expanded from 20 to **138 subjects** (118 new RestingState downloads).
+
+### Download Statistics
+| Metric | Value |
+|--------|-------|
+| New subjects downloaded | 118 |
+| Subjects scanned on S3 | ~383 (first portion of alphabet) |
+| Subjects skipped (no RestingState) | ~265 |
+| Failed downloads | 0 |
+| RestingState availability rate | ~31% of scanned subjects |
+
+### Storage After Batch Download
+- **Total subjects**: 138
+- **Total size**: 11 GB
+- **Average per subject**: ~80 MB
+- **Disk free after download**: 9 GB
+- **Download stopped**: background task timeout (10 min limit); disk approaching 5GB safety margin
+
+### Download Script
+Script saved at `scripts/download_hbn_batch.sh` for future use.
+
+## Scaling Up
+To download more subjects:
+- Need to free disk space first (currently only 9GB free, 5GB safety margin)
+- ~4,200 subjects remain unscanned on S3
+- Expected ~31% will have RestingState data (~1,300 more subjects available)
+- At ~80MB each, full dataset would need ~100GB total
+
+```bash
+# Resume downloading (script skips existing subjects automatically)
+bash scripts/download_hbn_batch.sh
 ```
 
-Estimated full dataset (all ~1,200 subjects with RestingState): ~80 GB
+Estimated full dataset (all ~1,200 subjects with RestingState): ~100 GB
