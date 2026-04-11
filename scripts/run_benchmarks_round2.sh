@@ -22,7 +22,17 @@ for model in \
     "iter063_gopsa" \
     "iter064_target_denoise" \
     "iter065_highpass3hz" \
-    "iter066_contrastive_finetune"; do
+    "iter066_contrastive_finetune" \
+    "iter068_channel_weighted" \
+    "iter069_progressive_unfreeze" \
+    "iter070_stochastic_depth" \
+    "iter071_eca" \
+    "iter072_multi_seed" \
+    "iter073_window_prune" \
+    "iter074_ema" \
+    "iter075_target_noise" \
+    "iter076_subject_soup" \
+    "iter077_best_practices"; do
     echo ""
     echo "=== Running $model at $(date) ==="
     $BENCH --model-fn "models/${model}.py" --name "${model}_46ch" || echo "FAILED: $model"
