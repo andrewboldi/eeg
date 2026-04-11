@@ -173,38 +173,41 @@ class GOPSAModel(nn.Module):
     """Wraps TinyDeep with Riemannian alignment at inference time.
 
     Stores the geometric mean sqrt matrix. At test time, computes the
-    test subject's covariance from the full batch, aligns, then predicts.
+    test batch's covariance, aligns to geometric mean, then predicts.
+
+    The alignment is computed per-batch, which works because:
+    - Each batch has ~32 windows from the same subject
+    - 32 windows x 256 timepoints gives stable 27x27 covariance estimate
+    - The benchmark processes one subject at a time
     """
 
-    def __init__(self, deep_model, R_mean_sqrt, C_scalp):
+    def __init__(self, deep_model, R_mean_sqrt, R_mean_invsqrt, C_scalp):
         super().__init__()
         self.deep = deep_model
-        # Store alignment reference as buffer (not parameter)
-        self.register_buffer('R_mean_sqrt',
+        # Store alignment reference as buffers
+        self.register_buffer('R_mean_sqrt_t',
                              torch.tensor(R_mean_sqrt.astype(np.float32)))
+        self.register_buffer('R_mean_invsqrt_t',
+                             torch.tensor(R_mean_invsqrt.astype(np.float32)))
         self.C_scalp = C_scalp
-        # Cache for test-time alignment matrix
-        self._test_align_matrix = None
-
-    def set_test_alignment(self, test_scalp_np):
-        """Pre-compute alignment matrix for a test subject.
-
-        Call this before running forward on test data.
-        Args:
-            test_scalp_np: (N, C, T) numpy array of all test windows
-        """
-        R_test = compute_subject_covariance(test_scalp_np)
-        R_test_invsqrt = _spd_invsqrt(R_test).astype(np.float32)
-        R_mean_sqrt_np = self.R_mean_sqrt.cpu().numpy()
-        A = R_mean_sqrt_np @ R_test_invsqrt
-        self._test_align_matrix = torch.tensor(A, dtype=torch.float32,
-                                                device=self.R_mean_sqrt.device)
+        self.align_test = True  # Set False to skip test-time alignment
 
     def forward(self, x):
-        if self._test_align_matrix is not None:
-            # Test-time alignment: apply stored alignment matrix
-            # x: (B, C, T), A: (C, C)
-            x = torch.einsum('ij,bjt->bit', self._test_align_matrix, x)
+        if not self.training and self.align_test:
+            # Test-time: compute batch covariance and align to geometric mean
+            # x: (B, C, T)
+            B, C, T = x.shape
+            # Batch covariance: mean of x @ x.T / T across batch
+            cov = torch.einsum('bct,bdt->cd', x, x) / (B * T)
+            # Regularize
+            cov = cov + 1e-6 * torch.eye(C, device=x.device)
+            # Compute alignment: R_mean^{1/2} @ R_batch^{-1/2}
+            # Use eigendecomposition for inverse square root (GPU-friendly)
+            eigvals, eigvecs = torch.linalg.eigh(cov)
+            eigvals = eigvals.clamp(min=1e-8)
+            R_batch_invsqrt = eigvecs @ torch.diag(1.0 / eigvals.sqrt()) @ eigvecs.T
+            A = self.R_mean_sqrt_t @ R_batch_invsqrt
+            x = torch.einsum('ij,bjt->bit', A, x)
         return self.deep(x)
 
 
@@ -369,37 +372,12 @@ def build_and_train(train_ds, val_ds, C_scalp, C_inear, device):
     print(f"Best val_r: {best_r:.4f}")
 
     # ── Step 6: Wrap in GOPSAModel for test-time alignment ──
-    model = GOPSAModel(deep, R_mean_sqrt, C_scalp).to(device)
+    R_mean_invsqrt = _spd_invsqrt(R_mean)
+    model = GOPSAModel(deep, R_mean_sqrt, R_mean_invsqrt, C_scalp).to(device)
 
-    # Monkey-patch the model's forward to handle test-time alignment automatically.
-    # The benchmark calls model(x) for each test subject's full batch.
-    # We override eval() to signal test mode and compute alignment on first forward.
-    original_forward = model.forward
-    _alignment_computed = [False]
-    _batch_buffer = []
-
-    def _gopsa_forward(x):
-        """Test-time forward with automatic covariance estimation.
-
-        On the first call after eval(), estimates covariance from this batch
-        and sets the alignment matrix. Subsequent calls use the same alignment.
-        This works because benchmark evaluates one subject at a time.
-        """
-        if not model.training and model._test_align_matrix is None:
-            # First batch of a new test subject - estimate covariance
-            x_np = x.detach().cpu().numpy()
-            model.set_test_alignment(x_np)
-        return original_forward(x)
-
-    model.forward = _gopsa_forward
-
-    # Override eval to reset alignment for each new test subject
-    original_eval = model.eval
-
-    def _gopsa_eval():
-        model._test_align_matrix = None
-        return original_eval()
-
-    model.eval = _gopsa_eval
+    # Verify: run validation through the full model (with alignment disabled in train mode)
+    model.eval()
+    final_r = validate_correlation(model, vl, device)
+    print(f"GOPSAModel final val_r (with test-time alignment): {final_r:.4f}")
 
     return model
