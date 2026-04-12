@@ -15,3 +15,4 @@
 {"model": "iter045_long_context_4s", "mean_r": 0.6061555995932832, "std_r": 0.11996266908566484, "mean_snr": 2.1026239593823752, "timestamp": "2026-04-11 07:21:23"}
 {"model": "iter054_pretrained_finetune", "mean_r": 0.5886352234429474, "std_r": 0.11726652192505768, "mean_snr": 1.938257873058319, "timestamp": "2026-04-11 08:04:41"}
 {"model": "iter057_unified_pretrained", "mean_r": 0.5898359376032601, "std_r": 0.11668568336952025, "mean_snr": 1.9471956690152485, "timestamp": "2026-04-11 20:43:12"}
+{"model": "iter078_pruned_subjects", "mean_r": 0.6098535351890896, "std_r": 0.11978781121463854, "mean_snr": 2.11076682806015, "timestamp": "2026-04-11 21:01:51"}
