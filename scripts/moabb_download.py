@@ -22,7 +22,7 @@ warnings.filterwarnings('ignore')
 STATUS_FILE = '/home/andrew/eeg/docs/research/moabb_download_status.json'
 SUMMARY_FILE = '/home/andrew/eeg/docs/research/moabb_download_status.md'
 MNE_DATA_DIR = os.path.expanduser('~/mne_data')
-MAX_DISK_GB = 18.0
+MAX_DISK_GB = 6.0  # Very tight on disk -- other session using 44GB
 
 # Ordered by download efficiency and hosting speed
 # Format: (name, class, expected_subjects)
@@ -193,8 +193,8 @@ def download_dataset(name, cls, status):
                 meta['mb_per_subject'] = mb_first
                 est_total_gb = mb_first * len(remaining) / 1024
                 print(f"    ~{mb_first:.0f}MB/subj, est total: {est_total_gb:.1f}GB for {len(remaining)} subjects")
-                if mb_first > 300:
-                    # Cap downloads for large datasets
+                if mb_first > 100:
+                    # Cap downloads for large datasets (tight disk)
                     budget_gb = MAX_DISK_GB - disk_after_first
                     max_subj = max(3, int(budget_gb * 1024 / mb_first / 2))
                     if max_subj < len(remaining):
@@ -269,7 +269,7 @@ def main():
         if used > MAX_DISK_GB:
             print(f"\n*** DISK LIMIT ({used:.1f}GB > {MAX_DISK_GB}GB) ***")
             break
-        if free < 8.0:
+        if free < 3.0:
             print(f"\n*** LOW SPACE ({free:.1f}GB free) ***")
             break
 

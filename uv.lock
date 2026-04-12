@@ -825,6 +825,7 @@ dependencies = [
     { name = "optuna" },
     { name = "pandas", version = "2.3.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "pandas", version = "3.0.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
+    { name = "pyriemann" },
     { name = "pyyaml" },
     { name = "scikit-learn", version = "1.7.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "scikit-learn", version = "1.8.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
@@ -845,6 +846,7 @@ requires-dist = [
     { name = "numpy", specifier = ">=1.24" },
     { name = "optuna", specifier = ">=3.1" },
     { name = "pandas", specifier = ">=2.3.3" },
+    { name = "pyriemann", specifier = ">=0.10" },
     { name = "pyyaml", specifier = ">=6.0" },
     { name = "scikit-learn", specifier = ">=1.2" },
     { name = "scipy", specifier = ">=1.10" },
@@ -2885,6 +2887,25 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/f3/91/9c6ee907786a473bf81c5f53cf703ba0957b23ab84c264080fb5a450416f/pyparsing-3.3.2.tar.gz", hash = "sha256:c777f4d763f140633dcb6d8a3eda953bf7a214dc4eff598413c070bcdc117cbc", size = 6851574, upload-time = "2026-01-21T03:57:59.36Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/10/bd/c038d7cc38edc1aa5bf91ab8068b63d4308c66c4c8bb3cbba7dfbc049f9c/pyparsing-3.3.2-py3-none-any.whl", hash = "sha256:850ba148bd908d7e2411587e247a1e4f0327839c40e2e5e6d05a007ecc69911d", size = 122781, upload-time = "2026-01-21T03:57:55.912Z" },
+]
+
+[[package]]
+name = "pyriemann"
+version = "0.10"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "joblib" },
+    { name = "matplotlib" },
+    { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
+    { name = "numpy", version = "2.4.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
+    { name = "scikit-learn", version = "1.7.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
+    { name = "scikit-learn", version = "1.8.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
+    { name = "scipy", version = "1.15.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
+    { name = "scipy", version = "1.17.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/13/54/fd13222a054b7ef3f5cb8331bafaf22ea5e46fe3d11227a4cd9b419ac1f3/pyriemann-0.10.tar.gz", hash = "sha256:6debfa8cb58677ea3812f250cb50f6ef194f67b109eda19797467fbcecca9c0a", size = 148576, upload-time = "2026-01-06T07:25:59.899Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/cd/1f/3aaabc8e8eacf5fb00230ae395669a52dce3d9e97877469d31d707fcefc1/pyriemann-0.10-py2.py3-none-any.whl", hash = "sha256:db6411df50d7c1f2d9d7e22fa1c512f892b66226cdaf656cc94c4b67d4b3c20d", size = 132324, upload-time = "2026-01-06T07:25:58.519Z" },
 ]
 
 [[package]]
