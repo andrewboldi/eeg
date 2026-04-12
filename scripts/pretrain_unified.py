@@ -159,7 +159,7 @@ def preprocess_continuous(data: np.ndarray, fs: float) -> np.ndarray | None:
 # ═══════════════════════════════════════════════════════════════════════════
 
 
-def load_hbn_data() -> list[np.ndarray]:
+def load_hbn_data(max_subjects: int = 50) -> list[np.ndarray]:
     """Load HBN-EEG subjects. Returns list of (N_i, C_i, 256) arrays."""
     if not HBN_ROOT.exists():
         logger.info("HBN-EEG: directory not found, skipping")
@@ -168,6 +168,9 @@ def load_hbn_data() -> list[np.ndarray]:
     all_data = []
     subjects = sorted(HBN_ROOT.iterdir())
     for subj_dir in subjects:
+        if len(all_data) >= max_subjects:
+            logger.info(f"  HBN: reached {max_subjects} subject limit, stopping")
+            break
         mat_path = subj_dir / "RestingState.mat"
         if not mat_path.exists():
             continue
@@ -830,7 +833,7 @@ def main():
     skip = set(args.skip_datasets)
 
     loaders = [
-        ("hbn", "HBN-EEG", load_hbn_data),
+        ("hbn", "HBN-EEG", lambda: load_hbn_data(max_subjects=args.max_subjects_per_dataset)),
         ("mobile_bci", "Mobile BCI Ear", load_mobile_bci_data),
         ("eesm", "EESM19/23", load_eesm_data),
         ("moabb", "MOABB", load_moabb_data),
