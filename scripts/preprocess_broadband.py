@@ -29,7 +29,9 @@ from math import gcd
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
 
-BIDS_ROOT = Path("data/raw/ear_saad/bids_dataset")
+from src.data.download import ensure_dataset
+
+BIDS_ROOT = ensure_dataset("ear_saad") / "bids_dataset"
 
 # Channel classification (from the MATLAB script)
 INEAR_CHANNELS = {"ELA", "ELB", "ELC", "ELE", "ELI", "ELT",

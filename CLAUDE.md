@@ -23,6 +23,21 @@
 ### Narrowband Best: r = 0.378 (iter017/019)
 ### Full 15-subject LOSO CF: r = 0.645 (95% CI [0.563, 0.728])
 
+## Disk Cleanup (2026-11-18): Read Before Re-running Old Experiments
+To free disk space, these gitignored files were deleted from `data/processed/`. Only `broadband_46ch.h5` remains, and the deleted ones can be rebuilt from it in seconds.
+
+| Deleted file | Size | Used by | How to get it back |
+|---|---|---|---|
+| `broadband_46ch_4s.h5` | 2.8G | `models/iter045_long_context.py` | Stitch 2 s windows from `broadband_46ch.h5` (recipe below) |
+| `broadband.h5` (27ch) | 1.9G | `scripts/benchmark_broadband.py` | `broadband_46ch.h5` scalp `[:, :27, :]` + the same `inear` |
+| `data.h5`, `data_T{128,256,512,1024}.h5` | 0.3G | `src/train.py`, `scripts/ablation.py`, `scripts/sweep_hparams.py` | Synthetic-phase data; `src/train.py` regenerates it when missing |
+
+- **4s recipe** (verified bit-exact on all 15 subjects before deletion): per subject, split the 2 s windows (stride 128) into contiguous segments, breaking wherever `w[i][:, 128:] != w[i+1][:, :128]` (6 segments per subject). Within each segment, the 4 s window is `concat(w[j], w[j+2], axis=-1)` for j = start, start+2, … while j+2 < end. That gives 1794 windows per subject for both scalp and inear. Root attrs are the same, except `window_size=512` and `window_stride=256`.
+- **27ch** matched the 46ch file to within float32 rounding (≤ 7e-5 × std). Its root attr is `C_scalp=27`, and each subject group has an `n_windows` attr.
+- **Never delete `broadband_46ch.h5` or `data/raw/ear_saad/preprocessedData/`** (fixed benchmark input). The raw BIDS data is not on disk; it is a 12.2 GB Zenodo zip. Through `ensure_dataset("ear_saad")`, `scripts/preprocess_broadband*.py` will download it, so check `df -h /` first.
+- **`.venv` was rebuilt the same day.** The old one was all dangling symlinks into a wiped uv cache, because this machine exports `UV_LINK_MODE=symlink`. The rebuild command was `command rm -rf .venv && UV_LINK_MODE=hardlink uv sync --python 3.12.11`. Don't use `uv sync --reinstall` for this (it implies `--refresh` and re-downloads everything), and never run `uv cache clean`. `du` counts the hardlinked `.venv` (~5 GB) even though those files are shared with the uv cache, so use `df` for real usage.
+- **Dropped packages:** `moabb`, `seaborn`, `pytest` and others were not in `uv.lock`, so the rebuild removed them. Run `UV_LINK_MODE=hardlink uv add moabb` before running `scripts/moabb_*.py` or `scripts/pretrain_unified.py`.
+
 ## Key Findings (iter038-054)
 - **Around-ear channels are critical**: +0.15 r from adding 19 cEEGrid channels as input
 - **Broadband (1-45 Hz)**: +0.06 r over narrowband (1-9 Hz)
